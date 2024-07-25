@@ -1,0 +1,19 @@
+[workspace]
+members = [
+    "crates/json-rpc",
+    "secure-rpc",
+]
+resolver = "2"
+
+[workspace.dependencies]
+async-trait = "0.1.73"
+futures = "0.3.30"
+json-rpc = { path = "crates/json-rpc" }
+rand = "0.8.5"
+reqwest = { version = "0.12.4", features = ["json"] }
+serde = { version = "1.0.197", features = ["derive"] }
+serde_json = "1.0.117"
+tokio = { version = "1.37.0", default-features = false }
+toml = "0.8.13"
+tracing = "0.1.37"
+tracing-subscriber = "0.3.17"
