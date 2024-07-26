@@ -4,19 +4,19 @@ use json_rpc::RpcClient;
 
 use crate::error::Error;
 
-pub struct EthereumRpcClient(Arc<RpcClient>);
+pub struct RollupRpcClient(Arc<RpcClient>);
 
-unsafe impl Send for EthereumRpcClient {}
+unsafe impl Send for RollupRpcClient {}
 
-unsafe impl Sync for EthereumRpcClient {}
+unsafe impl Sync for RollupRpcClient {}
 
-impl Clone for EthereumRpcClient {
+impl Clone for RollupRpcClient {
     fn clone(&self) -> Self {
         Self(self.0.clone())
     }
 }
 
-impl EthereumRpcClient {
+impl RollupRpcClient {
     pub fn new(ethereum_rpc_url: impl AsRef<str>) -> Result<Self, Error> {
         let client = RpcClient::new(ethereum_rpc_url)?;
 

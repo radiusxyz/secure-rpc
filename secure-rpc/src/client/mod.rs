@@ -1,5 +1,5 @@
-pub mod ethereum_rpc_client;
-pub mod secure_rpc_client;
+mod rollup_rpc_client;
+mod sequencer_rpc_client;
 
-pub use ethereum_rpc_client::EthereumRpcClient;
-pub use secure_rpc_client::SecureRpcClient;
+pub use rollup_rpc_client::RollupRpcClient;
+pub use sequencer_rpc_client::SequencerRpcClient;

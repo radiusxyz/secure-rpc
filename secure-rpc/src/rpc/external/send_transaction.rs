@@ -16,7 +16,7 @@ impl SendTransaction {
         let parameter = parameter.parse::<Self>()?;
 
         context
-            .secure_rpc_client()
+            .sequencer_rpc_client()
             .rpc_client()
             .request(SendTransaction::METHOD_NAME, parameter)
             .await

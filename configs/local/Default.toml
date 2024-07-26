@@ -1,5 +1,5 @@
 # Sequencer
-sequencer_rpc_url = "http://127.0.0.1:8000"
+sequencer_rpc_url = "http://127.0.0.1:7235"
 secure_rpc_url = "http://127.0.0.1:8001"
 # Ethereum
 ethereum_rpc_url = "http://127.0.0.1:8545"
