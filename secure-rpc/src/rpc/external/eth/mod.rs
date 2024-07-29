@@ -1,5 +1,6 @@
 mod eth_block_number;
 mod eth_call;
+mod eth_chain_id;
 mod eth_estimate_gas;
 mod eth_fee_history;
 mod eth_gas_price;
@@ -13,6 +14,7 @@ mod eth_send_raw_transaction;
 
 pub use eth_block_number::EthBlockNumber;
 pub use eth_call::EthCall;
+pub use eth_chain_id::EthChainId;
 pub use eth_estimate_gas::EthEstimateGas;
 pub use eth_fee_history::EthFeeHistory;
 pub use eth_gas_price::EthGasPrice;

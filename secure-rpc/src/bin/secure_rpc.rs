@@ -48,6 +48,10 @@ async fn initialize_secure_rpc_server(
             external::eth::EthCall::handler,
         )?
         .register_rpc_method(
+            external::eth::EthChainId::METHOD_NAME,
+            external::eth::EthChainId::handler,
+        )?
+        .register_rpc_method(
             external::eth::EthEstimateGas::METHOD_NAME,
             external::eth::EthEstimateGas::handler,
         )?

@@ -44,7 +44,7 @@ macro_rules! impl_rollup_rpc_forwarder {
     ($method_struct:ident, $method_name:expr, $output_type:ty) => {
         #[async_trait]
         impl RollupRpcParameter for $method_struct {
-            const METHOD_NAME: &'static str = stringify!($method_name);
+            const METHOD_NAME: &'static str = $method_name;
 
             type Output = $output_type;
 
