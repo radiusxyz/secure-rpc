@@ -9,13 +9,18 @@ use crate::{
 };
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct EthEstimateGas {
+pub struct EthTransactionForEstimateGas {
     pub from: String,
     pub to: String,
     #[serde(default, rename = "gasPrice")]
     pub gas_price: String,
     pub value: String,
     pub data: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct EthEstimateGas {
+    pub tx: EthTransactionForEstimateGas,
 }
 
 impl_rollup_rpc_forwarder!(EthEstimateGas, "eth_estimateGas", String);
