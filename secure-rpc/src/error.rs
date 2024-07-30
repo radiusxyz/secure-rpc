@@ -7,6 +7,12 @@ pub enum Error {
     FetchResponse,
     InvalidSequencerPort,
     InvalidSecureRpcPort,
+
+    LoadConfigOption,
+    ParseTomlString,
+    RemoveConfigDirectory,
+    CreateConfigDirectory,
+    CreateConfigFile,
 }
 
 unsafe impl Send for Error {}

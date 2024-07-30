@@ -67,6 +67,7 @@ impl EthRpcClient {
         self
     }
 
+    // TODO(jaemin): Branching that parses parameters without distinguishing between client struct
     async fn request_inner<P, R>(&self, name: &'static str, method: P) -> Result<R, Error>
     where
         P: Clone + Serialize + Send,

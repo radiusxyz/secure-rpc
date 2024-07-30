@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+// use radius_sequencer_sdk::liveness::types::Block;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -84,3 +85,4 @@ pub struct EthGetBlockByNumber {
 }
 
 impl_rollup_rpc_forwarder!(EthGetBlockByNumber, "eth_getBlockByNumber", Block<String>);
+// impl_rollup_rpc_forwarder!(EthGetBlockByNumber, "eth_getBlockByNumber", Block);
