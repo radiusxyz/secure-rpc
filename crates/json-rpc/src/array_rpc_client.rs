@@ -10,18 +10,18 @@ use tokio::time::{sleep, Duration};
 
 use crate::{Error, ErrorKind};
 
-pub struct EthRpcClient {
+pub struct ArrayRpcClient {
     http_client: Arc<HttpClient>,
     timeout: u64,
     retry: u8,
     retry_interval: u64,
 }
 
-unsafe impl Send for EthRpcClient {}
+unsafe impl Send for ArrayRpcClient {}
 
-unsafe impl Sync for EthRpcClient {}
+unsafe impl Sync for ArrayRpcClient {}
 
-impl Clone for EthRpcClient {
+impl Clone for ArrayRpcClient {
     fn clone(&self) -> Self {
         Self {
             http_client: self.http_client.clone(),
@@ -32,7 +32,7 @@ impl Clone for EthRpcClient {
     }
 }
 
-impl EthRpcClient {
+impl ArrayRpcClient {
     pub const DEFAULT_TIMEOUT: u64 = 5;
     pub const DEFAULT_RETRY: u8 = 0;
     pub const DEFAULT_RETRY_INTERVAL: u64 = 0;
@@ -73,7 +73,7 @@ impl EthRpcClient {
         P: Clone + Serialize + Send,
         R: DeserializeOwned,
     {
-        let method = EthParameter::from(method);
+        let method = ArrayParameter::from(method);
         self.http_client
             .request(name, method)
             .await
@@ -100,11 +100,11 @@ impl EthRpcClient {
 }
 
 /// Wrapper for the RPC request parameter.
-pub(crate) struct EthParameter<P>(P)
+pub(crate) struct ArrayParameter<P>(P)
 where
     P: Clone + Serialize + Send;
 
-impl<P> Clone for EthParameter<P>
+impl<P> Clone for ArrayParameter<P>
 where
     P: Clone + Serialize + Send,
 {
@@ -113,7 +113,7 @@ where
     }
 }
 
-impl<P> From<P> for EthParameter<P>
+impl<P> From<P> for ArrayParameter<P>
 where
     P: Clone + Serialize + Send,
 {
@@ -122,7 +122,7 @@ where
     }
 }
 
-impl<P> ToRpcParams for EthParameter<P>
+impl<P> ToRpcParams for ArrayParameter<P>
 where
     P: Clone + Serialize + Send,
 {

@@ -1,4 +1,4 @@
-use std::{env, fs, path::PathBuf, sync::Arc};
+use std::{fs, path::PathBuf, sync::Arc};
 
 use json_rpc::RpcServer;
 use pvde::{
@@ -25,7 +25,8 @@ use pvde::{
     },
 };
 use secure_rpc::{
-    cli::{Cli, Commands, Config, ConfigOption, ConfigPath},
+    cli::{Cli, Commands, Config, ConfigPath},
+    context::{context, static_str::*, Context},
     error::Error,
     rpc::external::{self, RollupRpcParameter},
     state::AppState,
@@ -45,14 +46,11 @@ async fn main() -> Result<(), Error> {
             std::panic::set_hook(Box::new(|panic_info| tracing::error!("{}", panic_info)));
 
             let config = Config::load(config_option)?;
-
-            // let arguments: Vec<String> = env::args().skip(1).collect();
-            // let config_path = arguments
-            //     .get(0)
-            //     .expect("Provide the config file path.")
-            //     .to_owned();
+            let config_path = config_option.path.clone();
 
             tracing::info!("Successfully loaded the configuration file.",);
+
+            Context::init(Default::default());
 
             let is_using_zkp = config.is_using_zkp();
 
@@ -61,9 +59,9 @@ async fn main() -> Result<(), Error> {
             // Initialize the secure RPC server.
             let server_handle = initialize_external_rpc_server(&app_state).await?;
 
-            if is_using_zkp {
+            if let Some(path) = config_path {
                 // Initialize the time lock puzzle parameters.
-                store_time_lock_puzzle_param().await?;
+                store_time_lock_puzzle_param(path, is_using_zkp).await?;
             }
 
             server_handle.await.unwrap();
@@ -122,10 +120,6 @@ async fn initialize_external_rpc_server(
             external::eth::EthNetVersion::METHOD_NAME,
             external::eth::EthNetVersion::handler,
         )?
-        .register_rpc_method(
-            external::eth::EthSendRawTransaction::METHOD_NAME,
-            external::eth::EthSendRawTransaction::handler,
-        )?
         // .register_rpc_method(
         //     external::SendTransaction::METHOD_NAME,
         //     external::SendTransaction::handler,
@@ -149,114 +143,128 @@ async fn initialize_external_rpc_server(
     Ok(tokio::spawn(async move {
         secure_rpc_server.stopped().await;
     }))
-
-    // server_handle.await.unwrap();
-
-    // Ok(())
 }
 
-pub async fn store_time_lock_puzzle_param() -> Result<(), Error> {
-    // let config_path = PathBuf::from(config_path);
-    // let time_lock_puzzle_param_path = config_path
-    //     .join("time_lock_puzzle_param.json")
-    //     .to_str()
-    //     .unwrap()
-    //     .to_string();
+pub async fn store_time_lock_puzzle_param(
+    config_path: PathBuf,
+    is_using_zkp: bool,
+) -> Result<(), Error> {
+    let time_lock_puzzle_param_path = config_path
+        .join("time_lock_puzzle_param.json")
+        .to_str()
+        .unwrap()
+        .to_string();
 
-    // let time_lock_puzzle_param = if fs::metadata(&time_lock_puzzle_param_path).is_ok() {
-    //     import_time_lock_puzzle_param(&time_lock_puzzle_param_path)
-    // } else {
-    //     let time_lock_puzzle_param = setup_time_lock_puzzle_param(2048);
-    //     export_time_lock_puzzle_param(&time_lock_puzzle_param_path, time_lock_puzzle_param.clone());
-    //     time_lock_puzzle_param
-    // };
+    let time_lock_puzzle_param = if fs::metadata(&time_lock_puzzle_param_path).is_ok() {
+        import_time_lock_puzzle_param(&time_lock_puzzle_param_path)
+    } else {
+        let time_lock_puzzle_param = setup_time_lock_puzzle_param(2048);
+        export_time_lock_puzzle_param(&time_lock_puzzle_param_path, time_lock_puzzle_param.clone());
+        time_lock_puzzle_param
+    };
 
-    // if do_verify_tx_with_zkp {
-    //     let key_validation_param_file_path = config_path
-    //         .join("key_validation_zkp_param.data")
-    //         .to_str()
-    //         .unwrap()
-    //         .to_string();
-    //     let key_validation_proving_key_file_path = config_path
-    //         .join("key_validation_proving_key.data")
-    //         .to_str()
-    //         .unwrap()
-    //         .to_string();
-    //     let key_validation_verifying_key_file_path = config_path
-    //         .join("key_validation_verifying_key.data")
-    //         .to_str()
-    //         .unwrap()
-    //         .to_string();
+    context().store_blocking(TIME_LOCK_PUZZLE_PARAM, time_lock_puzzle_param);
 
-    //     let (key_validation_zkp_param, key_validation_verifying_key, key_validation_proving_key) =
-    //         if fs::metadata(&key_validation_param_file_path).is_ok() {
-    //             (
-    //                 import_key_validation_zkp_param(&key_validation_param_file_path),
-    //                 import_key_validation_verifying_key(&key_validation_verifying_key_file_path),
-    //                 import_key_validation_proving_key(&key_validation_proving_key_file_path),
-    //             )
-    //         } else {
-    //             let setup_results = setup_key_validation(13);
-    //             export_key_validation_zkp_param(
-    //                 &key_validation_param_file_path,
-    //                 setup_results.0.clone(),
-    //             );
-    //             export_key_validation_verifying_key(
-    //                 &key_validation_verifying_key_file_path,
-    //                 setup_results.1.clone(),
-    //             );
-    //             export_key_validation_proving_key(
-    //                 &key_validation_proving_key_file_path,
-    //                 setup_results.2.clone(),
-    //             );
-    //             setup_results
-    //         };
+    if is_using_zkp {
+        let key_validation_param_file_path = config_path
+            .join("key_validation_zkp_param.data")
+            .to_str()
+            .unwrap()
+            .to_string();
+        let key_validation_proving_key_file_path = config_path
+            .join("key_validation_proving_key.data")
+            .to_str()
+            .unwrap()
+            .to_string();
+        let key_validation_verifying_key_file_path = config_path
+            .join("key_validation_verifying_key.data")
+            .to_str()
+            .unwrap()
+            .to_string();
 
-    //     let poseidon_encryption_param_file_path = config_path
-    //         .join("poseidon_encryption_param.json")
-    //         .to_str()
-    //         .unwrap()
-    //         .to_string();
-    //     let poseidon_encryption_proving_key_file_path = config_path
-    //         .join("poseidon_encryption_proving_key.data")
-    //         .to_str()
-    //         .unwrap()
-    //         .to_string();
-    //     let poseidon_encryption_verifying_key_file_path = config_path
-    //         .join("poseidon_encryption_verifying_key.data")
-    //         .to_str()
-    //         .unwrap()
-    //         .to_string();
+        let (key_validation_zkp_param, key_validation_verifying_key, key_validation_proving_key) =
+            if fs::metadata(&key_validation_param_file_path).is_ok() {
+                (
+                    import_key_validation_zkp_param(&key_validation_param_file_path),
+                    import_key_validation_verifying_key(&key_validation_verifying_key_file_path),
+                    import_key_validation_proving_key(&key_validation_proving_key_file_path),
+                )
+            } else {
+                let setup_results = setup_key_validation(13);
+                export_key_validation_zkp_param(
+                    &key_validation_param_file_path,
+                    setup_results.0.clone(),
+                );
+                export_key_validation_verifying_key(
+                    &key_validation_verifying_key_file_path,
+                    setup_results.1.clone(),
+                );
+                export_key_validation_proving_key(
+                    &key_validation_proving_key_file_path,
+                    setup_results.2.clone(),
+                );
+                setup_results
+            };
 
-    //     let (
-    //         poseidon_encryption_zkp_param,
-    //         poseidon_encryption_verifying_key,
-    //         poseidon_encryption_proving_key,
-    //     ) = if fs::metadata(&poseidon_encryption_param_file_path).is_ok() {
-    //         (
-    //             import_poseidon_encryption_zkp_param(&poseidon_encryption_param_file_path),
-    //             import_poseidon_encryption_verifying_key(
-    //                 &poseidon_encryption_verifying_key_file_path,
-    //             ),
-    //             import_poseidon_encryption_proving_key(&poseidon_encryption_proving_key_file_path),
-    //         )
-    //     } else {
-    //         let setup_results = setup_poseidon_encryption(13);
-    //         export_poseidon_encryption_zkp_param(
-    //             &poseidon_encryption_param_file_path,
-    //             setup_results.0.clone(),
-    //         );
-    //         export_poseidon_encryption_verifying_key(
-    //             &poseidon_encryption_verifying_key_file_path,
-    //             setup_results.1.clone(),
-    //         );
-    //         export_poseidon_encryption_proving_key(
-    //             &poseidon_encryption_proving_key_file_path,
-    //             setup_results.2.clone(),
-    //         );
-    //         setup_results
-    //     };
-    // }
+        context().store_blocking(KEY_VALIDATION_ZKP_PARAM, key_validation_zkp_param);
+        context().store_blocking(KEY_VALIDATION_PROVE_KEY, key_validation_proving_key);
+        context().store_blocking(&KEY_VALIDATION_VERIFY_KEY, key_validation_verifying_key);
+
+        let poseidon_encryption_param_file_path = config_path
+            .join("poseidon_encryption_param.json")
+            .to_str()
+            .unwrap()
+            .to_string();
+        let poseidon_encryption_proving_key_file_path = config_path
+            .join("poseidon_encryption_proving_key.data")
+            .to_str()
+            .unwrap()
+            .to_string();
+        let poseidon_encryption_verifying_key_file_path = config_path
+            .join("poseidon_encryption_verifying_key.data")
+            .to_str()
+            .unwrap()
+            .to_string();
+
+        let (
+            poseidon_encryption_zkp_param,
+            poseidon_encryption_verifying_key,
+            poseidon_encryption_proving_key,
+        ) = if fs::metadata(&poseidon_encryption_param_file_path).is_ok() {
+            (
+                import_poseidon_encryption_zkp_param(&poseidon_encryption_param_file_path),
+                import_poseidon_encryption_verifying_key(
+                    &poseidon_encryption_verifying_key_file_path,
+                ),
+                import_poseidon_encryption_proving_key(&poseidon_encryption_proving_key_file_path),
+            )
+        } else {
+            let setup_results = setup_poseidon_encryption(13);
+            export_poseidon_encryption_zkp_param(
+                &poseidon_encryption_param_file_path,
+                setup_results.0.clone(),
+            );
+            export_poseidon_encryption_verifying_key(
+                &poseidon_encryption_verifying_key_file_path,
+                setup_results.1.clone(),
+            );
+            export_poseidon_encryption_proving_key(
+                &poseidon_encryption_proving_key_file_path,
+                setup_results.2.clone(),
+            );
+            setup_results
+        };
+
+        context().store_blocking(POSEIDON_ENCRYPTION_ZKP_PARAM, poseidon_encryption_zkp_param);
+        context().store_blocking(
+            POSEIDON_ENCRYPTION_PROVE_KEY,
+            poseidon_encryption_proving_key,
+        );
+        context().store_blocking(
+            POSEIDON_ENCRYPTION_VERIFY_KEY,
+            poseidon_encryption_verifying_key,
+        );
+    }
 
     Ok(())
 }

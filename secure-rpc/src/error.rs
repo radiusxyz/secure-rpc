@@ -13,6 +13,11 @@ pub enum Error {
     RemoveConfigDirectory,
     CreateConfigDirectory,
     CreateConfigFile,
+
+    // Context
+    KeyDoesNotExist,
+    Downcast,
+    NoneType,
 }
 
 unsafe impl Send for Error {}

@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
-use json_rpc::EthRpcClient;
+use json_rpc::ArrayRpcClient;
 
 use crate::error::Error;
 
-pub struct RollupRpcClient(Arc<EthRpcClient>);
+pub struct RollupRpcClient(Arc<ArrayRpcClient>);
 
 unsafe impl Send for RollupRpcClient {}
 
@@ -18,12 +18,12 @@ impl Clone for RollupRpcClient {
 
 impl RollupRpcClient {
     pub fn new(ethereum_rpc_url: impl AsRef<str>) -> Result<Self, Error> {
-        let client = EthRpcClient::new(ethereum_rpc_url)?;
+        let client = ArrayRpcClient::new(ethereum_rpc_url)?;
 
         Ok(Self(Arc::new(client)))
     }
 
-    pub fn rpc_client(&self) -> Arc<EthRpcClient> {
+    pub fn rpc_client(&self) -> Arc<ArrayRpcClient> {
         self.0.clone()
     }
 }

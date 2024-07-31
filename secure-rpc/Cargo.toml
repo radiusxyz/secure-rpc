@@ -19,5 +19,6 @@ tracing-subscriber = { workspace = true }
 async-trait = { workspace = true }
 pvde = { workspace = true }
 clap = { version = "4.4.7", features = ["derive"] }
+sequencer = { workspace = true }
 
 # radius-sequencer-sdk = { workspace = true }

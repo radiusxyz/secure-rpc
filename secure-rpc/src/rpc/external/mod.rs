@@ -1,3 +1,4 @@
+// mod encrypt_transaction;
 pub mod eth;
 // mod encrypt_transaction;
 // mod send_encrypted_transaciton;
@@ -9,7 +10,7 @@ pub mod eth;
 use std::fmt::Debug;
 
 use async_trait::async_trait;
-use json_rpc::EthRpcClient;
+use json_rpc::ArrayRpcClient;
 // pub use send_encrypted_transaciton::SendEncryptedTransaction;
 // pub use send_raw_transaction::SendRawTransaction;
 // pub use send_transaction::SendTransaction;
@@ -35,7 +36,7 @@ pub trait RollupRpcParameter: Clone + Debug + DeserializeOwned + Send + Serializ
 
 pub async fn forward_to_rpc_request<T: RollupRpcParameter>(
     rpc_parameter: T,
-    rpc_client: Arc<EthRpcClient>,
+    rpc_client: Arc<ArrayRpcClient>,
 ) -> Result<T::Output, RpcError> {
     rpc_client
         .request(T::METHOD_NAME, rpc_parameter.rpc_method())
