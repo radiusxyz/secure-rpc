@@ -1,4 +1,4 @@
-// mod encrypt_transaction;
+mod encrypt_transaction;
 pub mod eth;
 // mod encrypt_transaction;
 // mod send_encrypted_transaciton;
@@ -10,6 +10,7 @@ pub mod eth;
 use std::fmt::Debug;
 
 use async_trait::async_trait;
+pub use encrypt_transaction::EncryptTransaction;
 use json_rpc::ArrayRpcClient;
 // pub use send_encrypted_transaciton::SendEncryptedTransaction;
 // pub use send_raw_transaction::SendRawTransaction;

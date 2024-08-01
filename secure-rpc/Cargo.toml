@@ -12,6 +12,7 @@ futures = { workspace = true }
 json-rpc = { workspace = true }
 rand = { workspace = true }
 serde = { workspace = true }
+serde_json = { workspace = true }
 tokio = { workspace = true, features = ["full"] }
 toml = { workspace = true }
 tracing = { workspace = true }

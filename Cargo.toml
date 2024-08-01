@@ -19,4 +19,4 @@ tracing = "0.1.37"
 tracing-subscriber = "0.3.17"
 pvde = { git = "https://github.com/radiusxyz/pvde", rev="0abc447e775a52ecc5695cf070086fcad9cdaebb"}
 radius-sequencer-sdk = { git = "https://github.com/radiusxyz/radius-sdk-rs", rev = "34ef3b93a2833582123f5e963786d820f24eccf0", features = ["liveness-evm"] }
-sequencer = { git = "https://github.com/datactor/sequencer", branch="refactoring/re-name"}
+sequencer = { git = "https://github.com/radiusxyz/sequencer", branch="refactoring/encrypt-types"}

@@ -120,6 +120,10 @@ async fn initialize_external_rpc_server(
             external::eth::EthNetVersion::METHOD_NAME,
             external::eth::EthNetVersion::handler,
         )?
+        .register_rpc_method(
+            external::EncryptTransaction::METHOD_NAME,
+            external::EncryptTransaction::handler,
+        )?
         // .register_rpc_method(
         //     external::SendTransaction::METHOD_NAME,
         //     external::SendTransaction::handler,
@@ -163,7 +167,9 @@ pub async fn store_time_lock_puzzle_param(
         time_lock_puzzle_param
     };
 
-    context().store_blocking(TIME_LOCK_PUZZLE_PARAM, time_lock_puzzle_param);
+    context()
+        .store(TIME_LOCK_PUZZLE_PARAM, time_lock_puzzle_param)
+        .await;
 
     if is_using_zkp {
         let key_validation_param_file_path = config_path
@@ -206,9 +212,15 @@ pub async fn store_time_lock_puzzle_param(
                 setup_results
             };
 
-        context().store_blocking(KEY_VALIDATION_ZKP_PARAM, key_validation_zkp_param);
-        context().store_blocking(KEY_VALIDATION_PROVE_KEY, key_validation_proving_key);
-        context().store_blocking(&KEY_VALIDATION_VERIFY_KEY, key_validation_verifying_key);
+        context()
+            .store(KEY_VALIDATION_ZKP_PARAM, key_validation_zkp_param)
+            .await;
+        context()
+            .store(KEY_VALIDATION_PROVE_KEY, key_validation_proving_key)
+            .await;
+        context()
+            .store(&KEY_VALIDATION_VERIFY_KEY, key_validation_verifying_key)
+            .await;
 
         let poseidon_encryption_param_file_path = config_path
             .join("poseidon_encryption_param.json")
@@ -255,15 +267,21 @@ pub async fn store_time_lock_puzzle_param(
             setup_results
         };
 
-        context().store_blocking(POSEIDON_ENCRYPTION_ZKP_PARAM, poseidon_encryption_zkp_param);
-        context().store_blocking(
-            POSEIDON_ENCRYPTION_PROVE_KEY,
-            poseidon_encryption_proving_key,
-        );
-        context().store_blocking(
-            POSEIDON_ENCRYPTION_VERIFY_KEY,
-            poseidon_encryption_verifying_key,
-        );
+        context()
+            .store(POSEIDON_ENCRYPTION_ZKP_PARAM, poseidon_encryption_zkp_param)
+            .await;
+        context()
+            .store(
+                POSEIDON_ENCRYPTION_PROVE_KEY,
+                poseidon_encryption_proving_key,
+            )
+            .await;
+        context()
+            .store(
+                POSEIDON_ENCRYPTION_VERIFY_KEY,
+                poseidon_encryption_verifying_key,
+            )
+            .await;
     }
 
     Ok(())

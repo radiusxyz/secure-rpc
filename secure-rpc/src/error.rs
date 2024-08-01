@@ -18,6 +18,8 @@ pub enum Error {
     KeyDoesNotExist,
     Downcast,
     NoneType,
+
+    DecodeFailed,
 }
 
 unsafe impl Send for Error {}
