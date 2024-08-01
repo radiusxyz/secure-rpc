@@ -124,6 +124,10 @@ async fn initialize_external_rpc_server(
             external::EncryptTransaction::METHOD_NAME,
             external::EncryptTransaction::handler,
         )?
+        .register_rpc_method(
+            external::DecryptTransaction::METHOD_NAME,
+            external::DecryptTransaction::handler,
+        )?
         // .register_rpc_method(
         //     external::SendTransaction::METHOD_NAME,
         //     external::SendTransaction::handler,

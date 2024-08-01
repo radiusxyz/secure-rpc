@@ -38,7 +38,7 @@ pub type DecryptionKey = String;
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct EncryptTransaction {
     rollup_id: u32,
-    raw_tx: RawTransaction,
+    raw_transaction: RawTransaction,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -57,11 +57,15 @@ impl EncryptTransaction {
     ) -> Result<EncryptTransactionResponse, RpcError> {
         let parameter = parameter.parse::<Self>()?;
 
-        let raw_tx_string = match &parameter.raw_tx {
-            RawTransaction::Eth(raw_tx) => serde_json::to_string(&raw_tx).unwrap(),
-            RawTransaction::EthBundle(raw_tx) => serde_json::to_string(&raw_tx).unwrap(),
+        let raw_transaction_string = match &parameter.raw_transaction {
+            RawTransaction::Eth(raw_transaction) => {
+                serde_json::to_string(&raw_transaction).unwrap()
+            }
+            RawTransaction::EthBundle(raw_transaction) => {
+                serde_json::to_string(&raw_transaction).unwrap()
+            }
         };
-        let parsed_raw_tx_string: String = serde_json::from_str(&raw_tx_string)?;
+        let parsed_raw_transaction_string: String = serde_json::from_str(&raw_transaction_string)?;
 
         let time_lock_puzzle_param = setup_time_lock_puzzle_param(2048);
 
@@ -96,7 +100,7 @@ impl EncryptTransaction {
                 .unwrap();
 
             (_raw_data, encrypted_transaction) = encrypt_tx_with_zkp(
-                &parsed_raw_tx_string,
+                &parsed_raw_transaction_string,
                 &sigma_protocol_public_input,
                 &key_validation_param,
                 &key_validation_public_input,
@@ -107,12 +111,14 @@ impl EncryptTransaction {
                 &poseidon_encryption_proving_key,
             )?;
         } else {
-            (_raw_data, encrypted_transaction) =
-                encrypt_transaction(&parsed_raw_tx_string, &key_validation_secret_input.k)
-                    .map_err(|error| {
-                        tracing::error!("encrypt_tx error: {:?}", error);
-                        RpcError::from(error)
-                    })?;
+            (_raw_data, encrypted_transaction) = encrypt_transaction(
+                &parsed_raw_transaction_string,
+                &key_validation_secret_input.k,
+            )
+            .map_err(|error| {
+                tracing::error!("encrypt_tx error: {:?}", error);
+                RpcError::from(error)
+            })?;
         }
 
         Ok(EncryptTransactionResponse {
