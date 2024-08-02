@@ -37,8 +37,7 @@ pub type DecryptionKey = String;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct EncryptTransaction {
-    pub rollup_id: u32,
-    raw_transaction: RawTransaction,
+    pub raw_transaction: RawTransaction,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -49,7 +48,7 @@ pub struct EncryptTransactionResponse {
 }
 
 impl EncryptTransaction {
-    pub const METHOD_NAME: &'static str = stringify!(EncryptTransaction);
+    pub const METHOD_NAME: &'static str = "encrypt_transaction";
 
     pub async fn handler(
         parameter: RpcParameter,

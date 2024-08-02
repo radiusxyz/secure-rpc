@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     impl_external_array_rpc_forwarder,
     rpc::{
-        external::{forward_to_array_rpc_request, ExternalRpcParameter},
+        {forward_to_array_rpc_request, ExternalRpcParameter},
         prelude::*,
     },
 };

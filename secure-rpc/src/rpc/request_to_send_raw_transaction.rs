@@ -13,21 +13,21 @@ pub struct SendRawTransaction {
 }
 
 impl RequestToSendRawTransaction {
-    pub const METHOD_NAME: &'static str = stringify!(RequestToSendRawTransaction);
+    pub const METHOD_NAME: &'static str = "request_to_send_raw_transaction";
 
     pub async fn handler(
         parameter: RpcParameter,
         context: Arc<AppState>,
     ) -> Result<OrderCommitment, RpcError> {
+        // TODO(jaemin): impl SendRawTransaction or import from Sequencer
+        const SEND_RAW_TRANSACTION: &str = "SendRawTransaction";
+
         let parameter = parameter.parse::<Self>()?;
 
         let send_raw_transaction = SendRawTransaction {
             rollup_id: parameter.rollup_id,
             raw_transaction: parameter.raw_transaction,
         };
-
-        // TODO(jaemin): impl SendRawTransaction or import from Sequencer
-        const SEND_RAW_TRANSACTION: &str = "SendRawTransaction";
 
         context
             .sequencer_rpc_client()

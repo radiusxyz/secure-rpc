@@ -1,9 +1,6 @@
 use std::sync::Arc;
 
-use crate::{
-    cli::Config,
-    client::{RollupRpcClient, SequencerRpcClient},
-};
+use crate::{cli::Config, client::*};
 
 pub struct AppState {
     inner: Arc<AppStateInner>,
@@ -11,6 +8,7 @@ pub struct AppState {
 
 struct AppStateInner {
     config: Config,
+    secure_rpc_client: SecureRpcClient,
     sequencer_rpc_client: SequencerRpcClient,
     rollup_rpc_client: RollupRpcClient,
 }
@@ -29,11 +27,13 @@ impl Clone for AppState {
 
 impl AppState {
     pub fn new(config: Config) -> Self {
+        let secure_rpc_client = SecureRpcClient::new(config.secure_rpc_url()).unwrap();
         let sequencer_rpc_client = SequencerRpcClient::new(config.sequencer_rpc_url()).unwrap();
         let rollup_rpc_client = RollupRpcClient::new(config.rollup_rpc_url()).unwrap();
 
         let inner = AppStateInner {
             config,
+            secure_rpc_client,
             sequencer_rpc_client,
             rollup_rpc_client,
         };
@@ -47,11 +47,15 @@ impl AppState {
         &self.inner.config
     }
 
+    pub fn secure_rpc_client(&self) -> SecureRpcClient {
+        self.inner.secure_rpc_client.clone()
+    }
+
     pub fn sequencer_rpc_client(&self) -> SequencerRpcClient {
         self.inner.sequencer_rpc_client.clone()
     }
 
-    pub fn ethereum_rpc_client(&self) -> RollupRpcClient {
+    pub fn rollup_rpc_client(&self) -> RollupRpcClient {
         self.inner.rollup_rpc_client.clone()
     }
 }

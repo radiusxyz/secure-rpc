@@ -28,7 +28,7 @@ use secure_rpc::{
     cli::{Cli, Commands, Config, ConfigPath},
     context::{context, static_str::*, Context},
     error::Error,
-    rpc::external::{self, ExternalRpcParameter},
+    rpc::*,
     state::AppState,
 };
 use tokio::task::JoinHandle;
@@ -75,76 +75,59 @@ async fn initialize_external_rpc_server(
     app_state: &AppState, // rpc_client: &RpcClient,
 ) -> Result<JoinHandle<()>, Error> {
     // Initialize the external RPC server.
+    let secure_rpc_url = app_state.config().secure_rpc_url();
+    let stripped_secure_rpc_url = app_state
+        .config()
+        .secure_rpc_url()
+        .strip_prefix("http://")
+        .unwrap_or(&secure_rpc_url);
+
     let secure_rpc_server = RpcServer::new(app_state.clone())
         // eth
         .register_rpc_method(
-            external::eth::EthBlockNumber::METHOD_NAME,
-            external::eth::EthBlockNumber::handler,
+            eth::EthBlockNumber::METHOD_NAME,
+            eth::EthBlockNumber::handler,
+        )?
+        .register_rpc_method(eth::EthCall::METHOD_NAME, eth::EthCall::handler)?
+        .register_rpc_method(eth::EthChainId::METHOD_NAME, eth::EthChainId::handler)?
+        .register_rpc_method(
+            eth::EthEstimateGas::METHOD_NAME,
+            eth::EthEstimateGas::handler,
+        )?
+        .register_rpc_method(eth::EthGasPrice::METHOD_NAME, eth::EthGasPrice::handler)?
+        .register_rpc_method(eth::EthGetBalance::METHOD_NAME, eth::EthGetBalance::handler)?
+        .register_rpc_method(
+            eth::EthGetBlockByNumber::METHOD_NAME,
+            eth::EthGetBlockByNumber::handler,
+        )?
+        .register_rpc_method(eth::EthGetCode::METHOD_NAME, eth::EthGetCode::handler)?
+        .register_rpc_method(
+            eth::EthGetTransactionCount::METHOD_NAME,
+            eth::EthGetTransactionCount::handler,
         )?
         .register_rpc_method(
-            external::eth::EthCall::METHOD_NAME,
-            external::eth::EthCall::handler,
+            eth::EthGetTransactionReceipt::METHOD_NAME,
+            eth::EthGetTransactionReceipt::handler,
         )?
-        .register_rpc_method(
-            external::eth::EthChainId::METHOD_NAME,
-            external::eth::EthChainId::handler,
-        )?
-        .register_rpc_method(
-            external::eth::EthEstimateGas::METHOD_NAME,
-            external::eth::EthEstimateGas::handler,
-        )?
-        .register_rpc_method(
-            external::eth::EthGasPrice::METHOD_NAME,
-            external::eth::EthGasPrice::handler,
-        )?
-        .register_rpc_method(
-            external::eth::EthGetBalance::METHOD_NAME,
-            external::eth::EthGetBalance::handler,
-        )?
-        .register_rpc_method(
-            external::eth::EthGetBlockByNumber::METHOD_NAME,
-            external::eth::EthGetBlockByNumber::handler,
-        )?
-        .register_rpc_method(
-            external::eth::EthGetCode::METHOD_NAME,
-            external::eth::EthGetCode::handler,
-        )?
-        .register_rpc_method(
-            external::eth::EthGetTransactionCount::METHOD_NAME,
-            external::eth::EthGetTransactionCount::handler,
-        )?
-        .register_rpc_method(
-            external::eth::EthGetTransactionReceipt::METHOD_NAME,
-            external::eth::EthGetTransactionReceipt::handler,
-        )?
-        .register_rpc_method(
-            external::eth::EthNetVersion::METHOD_NAME,
-            external::eth::EthNetVersion::handler,
-        )?
+        .register_rpc_method(eth::EthNetVersion::METHOD_NAME, eth::EthNetVersion::handler)?
         // cryptography
-        .register_rpc_method(
-            external::EncryptTransaction::METHOD_NAME,
-            external::EncryptTransaction::handler,
-        )?
-        .register_rpc_method(
-            external::DecryptTransaction::METHOD_NAME,
-            external::DecryptTransaction::handler,
-        )?
+        .register_rpc_method(EncryptTransaction::METHOD_NAME, EncryptTransaction::handler)?
+        .register_rpc_method(DecryptTransaction::METHOD_NAME, DecryptTransaction::handler)?
         // sequencer
         .register_rpc_method(
-            external::RequestToSendEncryptedTransaction::METHOD_NAME,
-            external::RequestToSendEncryptedTransaction::handler,
+            RequestToSendEncryptedTransaction::METHOD_NAME,
+            RequestToSendEncryptedTransaction::handler,
         )?
         .register_rpc_method(
-            external::RequestToSendRawTransaction::METHOD_NAME,
-            external::RequestToSendRawTransaction::handler,
+            RequestToSendRawTransaction::METHOD_NAME,
+            RequestToSendRawTransaction::handler,
         )?
-        .init(app_state.config().secure_rpc_url())
+        .init(stripped_secure_rpc_url)
         .await?;
 
     tracing::info!(
         "Successfully started the Secure RPC server: {}",
-        app_state.config().secure_rpc_url()
+        stripped_secure_rpc_url
     );
 
     Ok(tokio::spawn(async move {

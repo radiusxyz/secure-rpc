@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use super::{ConfigPath, CONFIG_FILE_NAME};
 use crate::error::Error;
 
-const DEFAULT_SECURE_RPC_URL: &str = "127.0.0.1:9000";
+const DEFAULT_SECURE_RPC_URL: &str = "http://127.0.0.1:9000";
 const DEFAULT_SEQUENCER_RPC_URL: &str = "http://127.0.0.1:8000";
 const DEFAULT_ROLLIP_RPC_URL: &str = "http://192.168.12.68:8123";
 
