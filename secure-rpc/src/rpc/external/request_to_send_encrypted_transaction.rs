@@ -1,3 +1,4 @@
+use json_rpc::Params;
 use serde_json::value::RawValue;
 
 use super::EncryptTransaction;

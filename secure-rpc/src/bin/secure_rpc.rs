@@ -76,6 +76,7 @@ async fn initialize_external_rpc_server(
 ) -> Result<JoinHandle<()>, Error> {
     // Initialize the external RPC server.
     let secure_rpc_server = RpcServer::new(app_state.clone())
+        // eth
         .register_rpc_method(
             external::eth::EthBlockNumber::METHOD_NAME,
             external::eth::EthBlockNumber::handler,
@@ -120,6 +121,7 @@ async fn initialize_external_rpc_server(
             external::eth::EthNetVersion::METHOD_NAME,
             external::eth::EthNetVersion::handler,
         )?
+        // cryptography
         .register_rpc_method(
             external::EncryptTransaction::METHOD_NAME,
             external::EncryptTransaction::handler,
@@ -128,6 +130,7 @@ async fn initialize_external_rpc_server(
             external::DecryptTransaction::METHOD_NAME,
             external::DecryptTransaction::handler,
         )?
+        // sequencer
         .register_rpc_method(
             external::RequestToSendEncryptedTransaction::METHOD_NAME,
             external::RequestToSendEncryptedTransaction::handler,
