@@ -1,9 +1,9 @@
 use async_trait::async_trait;
 
 use crate::{
-    impl_rollup_rpc_forwarder,
+    impl_external_array_rpc_forwarder,
     rpc::{
-        external::{forward_to_rpc_request, RollupRpcParameter},
+        external::{forward_to_array_rpc_request, ExternalRpcParameter},
         prelude::*,
     },
 };
@@ -14,4 +14,4 @@ pub struct EthGetCode {
     block_number: String,
 }
 
-impl_rollup_rpc_forwarder!(EthGetCode, "eth_getCode", String);
+impl_external_array_rpc_forwarder!(EthGetCode, "eth_getCode", String);

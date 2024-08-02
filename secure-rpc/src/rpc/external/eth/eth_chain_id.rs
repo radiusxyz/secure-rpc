@@ -1,9 +1,9 @@
 use async_trait::async_trait;
 
 use crate::{
-    impl_rollup_rpc_forwarder,
+    impl_external_array_rpc_forwarder,
     rpc::{
-        external::{forward_to_rpc_request, RollupRpcParameter},
+        external::{forward_to_array_rpc_request, ExternalRpcParameter},
         prelude::*,
     },
 };
@@ -11,4 +11,4 @@ use crate::{
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct EthChainId {}
 
-impl_rollup_rpc_forwarder!(EthChainId, "eth_chainId", String);
+impl_external_array_rpc_forwarder!(EthChainId, "eth_chainId", String);

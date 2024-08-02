@@ -37,7 +37,7 @@ pub type DecryptionKey = String;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct EncryptTransaction {
-    rollup_id: u32,
+    pub rollup_id: u32,
     raw_transaction: RawTransaction,
 }
 

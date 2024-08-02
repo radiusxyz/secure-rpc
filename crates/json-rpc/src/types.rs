@@ -1,4 +1,5 @@
-use jsonrpsee::{core::traits::ToRpcParams, types::Params};
+use jsonrpsee::core::traits::ToRpcParams;
+pub use jsonrpsee::types::Params;
 use serde::ser::Serialize;
 use serde_json::value::RawValue;
 

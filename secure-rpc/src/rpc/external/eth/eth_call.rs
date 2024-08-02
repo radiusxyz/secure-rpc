@@ -1,9 +1,9 @@
 use async_trait::async_trait;
 
 use crate::{
-    impl_rollup_rpc_forwarder,
+    impl_external_array_rpc_forwarder,
     rpc::{
-        external::{forward_to_rpc_request, RollupRpcParameter},
+        external::{forward_to_array_rpc_request, ExternalRpcParameter},
         prelude::*,
     },
 };
@@ -21,4 +21,4 @@ struct EthTxData {
     from: Option<String>,
 }
 
-impl_rollup_rpc_forwarder!(EthCall, "eth_call", String);
+impl_external_array_rpc_forwarder!(EthCall, "eth_call", String);

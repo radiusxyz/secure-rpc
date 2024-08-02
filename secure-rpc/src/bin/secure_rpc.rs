@@ -28,7 +28,7 @@ use secure_rpc::{
     cli::{Cli, Commands, Config, ConfigPath},
     context::{context, static_str::*, Context},
     error::Error,
-    rpc::external::{self, RollupRpcParameter},
+    rpc::external::{self, ExternalRpcParameter},
     state::AppState,
 };
 use tokio::task::JoinHandle;
@@ -128,18 +128,14 @@ async fn initialize_external_rpc_server(
             external::DecryptTransaction::METHOD_NAME,
             external::DecryptTransaction::handler,
         )?
-        // .register_rpc_method(
-        //     external::SendTransaction::METHOD_NAME,
-        //     external::SendTransaction::handler,
-        // )?
-        // .register_rpc_method(
-        //     external::SendRawTransaction::METHOD_NAME,
-        //     external::SendRawTransaction::handler,
-        // )?
-        // .register_rpc_method(
-        //     external::SendEncryptedTransaction::METHOD_NAME,
-        //     external::SendEncryptedTransaction::handler,
-        // )?
+        .register_rpc_method(
+            external::RequestToSendEncryptedTransaction::METHOD_NAME,
+            external::RequestToSendEncryptedTransaction::handler,
+        )?
+        .register_rpc_method(
+            external::RequestToSendRawTransaction::METHOD_NAME,
+            external::RequestToSendRawTransaction::handler,
+        )?
         .init(app_state.config().secure_rpc_url())
         .await?;
 

@@ -1,12 +1,8 @@
 mod decrypt_transaction;
 mod encrypt_transaction;
 pub mod eth;
-// mod encrypt_transaction;
-// mod send_encrypted_transaciton;
-// mod send_raw_transaction;
-// mod send_transaction;
-// mod encrypt_transaction;
-// mod request_to_send_encrypted_transaction;
+mod request_to_send_encrypted_transaction;
+mod request_to_send_raw_transaction;
 
 use std::fmt::Debug;
 
@@ -14,15 +10,14 @@ use async_trait::async_trait;
 pub use decrypt_transaction::DecryptTransaction;
 pub use encrypt_transaction::EncryptTransaction;
 use json_rpc::ArrayRpcClient;
-// pub use send_encrypted_transaciton::SendEncryptedTransaction;
-// pub use send_raw_transaction::SendRawTransaction;
-// pub use send_transaction::SendTransaction;
+pub use request_to_send_encrypted_transaction::*;
+pub use request_to_send_raw_transaction::*;
 use serde::de::DeserializeOwned;
 
 use crate::{rpc::prelude::*, state::AppState};
 
 #[async_trait]
-pub trait RollupRpcParameter: Clone + Debug + DeserializeOwned + Send + Serialize {
+pub trait ExternalRpcParameter: Clone + Debug + DeserializeOwned + Send + Serialize {
     const METHOD_NAME: &'static str;
 
     type Output: Debug + DeserializeOwned + Send + Serialize;
@@ -37,7 +32,7 @@ pub trait RollupRpcParameter: Clone + Debug + DeserializeOwned + Send + Serializ
     ) -> Result<Self::Output, RpcError>;
 }
 
-pub async fn forward_to_rpc_request<T: RollupRpcParameter>(
+pub async fn forward_to_array_rpc_request<T: ExternalRpcParameter>(
     rpc_parameter: T,
     rpc_client: Arc<ArrayRpcClient>,
 ) -> Result<T::Output, RpcError> {
@@ -48,10 +43,10 @@ pub async fn forward_to_rpc_request<T: RollupRpcParameter>(
 }
 
 #[macro_export]
-macro_rules! impl_rollup_rpc_forwarder {
+macro_rules! impl_external_array_rpc_forwarder {
     ($method_struct:ident, $method_name:expr, $output_type:ty) => {
         #[async_trait]
-        impl RollupRpcParameter for $method_struct {
+        impl ExternalRpcParameter for $method_struct {
             const METHOD_NAME: &'static str = $method_name;
 
             type Output = $output_type;
@@ -68,7 +63,7 @@ macro_rules! impl_rollup_rpc_forwarder {
 
                 let eth_rpc_client = context.ethereum_rpc_client().rpc_client();
 
-                Ok(forward_to_rpc_request(parameter, eth_rpc_client).await?)
+                Ok(forward_to_array_rpc_request(parameter, eth_rpc_client).await?)
             }
         }
     };
