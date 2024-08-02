@@ -27,7 +27,7 @@ impl RequestToSendRawTransaction {
         };
 
         // TODO(jaemin): impl SendRawTransaction or import from Sequencer
-        const SEND_RAW_TRANSACTION: &'static str = "SendRawTransaction";
+        const SEND_RAW_TRANSACTION: &str = "SendRawTransaction";
 
         context
             .sequencer_rpc_client()

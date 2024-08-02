@@ -219,7 +219,7 @@ pub async fn store_time_lock_puzzle_param(
             .store(KEY_VALIDATION_PROVE_KEY, key_validation_proving_key)
             .await;
         context()
-            .store(&KEY_VALIDATION_VERIFY_KEY, key_validation_verifying_key)
+            .store(KEY_VALIDATION_VERIFY_KEY, key_validation_verifying_key)
             .await;
 
         let poseidon_encryption_param_file_path = config_path

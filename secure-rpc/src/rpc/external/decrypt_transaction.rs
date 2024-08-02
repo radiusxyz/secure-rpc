@@ -33,9 +33,9 @@ impl DecryptTransaction {
         let encrypted_data = parameter.encrypted_transaction.encrypted_data().clone();
         let open_data = parameter.encrypted_transaction.open_data().clone();
 
-        let o = BigUint::from_str(&time_lock_puzzle.o()).unwrap();
+        let o = BigUint::from_str(time_lock_puzzle.o()).unwrap();
         let t = time_lock_puzzle.t();
-        let n = BigUint::from_str(&time_lock_puzzle.n()).unwrap();
+        let n = BigUint::from_str(time_lock_puzzle.n()).unwrap();
         let solved_k = solve_time_lock_puzzle(o, t, n);
         let solved_k_hash_value = hash::hash(solved_k.clone());
 

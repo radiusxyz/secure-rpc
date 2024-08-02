@@ -112,14 +112,14 @@ where
     }
 }
 
-impl Into<String> for RpcError {
-    fn into(self) -> String {
-        self.0.to_string()
+impl From<RpcError> for String {
+    fn from(value: RpcError) -> Self {
+        value.0.to_string()
     }
 }
 
-impl Into<ErrorObjectOwned> for RpcError {
-    fn into(self) -> ErrorObjectOwned {
-        ErrorObjectOwned::owned::<u8>(ErrorCode::InternalError.code(), self, None)
+impl From<RpcError> for ErrorObjectOwned {
+    fn from(value: RpcError) -> Self {
+        ErrorObjectOwned::owned::<u8>(ErrorCode::InternalError.code(), value, None)
     }
 }

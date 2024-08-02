@@ -40,7 +40,7 @@ impl RequestToSendEncryptedTransaction {
         };
 
         // TODO(jaemin): impl SendEncryptedTransaction or import from Sequencer
-        const SEND_ENCRYPTED_TRANSACTION: &'static str = "SendEncryptedTransaction";
+        const SEND_ENCRYPTED_TRANSACTION: &str = "SendEncryptedTransaction";
 
         context
             .sequencer_rpc_client()

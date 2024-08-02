@@ -59,7 +59,7 @@ impl ConfigOption {
         // Read config file
         let config_file_path = config_path.join(CONFIG_FILE_NAME);
         let config_string =
-            fs::read_to_string(&config_file_path).map_err(|_| Error::LoadConfigOption)?;
+            fs::read_to_string(config_file_path).map_err(|_| Error::LoadConfigOption)?;
 
         // Parse String to TOML String
         let config_file: Self =
@@ -93,23 +93,23 @@ impl ConfigOption {
 
     pub fn merge(mut self, other: &ConfigOption) -> Self {
         if other.path.is_some() {
-            self.path = other.path.clone();
+            self.path.clone_from(&other.path);
         }
 
         if other.secure_rpc_url.is_some() {
-            self.secure_rpc_url = other.secure_rpc_url.clone();
+            self.secure_rpc_url.clone_from(&other.secure_rpc_url);
         }
 
         if other.sequencer_rpc_url.is_some() {
-            self.sequencer_rpc_url = other.sequencer_rpc_url.clone();
+            self.sequencer_rpc_url.clone_from(&other.sequencer_rpc_url);
         }
 
         if other.rollup_rpc_url.is_some() {
-            self.rollup_rpc_url = other.rollup_rpc_url.clone();
+            self.rollup_rpc_url.clone_from(&other.rollup_rpc_url);
         }
 
         if other.is_using_zkp.is_some() {
-            self.is_using_zkp = other.is_using_zkp.clone();
+            self.is_using_zkp.clone_from(&other.is_using_zkp);
         }
 
         self

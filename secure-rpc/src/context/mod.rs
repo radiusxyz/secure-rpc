@@ -94,9 +94,7 @@ impl Context {
     {
         let lock = self.inner.lock().await;
 
-        let value_any = lock
-            .get(key.as_ref())
-            .ok_or(Error::from(Error::KeyDoesNotExist))?;
+        let value_any = lock.get(key.as_ref()).ok_or(Error::KeyDoesNotExist)?;
 
         match value_any.downcast_ref::<V>() {
             Some(value) => Ok(value.clone()),

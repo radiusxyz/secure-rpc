@@ -57,7 +57,7 @@ macro_rules! impl_external_array_rpc_forwarder {
 
             async fn handler(
                 parameter: RpcParameter,
-                context: Arc<crate::state::AppState>,
+                context: Arc<$crate::state::AppState>,
             ) -> Result<Self::Output, RpcError> {
                 let parameter = parameter.parse::<Self>()?;
 

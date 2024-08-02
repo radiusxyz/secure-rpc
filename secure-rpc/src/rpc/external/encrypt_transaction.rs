@@ -183,7 +183,7 @@ pub fn generate_time_lock_puzzle(
 }
 
 pub fn get_open_and_encrypted_data(raw_tx: &str) -> Result<(EthOpenData, String), Error> {
-    let decoded_transaction = decode_rlp_transaction(&raw_tx).map_err(|error| {
+    let decoded_transaction = decode_rlp_transaction(raw_tx).map_err(|error| {
         tracing::error!("decode_rlp_transaction error: {:?}", error);
         Error::DecodeFailed
     })?;
@@ -196,7 +196,7 @@ pub fn encrypt_transaction(
     raw_tx: &str,
     k: &BigUint,
 ) -> Result<(String, EncryptedTransaction), Error> {
-    let (open_data, to_encrypt_data) = get_open_and_encrypted_data(&raw_tx)?;
+    let (open_data, to_encrypt_data) = get_open_and_encrypted_data(raw_tx)?;
 
     let encryption_key = hash::hash(k.clone());
 
@@ -215,6 +215,7 @@ pub fn encrypt_transaction(
     ))
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn encrypt_tx_with_zkp(
     raw_tx: &str,
 
@@ -233,11 +234,11 @@ pub fn encrypt_tx_with_zkp(
 
     // Generate key validation zkp
     let proof_of_key_validation = prove_key_validation(
-        &key_validation_zkp_param,
-        &key_validation_proving_key,
-        &key_validation_param,
-        &key_validation_public_input,
-        &key_validation_secret_input,
+        key_validation_zkp_param,
+        key_validation_proving_key,
+        key_validation_param,
+        key_validation_public_input,
+        key_validation_secret_input,
     );
 
     // Generate position encryption public & secret input
@@ -250,8 +251,8 @@ pub fn encrypt_tx_with_zkp(
         k: key_validation_secret_input.k.clone(),
     };
     let proof_of_poseidon_encryption = prove_poseidon_encryption(
-        &poseidon_encryption_zkp_param,
-        &poseidon_encryption_proving_key,
+        poseidon_encryption_zkp_param,
+        poseidon_encryption_proving_key,
         &poseidon_encryption_public_input,
         &poseidon_encryption_secret_input,
     );
