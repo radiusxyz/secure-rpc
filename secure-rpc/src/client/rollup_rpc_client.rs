@@ -17,8 +17,8 @@ impl Clone for RollupRpcClient {
 }
 
 impl RollupRpcClient {
-    pub fn new(ethereum_rpc_url: impl AsRef<str>) -> Result<Self, Error> {
-        let client = ArrayRpcClient::new(ethereum_rpc_url)?;
+    pub fn new(rollup_rpc_url: impl AsRef<str>) -> Result<Self, Error> {
+        let client = ArrayRpcClient::new(rollup_rpc_url)?;
 
         Ok(Self(Arc::new(client)))
     }
