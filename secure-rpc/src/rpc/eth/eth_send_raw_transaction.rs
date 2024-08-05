@@ -2,8 +2,7 @@ use json_rpc::Params;
 use serde_json::{json, value::RawValue};
 
 use crate::{
-    rpc::prelude::*,
-    rpc::{RequestToSendEncryptedTransaction, RequestToSendRawTransaction},
+    rpc::{prelude::*, RequestToSendEncryptedTransaction, RequestToSendRawTransaction},
     state::AppState,
 };
 
@@ -19,39 +18,27 @@ impl EthSendRawTransaction {
     ) -> Result<OrderCommitment, RpcError> {
         let parameter = parameter.parse::<Self>()?;
 
-        let is_using_encryption = 
-        // context.config().is_using_encryption();
-        true;
-
-        let rollup_id = 
-        // context.config().rollup_id();
-        "0".to_string();
-
-        let raw_transaction_string = parameter.0.first().and_then(|raw_transaction| {
-            serde_json::to_string(raw_transaction).ok()
-        }).ok_or(Error::DecodeFailed)?;
+        let raw_transaction_string = parameter
+            .0
+            .first()
+            .and_then(|raw_transaction| serde_json::to_string(raw_transaction).ok())
+            .ok_or(Error::DecodeFailed)?;
 
         let raw_transaction_request_string = json!({
-            "rollup_id": rollup_id,
+            "rollup_id": context.config().rollup_id(),
             "raw_transaction": {
                 "Eth": serde_json::from_str::<String>(&raw_transaction_string)?
             }
-        }).to_string();
+        })
+        .to_string();
 
         let raw_value = RawValue::from_string(raw_transaction_request_string)?;
         let raw_transaction_params = Params::new(Some(Box::leak(raw_value).get()));
 
-        if is_using_encryption {
-            RequestToSendEncryptedTransaction::handler(
-                raw_transaction_params,
-                context,
-            )
-            .await
+        if context.config().is_using_encryption() {
+            RequestToSendEncryptedTransaction::handler(raw_transaction_params, context).await
         } else {
-            RequestToSendRawTransaction::handler(
-                raw_transaction_params,
-                context,
-            ).await
+            RequestToSendRawTransaction::handler(raw_transaction_params, context).await
         }
     }
 }

@@ -16,6 +16,10 @@ pub struct ConfigOption {
     #[clap(long = "path")]
     pub path: Option<PathBuf>,
 
+    #[doc = "Set rollup id"]
+    #[clap(long = "rollup-id")]
+    pub rollup_id: Option<String>,
+
     #[doc = "Set the secure rpc url"]
     #[clap(long = "secure-rpc-url")]
     pub secure_rpc_url: Option<String>,
@@ -28,6 +32,10 @@ pub struct ConfigOption {
     #[clap(long = "rollup-rpc-url")]
     pub rollup_rpc_url: Option<String>,
 
+    #[doc = "Set using encryption"]
+    #[clap(long = "is-using-encryption")]
+    pub is_using_encryption: Option<bool>,
+
     #[doc = "Set using zkp"]
     #[clap(long = "is-using-zkp")]
     pub is_using_zkp: Option<bool>,
@@ -37,9 +45,11 @@ impl Default for ConfigOption {
     fn default() -> Self {
         Self {
             path: Some(ConfigPath::default().as_ref().into()),
+            rollup_id: Some("0".into()),
             secure_rpc_url: Some(DEFAULT_SECURE_RPC_URL.into()),
             sequencer_rpc_url: Some(DEFAULT_SEQUENCER_RPC_URL.into()),
             rollup_rpc_url: Some(DEFAULT_ROLLIP_RPC_URL.into()),
+            is_using_encryption: Some(true),
             is_using_zkp: Some(false),
         }
     }
@@ -72,6 +82,9 @@ impl ConfigOption {
     pub fn get_toml_string(&self) -> String {
         let mut toml_string = String::new();
 
+        set_toml_comment(&mut toml_string, "Set rollup id");
+        set_toml_name_value(&mut toml_string, "rollup_id", &self.rollup_id);
+
         set_toml_comment(&mut toml_string, "Set secure rpc url");
         set_toml_name_value(&mut toml_string, "secure_rpc_url", &self.secure_rpc_url);
 
@@ -85,6 +98,13 @@ impl ConfigOption {
         set_toml_comment(&mut toml_string, "Set rollup rpc url");
         set_toml_name_value(&mut toml_string, "rollup_rpc_url", &self.rollup_rpc_url);
 
+        set_toml_comment(&mut toml_string, "Set using encryption");
+        set_toml_name_value(
+            &mut toml_string,
+            "is_using_encryption",
+            &self.is_using_encryption,
+        );
+
         set_toml_comment(&mut toml_string, "Set using zkp");
         set_toml_name_value(&mut toml_string, "is_using_zkp", &self.is_using_zkp);
 
@@ -94,6 +114,10 @@ impl ConfigOption {
     pub fn merge(mut self, other: &ConfigOption) -> Self {
         if other.path.is_some() {
             self.path.clone_from(&other.path);
+        }
+
+        if other.rollup_id.is_some() {
+            self.rollup_id.clone_from(&other.rollup_id);
         }
 
         if other.secure_rpc_url.is_some() {
@@ -106,6 +130,11 @@ impl ConfigOption {
 
         if other.rollup_rpc_url.is_some() {
             self.rollup_rpc_url.clone_from(&other.rollup_rpc_url);
+        }
+
+        if other.is_using_encryption.is_some() {
+            self.is_using_encryption
+                .clone_from(&other.is_using_encryption);
         }
 
         if other.is_using_zkp.is_some() {

@@ -7,12 +7,16 @@ use crate::error::Error;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Config {
+    // Rollup ID
+    rollup_id: String,
     // Secure RPC
     secure_rpc_url: String,
     // Sequencer
     sequencer_rpc_url: String,
     // Rollup
     rollup_rpc_url: String,
+    // encryption
+    is_using_encryption: bool,
     // zkp
     is_using_zkp: bool,
 }
@@ -41,11 +45,17 @@ impl Config {
         let merged_config_option = config_file.merge(config_option);
 
         Ok(Config {
+            rollup_id: merged_config_option.rollup_id.unwrap(),
             secure_rpc_url: merged_config_option.secure_rpc_url.unwrap(),
             sequencer_rpc_url: merged_config_option.sequencer_rpc_url.unwrap(),
             rollup_rpc_url: merged_config_option.rollup_rpc_url.unwrap(),
+            is_using_encryption: merged_config_option.is_using_encryption.unwrap(),
             is_using_zkp: merged_config_option.is_using_zkp.unwrap(),
         })
+    }
+
+    pub fn rollup_id(&self) -> &String {
+        &self.rollup_id
     }
 
     pub fn secure_rpc_url(&self) -> &String {
@@ -58,6 +68,10 @@ impl Config {
 
     pub fn rollup_rpc_url(&self) -> &String {
         &self.rollup_rpc_url
+    }
+
+    pub fn is_using_encryption(&self) -> bool {
+        self.is_using_encryption
     }
 
     pub fn is_using_zkp(&self) -> bool {
