@@ -10,6 +10,7 @@ mod eth_get_code;
 mod eth_get_transaction_count;
 mod eth_get_transaction_receipt;
 mod eth_net_version;
+mod eth_send_raw_transaction;
 
 pub use eth_block_number::EthBlockNumber;
 pub use eth_call::EthCall;
@@ -23,3 +24,4 @@ pub use eth_get_code::EthGetCode;
 pub use eth_get_transaction_count::EthGetTransactionCount;
 pub use eth_get_transaction_receipt::EthGetTransactionReceipt;
 pub use eth_net_version::EthNetVersion;
+pub use eth_send_raw_transaction::EthSendRawTransaction;

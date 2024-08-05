@@ -110,6 +110,10 @@ async fn initialize_external_rpc_server(
             eth::EthGetTransactionReceipt::handler,
         )?
         .register_rpc_method(eth::EthNetVersion::METHOD_NAME, eth::EthNetVersion::handler)?
+        .register_rpc_method(
+            eth::EthSendRawTransaction::METHOD_NAME,
+            eth::EthSendRawTransaction::handler,
+        )?
         // cryptography
         .register_rpc_method(EncryptTransaction::METHOD_NAME, EncryptTransaction::handler)?
         .register_rpc_method(DecryptTransaction::METHOD_NAME, DecryptTransaction::handler)?

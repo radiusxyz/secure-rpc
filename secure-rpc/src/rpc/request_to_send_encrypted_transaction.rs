@@ -29,14 +29,28 @@ impl RequestToSendEncryptedTransaction {
 
         let parameter = parameter.parse::<Self>()?;
 
-        let raw_tx = serde_json::to_string(&parameter.raw_transaction).unwrap();
+        let raw_transaction_request_string = match parameter.raw_transaction {
+            RawTransaction::Eth(raw_transaction) => {
+                let raw_transaction_string = serde_json::to_string(&raw_transaction)?;
+                json!({
+                    "raw_transaction": {
+                        "Eth": serde_json::from_str::<String>(&raw_transaction_string)?
+                    }
+                })
+                .to_string()
+            }
+            RawTransaction::EthBundle(raw_transaction) => {
+                let raw_transaction_string = serde_json::to_string(&raw_transaction)?;
+                json!({
+                    "raw_transaction": {
+                        "EthBundle": serde_json::from_str::<String>(&raw_transaction_string)?
+                    }
+                })
+                .to_string()
+            }
+        };
 
-        let raw_transaction_string = json!({
-            "raw_transaction": raw_tx
-        })
-        .to_string();
-
-        let raw_value = RawValue::from_string(raw_transaction_string)?;
+        let raw_value = RawValue::from_string(raw_transaction_request_string)?;
         let encrypt_transaction_params = Params::new(Some(Box::leak(raw_value).get()));
 
         // encrypt transaction

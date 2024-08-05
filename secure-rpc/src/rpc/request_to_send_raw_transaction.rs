@@ -2,8 +2,8 @@ use crate::{rpc::prelude::*, state::AppState};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct RequestToSendRawTransaction {
-    rollup_id: RollupId,
-    raw_transaction: RawTransaction,
+    pub rollup_id: RollupId,
+    pub raw_transaction: RawTransaction,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -20,7 +20,7 @@ impl RequestToSendRawTransaction {
         context: Arc<AppState>,
     ) -> Result<OrderCommitment, RpcError> {
         // TODO(jaemin): impl SendRawTransaction or import from Sequencer
-        const SEND_RAW_TRANSACTION: &str = "SendRawTransaction";
+        const SEND_RAW_TRANSACTION: &str = "send_raw_transaction";
 
         let parameter = parameter.parse::<Self>()?;
 
