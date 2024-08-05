@@ -19,14 +19,14 @@ use crate::{
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct DecryptTransaction {
-    rollup_id: u32,
+    rollup_id: RollupId,
     encrypted_transaction: EncryptedTransaction,
     time_lock_puzzle: TimeLockPuzzle,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct DecryptTransactionResponse {
-    pub rollup_id: u32,
+    pub rollup_id: RollupId,
     pub raw_transaction: RawTransaction,
 }
 
