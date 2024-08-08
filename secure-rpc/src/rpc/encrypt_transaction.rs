@@ -27,11 +27,7 @@ use pvde::{
 };
 use rand::{thread_rng, Rng};
 
-use crate::{
-    context::{context as static_context, static_str::*},
-    rpc::prelude::*,
-    state::AppState,
-};
+use crate::{rpc::prelude::*, state::AppState};
 
 pub type DecryptionKey = String;
 
@@ -80,22 +76,16 @@ impl EncryptTransaction {
         let decryption_key = DecryptionKey::from(key_validation_secret_input.k.to_str_radix(10));
 
         if context.config().is_using_zkp() {
-            let key_validation_zkp_param = static_context()
-                .load(KEY_VALIDATION_ZKP_PARAM)
-                .await
-                .unwrap();
-            let key_validation_proving_key = static_context()
-                .load(KEY_VALIDATION_PROVE_KEY)
-                .await
-                .unwrap();
+            let pvde_params = context.pvde_params().load().as_ref().clone().unwrap();
+            let key_validation_zkp_param = pvde_params.key_validation_zkp_param().clone().unwrap();
+            let key_validation_proving_key =
+                pvde_params.key_validation_proving_key().clone().unwrap();
 
-            let poseidon_encryption_zkp_param = static_context()
-                .load(POSEIDON_ENCRYPTION_ZKP_PARAM)
-                .await
-                .unwrap();
-            let poseidon_encryption_proving_key = static_context()
-                .load(POSEIDON_ENCRYPTION_PROVE_KEY)
-                .await
+            let poseidon_encryption_zkp_param =
+                pvde_params.poseidon_encryption_zkp_param().clone().unwrap();
+            let poseidon_encryption_proving_key = pvde_params
+                .poseidon_encryption_proving_key()
+                .clone()
                 .unwrap();
 
             (_raw_data, encrypted_transaction) = encrypt_tx_with_zkp(

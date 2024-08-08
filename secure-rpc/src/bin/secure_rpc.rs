@@ -26,10 +26,9 @@ use pvde::{
 };
 use secure_rpc::{
     cli::{Cli, Commands, Config, ConfigPath},
-    context::{context, static_str::*, Context},
     error::Error,
     rpc::*,
-    state::AppState,
+    state::{AppState, PvdeParams},
 };
 use tokio::task::JoinHandle;
 
@@ -50,8 +49,6 @@ async fn main() -> Result<(), Error> {
 
             tracing::info!("Successfully loaded the configuration file.",);
 
-            Context::init(Default::default());
-
             let is_using_zkp = config.is_using_zkp();
 
             let app_state = Arc::new(AppState::new(config));
@@ -61,7 +58,7 @@ async fn main() -> Result<(), Error> {
 
             if let Some(path) = config_path {
                 // Initialize the time lock puzzle parameters.
-                store_time_lock_puzzle_param(path, is_using_zkp).await?;
+                store_time_lock_puzzle_param(app_state, path, is_using_zkp).await?;
             }
 
             server_handle.await.unwrap();
@@ -140,6 +137,7 @@ async fn initialize_external_rpc_server(
 }
 
 pub async fn store_time_lock_puzzle_param(
+    app_state: Arc<AppState>,
     config_path: PathBuf,
     is_using_zkp: bool,
 ) -> Result<(), Error> {
@@ -157,9 +155,8 @@ pub async fn store_time_lock_puzzle_param(
         time_lock_puzzle_param
     };
 
-    context()
-        .store(TIME_LOCK_PUZZLE_PARAM, time_lock_puzzle_param)
-        .await;
+    let mut pvde_params = PvdeParams::default();
+    pvde_params.update_time_lock_puzzle_param(time_lock_puzzle_param);
 
     if is_using_zkp {
         let key_validation_param_file_path = config_path
@@ -202,15 +199,9 @@ pub async fn store_time_lock_puzzle_param(
                 setup_results
             };
 
-        context()
-            .store(KEY_VALIDATION_ZKP_PARAM, key_validation_zkp_param)
-            .await;
-        context()
-            .store(KEY_VALIDATION_PROVE_KEY, key_validation_proving_key)
-            .await;
-        context()
-            .store(KEY_VALIDATION_VERIFY_KEY, key_validation_verifying_key)
-            .await;
+        pvde_params.update_key_validation_zkp_param(key_validation_zkp_param);
+        pvde_params.update_key_validation_proving_key(key_validation_proving_key);
+        pvde_params.update_key_validation_verifying_key(key_validation_verifying_key);
 
         let poseidon_encryption_param_file_path = config_path
             .join("poseidon_encryption_param.json")
@@ -257,21 +248,17 @@ pub async fn store_time_lock_puzzle_param(
             setup_results
         };
 
-        context()
-            .store(POSEIDON_ENCRYPTION_ZKP_PARAM, poseidon_encryption_zkp_param)
-            .await;
-        context()
-            .store(
-                POSEIDON_ENCRYPTION_PROVE_KEY,
-                poseidon_encryption_proving_key,
-            )
-            .await;
-        context()
-            .store(
-                POSEIDON_ENCRYPTION_VERIFY_KEY,
-                poseidon_encryption_verifying_key,
-            )
-            .await;
+        pvde_params.update_poseidon_encryption_zkp_param(poseidon_encryption_zkp_param);
+        pvde_params.update_poseidon_encryption_proving_key(poseidon_encryption_proving_key);
+        pvde_params.update_poseidon_encryption_verifying_key(poseidon_encryption_verifying_key);
+
+        app_state
+            .pvde_params()
+            .update(Some(pvde_params))
+            .map_err(|error| {
+                tracing::error!("Failed to update the PVDE parameters: {:?}", error);
+                Error::ContextUpdateFail
+            })?;
     }
 
     Ok(())

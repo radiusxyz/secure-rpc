@@ -15,11 +15,13 @@ pub enum Error {
     CreateConfigFile,
 
     // Context
+    ContextUpdateFail,
     KeyDoesNotExist,
     Downcast,
     NoneType,
 
     DecodeFailed,
+    PvdeZkpInvalid,
 }
 
 unsafe impl Send for Error {}
