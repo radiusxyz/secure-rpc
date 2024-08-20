@@ -22,6 +22,8 @@ pub enum Error {
 
     DecodeFailed,
     PvdeZkpInvalid,
+
+    EncryptionNotEnabled,
 }
 
 unsafe impl Send for Error {}

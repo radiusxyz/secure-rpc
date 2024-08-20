@@ -1,4 +1,3 @@
-use core::time;
 use std::str::FromStr;
 
 use pvde::{
@@ -11,11 +10,9 @@ use pvde::{
     num_bigint::BigUint,
     poseidon::hash,
     time_lock_puzzle::{
-        key_validation_zkp::{self, verify as verify_key_validation, KeyValidationPublicInput},
-        sigma_protocol::{
-            verify as verify_sigma_protocol, SigmaProtocolParam, SigmaProtocolPublicInput,
-        },
-        solve_time_lock_puzzle, TimeLockPuzzleParam,
+        key_validation_zkp::verify as verify_key_validation,
+        sigma_protocol::{verify as verify_sigma_protocol, SigmaProtocolParam},
+        solve_time_lock_puzzle,
     },
 };
 

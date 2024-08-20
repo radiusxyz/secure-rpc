@@ -1,5 +1,5 @@
-use json_rpc::Params;
-use serde_json::{json, value::RawValue};
+use sequencer::rpc::prelude::RpcParameter;
+use serde_json::json;
 
 use super::EncryptTransaction;
 use crate::{rpc::prelude::*, state::AppState};
@@ -18,14 +18,15 @@ pub struct SendEncryptedTransaction {
 }
 
 impl RequestToSendEncryptedTransaction {
-    pub const METHOD_NAME: &'static str = "request_to_send_encrypted_transaction";
+    pub const METHOD_NAME: &'static str = "send_encrypted_transaction";
 
     pub async fn handler(
         parameter: RpcParameter,
         context: Arc<AppState>,
     ) -> Result<OrderCommitment, RpcError> {
-        // TODO(jaemin): impl SendEncryptedTransaction or import from Sequencer
-        const SEND_ENCRYPTED_TRANSACTION: &str = "send_encrypted_transaction";
+        if !context.config().is_using_encryption() {
+            return Err(Error::EncryptionNotEnabled.into());
+        }
 
         let parameter = parameter.parse::<Self>()?;
 
@@ -50,8 +51,8 @@ impl RequestToSendEncryptedTransaction {
             }
         };
 
-        let raw_value = RawValue::from_string(raw_transaction_request_string)?;
-        let encrypt_transaction_params = Params::new(Some(Box::leak(raw_value).get()));
+        let encrypt_transaction_static_str = LeakedStrGuard::new(raw_transaction_request_string);
+        let encrypt_transaction_params = RpcParameter::new(Some(*encrypt_transaction_static_str));
 
         // encrypt transaction
         let encrypt_transaction_response =
@@ -66,8 +67,42 @@ impl RequestToSendEncryptedTransaction {
         context
             .sequencer_rpc_client()
             .rpc_client()
-            .request(SEND_ENCRYPTED_TRANSACTION, send_encrypted_transaction)
+            .request(
+                RequestToSendEncryptedTransaction::METHOD_NAME,
+                send_encrypted_transaction,
+            )
             .await
             .map_err(|error| error.into())
+    }
+}
+
+use std::ops::Deref;
+
+pub struct LeakedStrGuard {
+    inner: &'static str,
+}
+
+impl LeakedStrGuard {
+    pub fn new(s: String) -> Self {
+        let boxed_str = s.into_boxed_str();
+        let static_str = Box::leak(boxed_str);
+
+        LeakedStrGuard { inner: static_str }
+    }
+}
+
+impl Deref for LeakedStrGuard {
+    type Target = &'static str;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl Drop for LeakedStrGuard {
+    fn drop(&mut self) {
+        unsafe {
+            let _ = Box::from_raw(self.inner as *const str as *mut str);
+        }
     }
 }

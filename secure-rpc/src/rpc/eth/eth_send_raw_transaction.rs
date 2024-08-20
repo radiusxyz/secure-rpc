@@ -1,8 +1,7 @@
-use json_rpc::Params;
-use serde_json::{json, value::RawValue};
+use serde_json::json;
 
 use crate::{
-    rpc::{prelude::*, RequestToSendEncryptedTransaction, RequestToSendRawTransaction},
+    rpc::{prelude::*, LeakedStrGuard, RequestToSendRawTransaction},
     state::AppState,
 };
 
@@ -32,13 +31,9 @@ impl EthSendRawTransaction {
         })
         .to_string();
 
-        let raw_value = RawValue::from_string(raw_transaction_request_string)?;
-        let raw_transaction_params = Params::new(Some(Box::leak(raw_value).get()));
+        let raw_transaction_static_str = LeakedStrGuard::new(raw_transaction_request_string);
+        let raw_transaction_params = RpcParameter::new(Some(*raw_transaction_static_str));
 
-        if context.config().is_using_encryption() {
-            RequestToSendEncryptedTransaction::handler(raw_transaction_params, context).await
-        } else {
-            RequestToSendRawTransaction::handler(raw_transaction_params, context).await
-        }
+        RequestToSendRawTransaction::handler(raw_transaction_params, context).await
     }
 }
