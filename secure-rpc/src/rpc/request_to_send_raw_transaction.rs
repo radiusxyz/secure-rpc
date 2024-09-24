@@ -2,13 +2,13 @@ use crate::{rpc::prelude::*, state::AppState};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct RequestToSendRawTransaction {
-    pub rollup_id: RollupId,
+    pub rollup_id: String,
     pub raw_transaction: RawTransaction,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SendRawTransaction {
-    pub rollup_id: RollupId,
+    pub rollup_id: String,
     raw_transaction: RawTransaction,
 }
 

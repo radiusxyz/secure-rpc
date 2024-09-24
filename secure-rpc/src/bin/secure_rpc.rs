@@ -1,6 +1,7 @@
 use std::{fs, path::PathBuf, sync::Arc};
 
 use json_rpc::RpcServer;
+use prelude::EncryptedTransactionType;
 use pvde::{
     encryption::poseidon_encryption_zkp::{
         export_proving_key as export_poseidon_encryption_proving_key,
@@ -26,6 +27,7 @@ use pvde::{
 };
 use secure_rpc::{
     cli::{Cli, Commands, Config, ConfigPath},
+    client::KeyManagementSystemClient,
     error::Error,
     rpc::*,
     state::{AppState, PvdeParams},
@@ -51,7 +53,17 @@ async fn main() -> Result<(), Error> {
 
             let is_using_zkp = config.is_using_zkp();
 
-            let app_state = Arc::new(AppState::new(config));
+            let app_state = match config.encrypted_transaction_type() {
+                EncryptedTransactionType::Skde => {
+                    // Initialize key management system client
+                    let key_management_system_rpc_url = config.key_management_system_rpc_url();
+                    let key_management_system_client =
+                        KeyManagementSystemClient::new(key_management_system_rpc_url)?;
+
+                    Arc::new(AppState::new(config, Some(key_management_system_client)))
+                }
+                _ => Arc::new(AppState::new(config, None)),
+            };
 
             // Initialize the secure RPC server.
             let server_handle = initialize_external_rpc_server(&app_state).await?;
@@ -69,17 +81,12 @@ async fn main() -> Result<(), Error> {
 }
 
 async fn initialize_external_rpc_server(
-    app_state: &AppState, // rpc_client: &RpcClient,
+    context: &AppState, // rpc_client: &RpcClient,
 ) -> Result<JoinHandle<()>, Error> {
-    // Initialize the external RPC server.
-    let secure_rpc_url = app_state.config().secure_rpc_url();
-    let stripped_secure_rpc_url = app_state
-        .config()
-        .secure_rpc_url()
-        .strip_prefix("http://")
-        .unwrap_or(&secure_rpc_url);
+    let secure_rpc_url = context.config().secure_rpc_url().to_string();
 
-    let secure_rpc_server = RpcServer::new(app_state.clone())
+    // Initialize the external RPC server.
+    let external_rpc_server = RpcServer::new(context.clone())
         // eth
         .register_rpc_method(
             eth::EthBlockNumber::METHOD_NAME,
@@ -123,17 +130,19 @@ async fn initialize_external_rpc_server(
             RequestToSendRawTransaction::METHOD_NAME,
             RequestToSendRawTransaction::handler,
         )?
-        .init(stripped_secure_rpc_url)
+        .init(secure_rpc_url.clone())
         .await?;
 
     tracing::info!(
         "Successfully started the Secure RPC server: {}",
-        stripped_secure_rpc_url
+        secure_rpc_url
     );
 
-    Ok(tokio::spawn(async move {
-        secure_rpc_server.stopped().await;
-    }))
+    let server_handle = tokio::spawn(async move {
+        external_rpc_server.stopped().await;
+    });
+
+    Ok(server_handle)
 }
 
 pub async fn store_time_lock_puzzle_param(

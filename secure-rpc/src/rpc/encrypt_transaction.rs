@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use pvde::{
     encryption::{
         poseidon_encryption_zkp::{
@@ -26,10 +28,10 @@ use pvde::{
     },
 };
 use rand::{thread_rng, Rng};
+use sequencer::skde::{self, delay_encryption::PublicKey};
+use tracing::info;
 
 use crate::{rpc::prelude::*, state::AppState};
-
-pub type DecryptionKey = String;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct EncryptTransaction {
@@ -39,8 +41,6 @@ pub struct EncryptTransaction {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct EncryptTransactionResponse {
     pub encrypted_transaction: EncryptedTransaction,
-    pub decryption_key: DecryptionKey,
-    pub time_lock_puzzle: TimeLockPuzzle,
 }
 
 impl EncryptTransaction {
@@ -52,73 +52,109 @@ impl EncryptTransaction {
     ) -> Result<EncryptTransactionResponse, RpcError> {
         let parameter = parameter.parse::<Self>()?;
 
-        let raw_transaction_string = match &parameter.raw_transaction {
+        info!(
+            "EncryptTransaction - raw_transaction: {:?}",
+            parameter.raw_transaction
+        );
+
+        // Convert raw transaction to string
+        let raw_transaction_string: String = match &parameter.raw_transaction {
             RawTransaction::Eth(raw_transaction) => {
-                serde_json::to_string(&raw_transaction).unwrap()
+                serde_json::from_str(&serde_json::to_string(&raw_transaction).unwrap())?
             }
             RawTransaction::EthBundle(raw_transaction) => {
-                serde_json::to_string(&raw_transaction).unwrap()
+                serde_json::from_str(&serde_json::to_string(&raw_transaction).unwrap())?
             }
         };
-        let parsed_raw_transaction_string: String = serde_json::from_str(&raw_transaction_string)?;
 
-        let time_lock_puzzle_param = setup_time_lock_puzzle_param(2048);
+        let encrypted_transaction_type = context.config().encrypted_transaction_type();
 
-        let (
-            sigma_protocol_public_input,
-            key_validation_param,
-            key_validation_public_input,
-            key_validation_secret_input,
-        ) = generate_time_lock_puzzle(time_lock_puzzle_param.clone())?;
+        match encrypted_transaction_type {
+            EncryptedTransactionType::Pvde => {
+                // Generate time lock puzzle
+                let time_lock_puzzle_param = setup_time_lock_puzzle_param(2048);
+                let (
+                    sigma_protocol_public_input,
+                    key_validation_param,
+                    key_validation_public_input,
+                    key_validation_secret_input,
+                ) = generate_time_lock_puzzle(time_lock_puzzle_param.clone())?;
 
-        let _raw_data;
-        let encrypted_transaction;
-        let decryption_key = DecryptionKey::from(key_validation_secret_input.k.to_str_radix(10));
+                let time_lock_puzzle = TimeLockPuzzle::new(
+                    time_lock_puzzle_param.t,
+                    sigma_protocol_public_input.o.to_string(),
+                    time_lock_puzzle_param.n.to_string(),
+                );
 
-        if context.config().is_using_zkp() {
-            let pvde_params = context.pvde_params().load().as_ref().clone().unwrap();
-            let key_validation_zkp_param = pvde_params.key_validation_zkp_param().clone().unwrap();
-            let key_validation_proving_key =
-                pvde_params.key_validation_proving_key().clone().unwrap();
+                let encrypted_transaction;
 
-            let poseidon_encryption_zkp_param =
-                pvde_params.poseidon_encryption_zkp_param().clone().unwrap();
-            let poseidon_encryption_proving_key = pvde_params
-                .poseidon_encryption_proving_key()
-                .clone()
-                .unwrap();
+                if context.config().is_using_zkp() {
+                    let pvde_params = context.pvde_params().load().as_ref().clone().unwrap();
+                    let key_validation_zkp_param =
+                        pvde_params.key_validation_zkp_param().clone().unwrap();
+                    let key_validation_proving_key =
+                        pvde_params.key_validation_proving_key().clone().unwrap();
 
-            (_raw_data, encrypted_transaction) = encrypt_tx_with_zkp(
-                &parsed_raw_transaction_string,
-                &sigma_protocol_public_input,
-                &key_validation_param,
-                &key_validation_public_input,
-                &key_validation_secret_input,
-                &key_validation_zkp_param,
-                &key_validation_proving_key,
-                &poseidon_encryption_zkp_param,
-                &poseidon_encryption_proving_key,
-            )?;
-        } else {
-            (_raw_data, encrypted_transaction) = encrypt_transaction(
-                &parsed_raw_transaction_string,
-                &key_validation_secret_input.k,
-            )
-            .map_err(|error| {
-                tracing::error!("encrypt_tx error: {:?}", error);
-                RpcError::from(error)
-            })?;
+                    let poseidon_encryption_zkp_param =
+                        pvde_params.poseidon_encryption_zkp_param().clone().unwrap();
+                    let poseidon_encryption_proving_key = pvde_params
+                        .poseidon_encryption_proving_key()
+                        .clone()
+                        .unwrap();
+
+                    let pvde_encrypted_transaction = pvde_encrypt_tx_with_zkp(
+                        &raw_transaction_string,
+                        &sigma_protocol_public_input,
+                        &key_validation_param,
+                        &key_validation_public_input,
+                        &key_validation_secret_input,
+                        &key_validation_zkp_param,
+                        &key_validation_proving_key,
+                        &poseidon_encryption_zkp_param,
+                        &poseidon_encryption_proving_key,
+                        &time_lock_puzzle,
+                    )?;
+
+                    encrypted_transaction = EncryptedTransaction::Pvde(pvde_encrypted_transaction);
+                } else {
+                    let pvde_encrypted_transaction = pvde_encrypt_transaction(
+                        &raw_transaction_string,
+                        &key_validation_secret_input.k,
+                        &time_lock_puzzle,
+                    )
+                    .map_err(|error| {
+                        tracing::error!("encrypt_tx error: {:?}", error);
+                        RpcError::from(error)
+                    })?;
+
+                    encrypted_transaction = EncryptedTransaction::Pvde(pvde_encrypted_transaction);
+                }
+
+                Ok(EncryptTransactionResponse {
+                    encrypted_transaction,
+                })
+            }
+            EncryptedTransactionType::Skde => {
+                let key_management_system_client = context.key_management_client().clone().unwrap();
+
+                let get_latest_encryption_key_response = key_management_system_client
+                    .get_latest_encryption_key()
+                    .await?;
+
+                let encrypted_transaction = skde_encrypt_transaction(
+                    &raw_transaction_string,
+                    &get_latest_encryption_key_response.key_id,
+                    &get_latest_encryption_key_response.encryption_key,
+                )?;
+
+                Ok(EncryptTransactionResponse {
+                    encrypted_transaction: EncryptedTransaction::Skde(encrypted_transaction),
+                })
+            }
+            _ => {
+                unimplemented!()
+            }
         }
-
-        Ok(EncryptTransactionResponse {
-            encrypted_transaction,
-            decryption_key,
-            time_lock_puzzle: TimeLockPuzzle::new(
-                time_lock_puzzle_param.t,
-                sigma_protocol_public_input.o.to_string(),
-                time_lock_puzzle_param.n.to_string(),
-            ),
-        })
     }
 }
 
@@ -181,31 +217,60 @@ pub fn get_open_and_encrypted_data(raw_tx: &str) -> Result<(EthOpenData, String)
     Ok((EthOpenData::from(decoded_transaction), encrypt_data))
 }
 
-pub fn encrypt_transaction(
+pub fn skde_encrypt_transaction(
+    raw_tx: &str,
+    key_id: &u64,
+    encryption_key: &PublicKey,
+) -> Result<SkdeEncryptedTransaction, Error> {
+    const PRIME_P: &str = "8155133734070055735139271277173718200941522166153710213522626777763679009805792017274916613411023848268056376687809186180768200590914945958831360737612803";
+    const PRIME_Q: &str = "13379153270147861840625872456862185586039997603014979833900847304743997773803109864546170215161716700184487787472783869920830925415022501258643369350348243";
+    const GENERATOR: &str = "4";
+    const TIME_PARAM_T: u32 = 2;
+    const MAX_KEY_GENERATOR_NUMBER: u32 = 2;
+
+    let time = 2_u32.pow(TIME_PARAM_T);
+    let p = BigUint::from_str(PRIME_P).expect("Invalid PRIME_P");
+    let q = BigUint::from_str(PRIME_Q).expect("Invalid PRIME_Q");
+    let g = BigUint::from_str(GENERATOR).expect("Invalid GENERATOR");
+    let max_key_generator_number = BigUint::from(MAX_KEY_GENERATOR_NUMBER);
+
+    let (open_data, to_encrypt_data) = get_open_and_encrypted_data(raw_tx)?;
+
+    let skde_params = skde::setup(time, p, q, g, max_key_generator_number);
+    let encrypted_data =
+        skde::delay_encryption::encrypt(&skde_params, &to_encrypt_data, &encryption_key).unwrap();
+    let encrypted_data = format!("{}/{}", encrypted_data.c1, encrypted_data.c2);
+    let encrypted_data = EncryptedData::from(encrypted_data);
+    let transaction_data = TransactionData::Eth(EthTransactionData::new(encrypted_data, open_data));
+
+    Ok(SkdeEncryptedTransaction::new(
+        transaction_data,
+        key_id.clone(),
+    ))
+}
+
+pub fn pvde_encrypt_transaction(
     raw_tx: &str,
     k: &BigUint,
-) -> Result<(String, EncryptedTransaction), Error> {
+    time_lock_puzzle: &TimeLockPuzzle,
+) -> Result<PvdeEncryptedTransaction, Error> {
     let (open_data, to_encrypt_data) = get_open_and_encrypted_data(raw_tx)?;
 
     let encryption_key = hash::hash(k.clone());
 
-    let encrypted_data = EncryptedData::new(poseidon_encryption::encrypt(
-        &to_encrypt_data,
-        &encryption_key,
-    ));
+    let encrypted_data = poseidon_encryption::encrypt(&to_encrypt_data, &encryption_key);
+    let encrypted_data = EncryptedData::from(encrypted_data);
+    let transaction_data = TransactionData::Eth(EthTransactionData::new(encrypted_data, open_data));
 
-    Ok((
-        to_encrypt_data,
-        EncryptedTransaction::Eth(EthEncryptedTransaction::new(
-            open_data,
-            encrypted_data,
-            None,
-        )),
+    Ok(PvdeEncryptedTransaction::new(
+        transaction_data,
+        time_lock_puzzle.clone(),
+        None,
     ))
 }
 
 #[allow(clippy::too_many_arguments)]
-pub fn encrypt_tx_with_zkp(
+pub fn pvde_encrypt_tx_with_zkp(
     raw_tx: &str,
 
     sigma_protocol_public_input: &SigmaProtocolPublicInput,
@@ -217,9 +282,11 @@ pub fn encrypt_tx_with_zkp(
     key_validation_proving_key: &ProvingKey<G1Affine>,
     poseidon_encryption_zkp_param: &ParamsKZG<Bn256>,
     poseidon_encryption_proving_key: &ProvingKey<G1Affine>,
-) -> Result<(String, EncryptedTransaction), Error> {
-    let (to_encrypt_data, mut encrypted_tx) =
-        encrypt_transaction(raw_tx, &key_validation_secret_input.k)?;
+    time_lock_puzzle: &TimeLockPuzzle,
+) -> Result<PvdeEncryptedTransaction, Error> {
+    let (_open_data, to_encrypt_data) = get_open_and_encrypted_data(raw_tx)?;
+    let mut pvde_encrypted_transaction =
+        pvde_encrypt_transaction(raw_tx, &key_validation_secret_input.k, time_lock_puzzle)?;
 
     // Generate key validation zkp
     let proof_of_key_validation = prove_key_validation(
@@ -232,7 +299,12 @@ pub fn encrypt_tx_with_zkp(
 
     // Generate position encryption public & secret input
     let poseidon_encryption_public_input = PoseidonEncryptionPublicInput {
-        encrypted_data: encrypted_tx.encrypted_data().clone().into_inner().clone(),
+        encrypted_data: pvde_encrypted_transaction
+            .transaction_data()
+            .encrypted_data()
+            .clone()
+            .into_inner()
+            .clone(),
         k_hash_value: key_validation_public_input.k_hash_value.clone(),
     };
     let poseidon_encryption_secret_input = PoseidonEncryptionSecretInput {
@@ -258,7 +330,7 @@ pub fn encrypt_tx_with_zkp(
     let encryption_proof = EncryptionProof::new(proof_of_poseidon_encryption);
 
     let pvde_zkp = PvdeZkp::new(public_input, time_lock_puzzle_proof, encryption_proof);
-    encrypted_tx.update_pvde_zkp(Some(pvde_zkp));
+    pvde_encrypted_transaction.set_pvde_zkp(pvde_zkp);
 
-    Ok((to_encrypt_data, encrypted_tx))
+    Ok(pvde_encrypted_transaction)
 }

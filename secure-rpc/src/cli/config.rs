@@ -1,5 +1,6 @@
 use std::{fs, path::PathBuf};
 
+use sequencer::types::EncryptedTransactionType;
 use serde::{Deserialize, Serialize};
 
 use super::{ConfigOption, ConfigPath, CONFIG_FILE_NAME};
@@ -9,16 +10,27 @@ use crate::error::Error;
 pub struct Config {
     // Rollup ID
     rollup_id: String,
+
     // Secure RPC
     secure_rpc_url: String,
+
     // Sequencer
     sequencer_rpc_url: String,
+
     // Rollup
     rollup_rpc_url: String,
+
     // encryption
     is_using_encryption: bool,
-    // zkp
+
+    // encrypted_transaction_type
+    encrypted_transaction_type: EncryptedTransactionType,
+
+    // zkp (when using PVDE)
     is_using_zkp: bool,
+
+    // (when using SKDE)
+    key_management_rpc_url: String,
 }
 
 impl Config {
@@ -44,6 +56,8 @@ impl Config {
         // Merge configs from CLI input
         let merged_config_option = config_file.merge(config_option);
 
+        let encrypted_transaction_type = merged_config_option.encrypted_transaction_type.unwrap();
+
         Ok(Config {
             rollup_id: merged_config_option.rollup_id.unwrap(),
             secure_rpc_url: merged_config_option.secure_rpc_url.unwrap(),
@@ -51,6 +65,8 @@ impl Config {
             rollup_rpc_url: merged_config_option.rollup_rpc_url.unwrap(),
             is_using_encryption: merged_config_option.is_using_encryption.unwrap(),
             is_using_zkp: merged_config_option.is_using_zkp.unwrap(),
+            encrypted_transaction_type: EncryptedTransactionType::from(encrypted_transaction_type),
+            key_management_rpc_url: merged_config_option.key_management_system_rpc_url.unwrap(),
         })
     }
 
@@ -76,5 +92,13 @@ impl Config {
 
     pub fn is_using_zkp(&self) -> bool {
         self.is_using_zkp
+    }
+
+    pub fn encrypted_transaction_type(&self) -> &EncryptedTransactionType {
+        &self.encrypted_transaction_type
+    }
+
+    pub fn key_management_system_rpc_url(&self) -> &String {
+        &self.key_management_rpc_url
     }
 }

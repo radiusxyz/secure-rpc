@@ -22,7 +22,6 @@ pub use encrypt_transaction::EncryptTransaction;
 use json_rpc::ArrayRpcClient;
 pub use request_to_send_encrypted_transaction::*;
 pub use request_to_send_raw_transaction::*;
-use sequencer::rpc::prelude::RpcParameter;
 use serde::de::DeserializeOwned;
 
 use crate::{rpc::prelude::*, state::AppState};

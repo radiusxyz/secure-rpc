@@ -8,7 +8,10 @@ use crate::error::Error;
 
 const DEFAULT_SECURE_RPC_URL: &str = "http://127.0.0.1:9000";
 const DEFAULT_SEQUENCER_RPC_URL: &str = "http://127.0.0.1:3000";
-const DEFAULT_ROLLIP_RPC_URL: &str = "http://192.168.12.68:8123";
+const DEFAULT_ROLLUP_RPC_URL: &str = "http://192.168.12.68:8123";
+
+const DEFAULT_ENCRYPTED_TRANSACTION_TYPE: &str = "skde";
+const DEFAULT_KEY_MANAGEMENT_SYSTEM_RPC_URL: &str = "http://127.0.0.1:7100";
 
 #[derive(Debug, Deserialize, Parser, Serialize)]
 pub struct ConfigOption {
@@ -39,6 +42,14 @@ pub struct ConfigOption {
     #[doc = "Set using zkp"]
     #[clap(long = "is-using-zkp")]
     pub is_using_zkp: Option<bool>,
+
+    #[doc = "Set encrypted transaction type"]
+    #[clap(long = "encrypted-transaction-type")]
+    pub encrypted_transaction_type: Option<String>,
+
+    #[doc = "Set the key management system rpc url"]
+    #[clap(long = "key-management-system-rpc-url")]
+    pub key_management_system_rpc_url: Option<String>,
 }
 
 impl Default for ConfigOption {
@@ -48,9 +59,11 @@ impl Default for ConfigOption {
             rollup_id: Some("0".into()),
             secure_rpc_url: Some(DEFAULT_SECURE_RPC_URL.into()),
             sequencer_rpc_url: Some(DEFAULT_SEQUENCER_RPC_URL.into()),
-            rollup_rpc_url: Some(DEFAULT_ROLLIP_RPC_URL.into()),
+            rollup_rpc_url: Some(DEFAULT_ROLLUP_RPC_URL.into()),
             is_using_encryption: Some(true),
             is_using_zkp: Some(false),
+            encrypted_transaction_type: Some(DEFAULT_ENCRYPTED_TRANSACTION_TYPE.into()),
+            key_management_system_rpc_url: Some(DEFAULT_KEY_MANAGEMENT_SYSTEM_RPC_URL.into()),
         }
     }
 }
@@ -108,6 +121,20 @@ impl ConfigOption {
         set_toml_comment(&mut toml_string, "Set using zkp");
         set_toml_name_value(&mut toml_string, "is_using_zkp", &self.is_using_zkp);
 
+        set_toml_comment(&mut toml_string, "Set encrypted transaction type");
+        set_toml_name_value(
+            &mut toml_string,
+            "encrypted_transaction_type",
+            &self.encrypted_transaction_type,
+        );
+
+        set_toml_comment(&mut toml_string, "Set key management system rpc url");
+        set_toml_name_value(
+            &mut toml_string,
+            "key_management_system_rpc_url",
+            &self.key_management_system_rpc_url,
+        );
+
         toml_string
     }
 
@@ -139,6 +166,15 @@ impl ConfigOption {
 
         if other.is_using_zkp.is_some() {
             self.is_using_zkp.clone_from(&other.is_using_zkp);
+        }
+
+        if other.encrypted_transaction_type.is_some() {
+            self.encrypted_transaction_type
+                .clone_from(&other.encrypted_transaction_type);
+        }
+
+        if other.key_management_system_rpc_url.is_some() {
+            self.key_management_system_rpc_url = other.key_management_system_rpc_url.clone();
         }
 
         self

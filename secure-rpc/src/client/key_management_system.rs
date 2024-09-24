@@ -1,0 +1,92 @@
+use std::sync::Arc;
+
+use radius_sequencer_sdk::json_rpc::{Error, RpcClient};
+use sequencer::skde::delay_encryption::{PublicKey, SecretKey};
+use serde::{Deserialize, Serialize};
+
+pub struct KeyManagementSystemClient {
+    inner: Arc<RpcClient>,
+}
+
+impl Clone for KeyManagementSystemClient {
+    fn clone(&self) -> Self {
+        Self {
+            inner: self.inner.clone(),
+        }
+    }
+}
+
+impl KeyManagementSystemClient {
+    pub fn new(rpc_url: impl AsRef<str>) -> Result<Self, Error> {
+        let rpc_client = RpcClient::new(rpc_url)?;
+
+        Ok(Self {
+            inner: Arc::new(rpc_client),
+        })
+    }
+
+    pub async fn get_encryption_key(&self, key_id: u64) -> Result<GetEncryptionKeyReturn, Error> {
+        let rpc_parameter = GetEncryptionKey { key_id };
+
+        self.inner
+            .request(GetEncryptionKey::METHOD_NAME, rpc_parameter)
+            .await
+    }
+
+    pub async fn get_latest_encryption_key(&self) -> Result<GetLatestEncryptionKeyReturn, Error> {
+        let rpc_parameter = GetLatestEncryptionKey {};
+
+        self.inner
+            .request(GetLatestEncryptionKey::METHOD_NAME, rpc_parameter)
+            .await
+    }
+
+    pub async fn get_decryption_key(&self, key_id: u64) -> Result<GetDecryptionKeyResponse, Error> {
+        let rpc_parameter = GetDecryptionKey { key_id };
+
+        self.inner
+            .request(GetDecryptionKey::METHOD_NAME, rpc_parameter)
+            .await
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct GetLatestEncryptionKey {}
+
+impl GetLatestEncryptionKey {
+    pub const METHOD_NAME: &'static str = "get_latest_encryption_key";
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct GetLatestEncryptionKeyReturn {
+    pub encryption_key: PublicKey,
+    pub key_id: u64,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct GetEncryptionKey {
+    pub key_id: u64,
+}
+
+impl GetEncryptionKey {
+    pub const METHOD_NAME: &'static str = "get_encryption_key";
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct GetEncryptionKeyReturn {
+    pub encryption_key: PublicKey,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct GetDecryptionKey {
+    pub key_id: u64,
+}
+
+impl GetDecryptionKey {
+    pub const METHOD_NAME: &'static str = "get_decryption_key";
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct GetDecryptionKeyResponse {
+    pub decryption_key: SecretKey,
+}

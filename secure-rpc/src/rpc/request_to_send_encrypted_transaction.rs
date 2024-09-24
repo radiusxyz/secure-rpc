@@ -1,4 +1,3 @@
-use sequencer::rpc::prelude::RpcParameter;
 use serde_json::json;
 
 use super::EncryptTransaction;
@@ -6,17 +5,17 @@ use crate::{rpc::prelude::*, state::AppState};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct RequestToSendEncryptedTransaction {
-    rollup_id: RollupId,
+    rollup_id: String,
     pub raw_transaction: RawTransaction,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SendEncryptedTransaction {
-    pub rollup_id: RollupId,
+    pub rollup_id: String,
     pub encrypted_transaction: EncryptedTransaction,
-    pub time_lock_puzzle: TimeLockPuzzle,
 }
 
+// TODO: Refactoring
 impl RequestToSendEncryptedTransaction {
     pub const METHOD_NAME: &'static str = "send_encrypted_transaction";
 
@@ -30,39 +29,39 @@ impl RequestToSendEncryptedTransaction {
 
         let parameter = parameter.parse::<Self>()?;
 
-        let raw_transaction_request_string = match parameter.raw_transaction {
-            RawTransaction::Eth(raw_transaction) => {
-                let raw_transaction_string = serde_json::to_string(&raw_transaction)?;
-                json!({
-                    "raw_transaction": {
-                        "Eth": serde_json::from_str::<String>(&raw_transaction_string)?
-                    }
-                })
-                .to_string()
-            }
-            RawTransaction::EthBundle(raw_transaction) => {
-                let raw_transaction_string = serde_json::to_string(&raw_transaction)?;
-                json!({
-                    "raw_transaction": {
-                        "EthBundle": serde_json::from_str::<String>(&raw_transaction_string)?
-                    }
-                })
-                .to_string()
-            }
-        };
+        let raw_transaction_string = json!({
+            "raw_transaction": parameter.raw_transaction
+        })
+        .to_string();
 
-        let encrypt_transaction_static_str = LeakedStrGuard::new(raw_transaction_request_string);
+        println!("raw_transaction_string: {:?}", raw_transaction_string);
+        let encrypt_transaction_static_str = LeakedStrGuard::new(raw_transaction_string);
+
         let encrypt_transaction_params = RpcParameter::new(Some(*encrypt_transaction_static_str));
+
+        println!(
+            "encrypt_transaction_params: {:?}",
+            encrypt_transaction_params
+        );
 
         // encrypt transaction
         let encrypt_transaction_response =
             EncryptTransaction::handler(encrypt_transaction_params, context.clone()).await?;
 
+        print!(
+            "encrypt_transaction_response: {:?}",
+            encrypt_transaction_response
+        );
+
         let send_encrypted_transaction = SendEncryptedTransaction {
             rollup_id: parameter.rollup_id,
             encrypted_transaction: encrypt_transaction_response.encrypted_transaction,
-            time_lock_puzzle: encrypt_transaction_response.time_lock_puzzle,
         };
+
+        println!(
+            "send_encrypted_transaction: {:?}",
+            send_encrypted_transaction
+        );
 
         context
             .sequencer_rpc_client()
