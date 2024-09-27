@@ -63,15 +63,16 @@ impl RequestToSendEncryptedTransaction {
             send_encrypted_transaction
         );
 
-        context
+        let order_commitment: OrderCommitment = context
             .sequencer_rpc_client()
             .rpc_client()
             .request(
                 RequestToSendEncryptedTransaction::METHOD_NAME,
                 send_encrypted_transaction,
             )
-            .await
-            .map_err(|error| error.into())
+            .await?;
+
+        Ok(order_commitment)
     }
 }
 

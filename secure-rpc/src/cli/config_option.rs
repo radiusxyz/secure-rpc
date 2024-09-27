@@ -8,7 +8,7 @@ use crate::error::Error;
 
 const DEFAULT_SECURE_RPC_URL: &str = "http://127.0.0.1:9000";
 const DEFAULT_SEQUENCER_RPC_URL: &str = "http://127.0.0.1:3000";
-const DEFAULT_ROLLUP_RPC_URL: &str = "http://192.168.12.68:8123";
+const DEFAULT_ROLLUP_RPC_URL: &str = "http://127.0.0.1:8123";
 
 const DEFAULT_ENCRYPTED_TRANSACTION_TYPE: &str = "skde";
 const DEFAULT_KEY_MANAGEMENT_SYSTEM_RPC_URL: &str = "http://127.0.0.1:7100";

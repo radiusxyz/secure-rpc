@@ -239,7 +239,7 @@ pub fn skde_encrypt_transaction(
     let skde_params = skde::setup(time, p, q, g, max_key_generator_number);
     let encrypted_data =
         skde::delay_encryption::encrypt(&skde_params, &to_encrypt_data, &encryption_key).unwrap();
-    let encrypted_data = format!("{}/{}", encrypted_data.c1, encrypted_data.c2);
+    // let encrypted_data = format!("{}/{}", encrypted_data.c1, encrypted_data.c2);
     let encrypted_data = EncryptedData::from(encrypted_data);
     let transaction_data = TransactionData::Eth(EthTransactionData::new(encrypted_data, open_data));
 

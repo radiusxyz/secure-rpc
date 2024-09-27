@@ -1104,14 +1104,14 @@ dependencies = [
 [[package]]
 name = "big-integer"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/skde?rev=d7233e3fe5a418507cecf465c71f2dc757241369#d7233e3fe5a418507cecf465c71f2dc757241369"
+source = "git+https://github.com/radiusxyz/skde?rev=f02b1cf466f55041a60faa80b18202c029578d58#f02b1cf466f55041a60faa80b18202c029578d58"
 dependencies = [
  "ff",
  "halo2wrong 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
  "maingate 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
  "num-bigint",
  "num-traits",
- "poseidon 0.1.0 (git+https://github.com/radiusxyz/skde?rev=d7233e3fe5a418507cecf465c71f2dc757241369)",
+ "poseidon 0.1.0 (git+https://github.com/radiusxyz/skde?rev=f02b1cf466f55041a60faa80b18202c029578d58)",
  "rand",
 ]
 
@@ -1222,7 +1222,7 @@ dependencies = [
 [[package]]
 name = "block-commitment"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82#5c3ab2269f71dfa559a474a8c6b275021e277a82"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472#628112f3ea6d554fdc63010b8241f5b662932472"
 dependencies = [
  "ark-bls12-377",
  "ark-bls12-381",
@@ -1575,7 +1575,7 @@ checksum = "f7144d30dcf0fafbce74250a3963025d8d52177934239851c917d29f1df280c2"
 [[package]]
 name = "context"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82#5c3ab2269f71dfa559a474a8c6b275021e277a82"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472#628112f3ea6d554fdc63010b8241f5b662932472"
 dependencies = [
  "crossbeam-epoch",
 ]
@@ -2709,13 +2709,13 @@ dependencies = [
 [[package]]
 name = "hash"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/skde?rev=d7233e3fe5a418507cecf465c71f2dc757241369#d7233e3fe5a418507cecf465c71f2dc757241369"
+source = "git+https://github.com/radiusxyz/skde?rev=f02b1cf466f55041a60faa80b18202c029578d58#f02b1cf466f55041a60faa80b18202c029578d58"
 dependencies = [
  "ff",
  "halo2wrong 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
  "maingate 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
  "num-bigint",
- "poseidon 0.1.0 (git+https://github.com/radiusxyz/skde?rev=d7233e3fe5a418507cecf465c71f2dc757241369)",
+ "poseidon 0.1.0 (git+https://github.com/radiusxyz/skde?rev=f02b1cf466f55041a60faa80b18202c029578d58)",
  "rand",
 ]
 
@@ -3173,7 +3173,7 @@ dependencies = [
 [[package]]
 name = "json-rpc"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82#5c3ab2269f71dfa559a474a8c6b275021e277a82"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472#628112f3ea6d554fdc63010b8241f5b662932472"
 dependencies = [
  "hyper 0.14.28",
  "jsonrpsee",
@@ -3427,7 +3427,7 @@ dependencies = [
 [[package]]
 name = "kvstore"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82#5c3ab2269f71dfa559a474a8c6b275021e277a82"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472#628112f3ea6d554fdc63010b8241f5b662932472"
 dependencies = [
  "rocksdb",
  "serde",
@@ -3559,7 +3559,7 @@ checksum = "78b3ae25bc7c8c38cec158d1f2757ee79e9b3740fbc7ccf0e59e4b08d793fa89"
 [[package]]
 name = "liveness-radius"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82#5c3ab2269f71dfa559a474a8c6b275021e277a82"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472#628112f3ea6d554fdc63010b8241f5b662932472"
 dependencies = [
  "alloy",
  "futures",
@@ -4188,7 +4188,7 @@ dependencies = [
 [[package]]
 name = "poseidon"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/skde?rev=d7233e3fe5a418507cecf465c71f2dc757241369#d7233e3fe5a418507cecf465c71f2dc757241369"
+source = "git+https://github.com/radiusxyz/skde?rev=f02b1cf466f55041a60faa80b18202c029578d58#f02b1cf466f55041a60faa80b18202c029578d58"
 dependencies = [
  "ff",
  "halo2wrong 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
@@ -4352,15 +4352,15 @@ checksum = "dc33ff2d4973d518d823d61aa239014831e521c75da58e3df4840d3f47749d09"
 [[package]]
 name = "radius-sequencer-sdk"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82#5c3ab2269f71dfa559a474a8c6b275021e277a82"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472#628112f3ea6d554fdc63010b8241f5b662932472"
 dependencies = [
- "block-commitment 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82)",
- "context 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82)",
- "json-rpc 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82)",
- "kvstore 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82)",
- "liveness-radius 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82)",
- "signature 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82)",
- "validation-eigenlayer 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82)",
+ "block-commitment 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472)",
+ "context 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472)",
+ "json-rpc 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472)",
+ "kvstore 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472)",
+ "liveness-radius 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472)",
+ "signature 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472)",
+ "validation-eigenlayer 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472)",
 ]
 
 [[package]]
@@ -5068,10 +5068,11 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "clap",
+ "const-hex",
  "ethers",
  "futures",
  "pvde",
- "radius-sequencer-sdk 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82)",
+ "radius-sequencer-sdk 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472)",
  "serde",
  "serde_json",
  "sha3 0.10.8",
@@ -5240,7 +5241,7 @@ dependencies = [
 [[package]]
 name = "signature"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82#5c3ab2269f71dfa559a474a8c6b275021e277a82"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472#628112f3ea6d554fdc63010b8241f5b662932472"
 dependencies = [
  "bincode",
  "const-hex",
@@ -5298,10 +5299,11 @@ checksum = "38b58827f4464d87d377d175e90bf58eb00fd8716ff0a62f80356b5e61555d0d"
 [[package]]
 name = "skde"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/skde?rev=d7233e3fe5a418507cecf465c71f2dc757241369#d7233e3fe5a418507cecf465c71f2dc757241369"
+source = "git+https://github.com/radiusxyz/skde?rev=f02b1cf466f55041a60faa80b18202c029578d58#f02b1cf466f55041a60faa80b18202c029578d58"
 dependencies = [
- "big-integer 0.1.0 (git+https://github.com/radiusxyz/skde?rev=d7233e3fe5a418507cecf465c71f2dc757241369)",
+ "big-integer 0.1.0 (git+https://github.com/radiusxyz/skde?rev=f02b1cf466f55041a60faa80b18202c029578d58)",
  "bitvec",
+ "const-hex",
  "ff",
  "group",
  "halo2wrong 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
@@ -5309,7 +5311,7 @@ dependencies = [
  "maingate 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
  "num-bigint",
  "num-traits",
- "poseidon 0.1.0 (git+https://github.com/radiusxyz/skde?rev=d7233e3fe5a418507cecf465c71f2dc757241369)",
+ "poseidon 0.1.0 (git+https://github.com/radiusxyz/skde?rev=f02b1cf466f55041a60faa80b18202c029578d58)",
  "rand",
  "rand_core",
  "rayon",
@@ -6107,7 +6109,7 @@ dependencies = [
 [[package]]
 name = "validation-eigenlayer"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=5c3ab2269f71dfa559a474a8c6b275021e277a82#5c3ab2269f71dfa559a474a8c6b275021e277a82"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=628112f3ea6d554fdc63010b8241f5b662932472#628112f3ea6d554fdc63010b8241f5b662932472"
 dependencies = [
  "alloy",
  "chrono",
