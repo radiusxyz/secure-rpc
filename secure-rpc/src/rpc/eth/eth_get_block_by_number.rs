@@ -4,14 +4,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     impl_external_array_rpc_forwarder,
-    rpc::{
-        {forward_to_array_rpc_request, ExternalRpcParameter},
-        prelude::*,
-    },
+    rpc::{forward_to_array_rpc_request, prelude::*, ExternalRpcParameter},
 };
 
 #[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
-pub struct Block<TX> {
+pub struct EthBlock<TX> {
     #[serde(default, rename = "parentHash")]
     pub parent_hash: String,
     #[serde(default, rename = "sha3Uncles")]
@@ -84,5 +81,9 @@ pub struct EthGetBlockByNumber {
     full_tx: bool,
 }
 
-impl_external_array_rpc_forwarder!(EthGetBlockByNumber, "eth_getBlockByNumber", Block<String>);
+impl_external_array_rpc_forwarder!(
+    EthGetBlockByNumber,
+    "eth_getBlockByNumber",
+    EthBlock<String>
+);
 // impl_rollup_rpc_forwarder!(EthGetBlockByNumber, "eth_getBlockByNumber", Block);
