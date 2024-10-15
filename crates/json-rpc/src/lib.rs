@@ -3,6 +3,6 @@ mod array_rpc_client;
 
 pub use array_rpc_client::ArrayRpcClient;
 pub use jsonrpsee::types::Params;
-pub use radius_sequencer_sdk::json_rpc::{
+pub use radius_sdk::json_rpc::{
     types::RpcParameter, Error, ErrorKind, RpcClient, RpcError, RpcServer,
 };

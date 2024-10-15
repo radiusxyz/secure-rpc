@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use radius_sequencer_sdk::json_rpc::{Error, RpcClient};
+use radius_sdk::json_rpc::{Error, RpcClient};
 use sequencer::skde::delay_encryption::{PublicKey, SecretKey};
 use serde::{Deserialize, Serialize};
 

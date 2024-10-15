@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-// use radius_sequencer_sdk::liveness::types::Block;
+// use radius_sdk::liveness::types::Block;
 use serde::{Deserialize, Serialize};
 
 use crate::{

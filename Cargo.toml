@@ -20,4 +20,4 @@ tracing-subscriber = "0.3.17"
 pvde = { git = "https://github.com/radiusxyz/pvde", rev="0abc447e775a52ecc5695cf070086fcad9cdaebb"}
 skde = { git = "https://github.com/radiusxyz/skde", rev="f02b1cf466f55041a60faa80b18202c029578d58"}
 sequencer = { git = "https://github.com/radiusxyz/sequencer", rev="1050571c3dab86593b6574385b4750c45ad27b22"}
-radius-sequencer-sdk = { git = "https://github.com/radiusxyz/radius-sdk-rs", features = ["full"] }
+radius-sdk = { git = "https://github.com/radiusxyz/radius-sdk-rs", rev = "962f6b983a34826f8d03f8496c03d1a508f0207c", features = ["full"] }

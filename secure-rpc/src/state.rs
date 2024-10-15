@@ -8,7 +8,7 @@ use pvde::{
     },
     time_lock_puzzle::TimeLockPuzzleParam,
 };
-use radius_sequencer_sdk::context::SharedContext;
+use radius_sdk::context::SharedContext;
 
 use crate::{cli::Config, client::*};
 
