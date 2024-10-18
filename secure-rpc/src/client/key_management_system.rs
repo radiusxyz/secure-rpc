@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use radius_sdk::json_rpc::{Error, RpcClient};
-use sequencer::skde::delay_encryption::{PublicKey, SecretKey};
 use serde::{Deserialize, Serialize};
+use skde::delay_encryption::{PublicKey, SecretKey};
 
 pub struct KeyManagementSystemClient {
     inner: Arc<RpcClient>,
@@ -48,6 +48,14 @@ impl KeyManagementSystemClient {
             .request(GetDecryptionKey::METHOD_NAME, rpc_parameter)
             .await
     }
+
+    pub async fn get_skde_params(&self) -> Result<GetSkdeParamsResponse, Error> {
+        let rpc_parameter = GetSkdeParams {};
+
+        self.inner
+            .request(GetSkdeParams::METHOD_NAME, rpc_parameter)
+            .await
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -89,4 +97,16 @@ impl GetDecryptionKey {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct GetDecryptionKeyResponse {
     pub decryption_key: SecretKey,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct GetSkdeParams {}
+
+impl GetSkdeParams {
+    pub const METHOD_NAME: &'static str = "get_skde_params";
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct GetSkdeParamsResponse {
+    pub skde_params: skde::delay_encryption::SkdeParams,
 }

@@ -1,7 +1,6 @@
 use std::{fs, path::PathBuf, sync::Arc};
 
 use json_rpc::RpcServer;
-use prelude::EncryptedTransactionType;
 use pvde::{
     encryption::poseidon_encryption_zkp::{
         export_proving_key as export_poseidon_encryption_proving_key,
@@ -53,17 +52,20 @@ async fn main() -> Result<(), Error> {
 
             let is_using_zkp = config.is_using_zkp();
 
-            let app_state = match config.encrypted_transaction_type() {
-                EncryptedTransactionType::Skde => {
-                    // Initialize key management system client
-                    let key_management_system_rpc_url = config.key_management_system_rpc_url();
-                    let key_management_system_client =
-                        KeyManagementSystemClient::new(key_management_system_rpc_url)?;
+            let key_management_system_rpc_url = config.key_management_system_rpc_url();
+            let key_management_system_client =
+                KeyManagementSystemClient::new(key_management_system_rpc_url)?;
 
-                    Arc::new(AppState::new(config, Some(key_management_system_client)))
-                }
-                _ => Arc::new(AppState::new(config, None)),
-            };
+            let skde_params = key_management_system_client
+                .get_skde_params()
+                .await?
+                .skde_params;
+
+            let app_state = Arc::new(AppState::new(
+                config,
+                skde_params,
+                Some(key_management_system_client),
+            ));
 
             // Initialize the secure RPC server.
             let server_handle = initialize_external_rpc_server(&app_state).await?;
