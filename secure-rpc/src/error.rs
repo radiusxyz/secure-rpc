@@ -20,8 +20,11 @@ pub enum Error {
     Downcast,
     NoneType,
 
+    FailedToGetSkdeParams,
+
     DecodeFailed,
     PvdeZkpInvalid,
+    DecryptionError(skde::delay_encryption::DecryptionError),
 
     EncryptionNotEnabled,
 }

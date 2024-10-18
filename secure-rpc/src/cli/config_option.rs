@@ -174,7 +174,8 @@ impl ConfigOption {
         }
 
         if other.key_management_system_rpc_url.is_some() {
-            self.key_management_system_rpc_url = other.key_management_system_rpc_url.clone();
+            self.key_management_system_rpc_url
+                .clone_from(&other.key_management_system_rpc_url);
         }
 
         self

@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use pvde::{
     encryption::{
         poseidon_encryption_zkp::{
@@ -28,7 +26,7 @@ use pvde::{
     },
 };
 use rand::{thread_rng, Rng};
-use sequencer::skde::{self, delay_encryption::PublicKey};
+use skde::delay_encryption::{PublicKey, SkdeParams};
 use tracing::info;
 
 use crate::{rpc::prelude::*, state::AppState};
@@ -86,9 +84,7 @@ impl EncryptTransaction {
                     time_lock_puzzle_param.n.to_string(),
                 );
 
-                let encrypted_transaction;
-
-                if context.config().is_using_zkp() {
+                let encrypted_transaction = if context.config().is_using_zkp() {
                     let pvde_params = context.pvde_params().load().as_ref().clone().unwrap();
                     let key_validation_zkp_param =
                         pvde_params.key_validation_zkp_param().clone().unwrap();
@@ -115,7 +111,7 @@ impl EncryptTransaction {
                         &time_lock_puzzle,
                     )?;
 
-                    encrypted_transaction = EncryptedTransaction::Pvde(pvde_encrypted_transaction);
+                    EncryptedTransaction::Pvde(pvde_encrypted_transaction)
                 } else {
                     let pvde_encrypted_transaction = pvde_encrypt_transaction(
                         &raw_transaction_string,
@@ -127,8 +123,8 @@ impl EncryptTransaction {
                         RpcError::from(error)
                     })?;
 
-                    encrypted_transaction = EncryptedTransaction::Pvde(pvde_encrypted_transaction);
-                }
+                    EncryptedTransaction::Pvde(pvde_encrypted_transaction)
+                };
 
                 Ok(EncryptTransactionResponse {
                     encrypted_transaction,
@@ -136,12 +132,14 @@ impl EncryptTransaction {
             }
             EncryptedTransactionType::Skde => {
                 let key_management_system_client = context.key_management_client().clone().unwrap();
+                let skde_params = context.skde_params();
 
                 let get_latest_encryption_key_response = key_management_system_client
                     .get_latest_encryption_key()
                     .await?;
 
                 let encrypted_transaction = skde_encrypt_transaction(
+                    skde_params,
                     &raw_transaction_string,
                     &get_latest_encryption_key_response.key_id,
                     &get_latest_encryption_key_response.encryption_key,
@@ -218,28 +216,16 @@ pub fn get_open_and_encrypted_data(raw_tx: &str) -> Result<(EthOpenData, String)
 }
 
 pub fn skde_encrypt_transaction(
-    raw_tx: &str,
+    skde_params: &SkdeParams,
+    raw_transaction: &str,
     key_id: &u64,
     encryption_key: &PublicKey,
 ) -> Result<SkdeEncryptedTransaction, Error> {
-    const PRIME_P: &str = "8155133734070055735139271277173718200941522166153710213522626777763679009805792017274916613411023848268056376687809186180768200590914945958831360737612803";
-    const PRIME_Q: &str = "13379153270147861840625872456862185586039997603014979833900847304743997773803109864546170215161716700184487787472783869920830925415022501258643369350348243";
-    const GENERATOR: &str = "4";
-    const TIME_PARAM_T: u32 = 2;
-    const MAX_KEY_GENERATOR_NUMBER: u32 = 2;
+    let (open_data, to_encrypt_data) = get_open_and_encrypted_data(raw_transaction)?;
 
-    let time = 2_u32.pow(TIME_PARAM_T);
-    let p = BigUint::from_str(PRIME_P).expect("Invalid PRIME_P");
-    let q = BigUint::from_str(PRIME_Q).expect("Invalid PRIME_Q");
-    let g = BigUint::from_str(GENERATOR).expect("Invalid GENERATOR");
-    let max_key_generator_number = BigUint::from(MAX_KEY_GENERATOR_NUMBER);
-
-    let (open_data, to_encrypt_data) = get_open_and_encrypted_data(raw_tx)?;
-
-    let skde_params = skde::setup(time, p, q, g, max_key_generator_number);
     let encrypted_data =
-        skde::delay_encryption::encrypt(&skde_params, &to_encrypt_data, &encryption_key).unwrap();
-    // let encrypted_data = format!("{}/{}", encrypted_data.c1, encrypted_data.c2);
+        skde::delay_encryption::encrypt(skde_params, &to_encrypt_data, &encryption_key).unwrap();
+
     let encrypted_data = EncryptedData::from(encrypted_data);
     let transaction_data = TransactionData::Eth(EthTransactionData::new(encrypted_data, open_data));
 
