@@ -11,8 +11,8 @@ pub struct Config {
     // Rollup ID
     rollup_id: String,
 
-    // Secure RPC
-    secure_rpc_url: String,
+    // External RPC
+    external_rpc_url: String,
 
     // Sequencer
     sequencer_rpc_url: String,
@@ -60,7 +60,7 @@ impl Config {
 
         Ok(Config {
             rollup_id: merged_config_option.rollup_id.unwrap(),
-            secure_rpc_url: merged_config_option.secure_rpc_url.unwrap(),
+            external_rpc_url: merged_config_option.external_rpc_url.unwrap(),
             sequencer_rpc_url: merged_config_option.sequencer_rpc_url.unwrap(),
             rollup_rpc_url: merged_config_option.rollup_rpc_url.unwrap(),
             is_using_encryption: merged_config_option.is_using_encryption.unwrap(),
@@ -74,8 +74,8 @@ impl Config {
         &self.rollup_id
     }
 
-    pub fn secure_rpc_url(&self) -> &String {
-        &self.secure_rpc_url
+    pub fn external_rpc_url(&self) -> &String {
+        &self.external_rpc_url
     }
 
     pub fn sequencer_rpc_url(&self) -> &String {

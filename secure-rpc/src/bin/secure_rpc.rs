@@ -85,7 +85,7 @@ async fn main() -> Result<(), Error> {
 async fn initialize_external_rpc_server(
     context: &AppState, // rpc_client: &RpcClient,
 ) -> Result<JoinHandle<()>, Error> {
-    let secure_rpc_url = context.config().secure_rpc_url().to_string();
+    let external_rpc_url = context.config().external_rpc_url().to_string();
 
     // Initialize the external RPC server.
     let external_rpc_server = RpcServer::new(context.clone())
@@ -136,12 +136,12 @@ async fn initialize_external_rpc_server(
             RequestToSendRawTransaction::METHOD_NAME,
             RequestToSendRawTransaction::handler,
         )?
-        .init(secure_rpc_url.clone())
+        .init(external_rpc_url.clone())
         .await?;
 
     tracing::info!(
         "Successfully started the Secure RPC server: {}",
-        secure_rpc_url
+        external_rpc_url
     );
 
     let server_handle = tokio::spawn(async move {

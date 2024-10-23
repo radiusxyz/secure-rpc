@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use super::{ConfigPath, CONFIG_FILE_NAME};
 use crate::error::Error;
 
-const DEFAULT_SECURE_RPC_URL: &str = "http://127.0.0.1:9000";
+const DEFAULT_EXTERNAL_RPC_URL: &str = "http://127.0.0.1:9000";
 const DEFAULT_SEQUENCER_RPC_URL: &str = "http://127.0.0.1:3000";
 const DEFAULT_ROLLUP_RPC_URL: &str = "http://127.0.0.1:8123";
 
@@ -23,9 +23,9 @@ pub struct ConfigOption {
     #[clap(long = "rollup-id")]
     pub rollup_id: Option<String>,
 
-    #[doc = "Set the secure rpc url"]
-    #[clap(long = "secure-rpc-url")]
-    pub secure_rpc_url: Option<String>,
+    #[doc = "Set the external rpc url"]
+    #[clap(long = "external-rpc-url")]
+    pub external_rpc_url: Option<String>,
 
     #[doc = "Set the sequencer rpc url"]
     #[clap(long = "sequencer-rpc-url")]
@@ -57,7 +57,7 @@ impl Default for ConfigOption {
         Self {
             path: Some(ConfigPath::default().as_ref().into()),
             rollup_id: Some("0".into()),
-            secure_rpc_url: Some(DEFAULT_SECURE_RPC_URL.into()),
+            external_rpc_url: Some(DEFAULT_EXTERNAL_RPC_URL.into()),
             sequencer_rpc_url: Some(DEFAULT_SEQUENCER_RPC_URL.into()),
             rollup_rpc_url: Some(DEFAULT_ROLLUP_RPC_URL.into()),
             is_using_encryption: Some(true),
@@ -98,8 +98,8 @@ impl ConfigOption {
         set_toml_comment(&mut toml_string, "Set rollup id");
         set_toml_name_value(&mut toml_string, "rollup_id", &self.rollup_id);
 
-        set_toml_comment(&mut toml_string, "Set secure rpc url");
-        set_toml_name_value(&mut toml_string, "secure_rpc_url", &self.secure_rpc_url);
+        set_toml_comment(&mut toml_string, "Set external rpc url");
+        set_toml_name_value(&mut toml_string, "external_rpc_url", &self.external_rpc_url);
 
         set_toml_comment(&mut toml_string, "Set sequencer rpc url");
         set_toml_name_value(
@@ -147,8 +147,8 @@ impl ConfigOption {
             self.rollup_id.clone_from(&other.rollup_id);
         }
 
-        if other.secure_rpc_url.is_some() {
-            self.secure_rpc_url.clone_from(&other.secure_rpc_url);
+        if other.external_rpc_url.is_some() {
+            self.external_rpc_url.clone_from(&other.external_rpc_url);
         }
 
         if other.sequencer_rpc_url.is_some() {

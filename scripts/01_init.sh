@@ -10,7 +10,7 @@ $SECURE_RPC_BIN_PATH init --path $DATA_PATH
 
 config_file_path=$DATA_PATH/config.toml
     
-sed -i.temp "s/secure_rpc_url = \"http:\/\/127.0.0.1:9000\"/secure_rpc_url = \"http:\/\/$HOST:9000\"/g" $config_file_path
+sed -i.temp "s/external_rpc_url = \"http:\/\/127.0.0.1:9000\"/external_rpc_url = \"http:\/\/$HOST:9000\"/g" $config_file_path
 
 sed -i.temp "s/sequencer_rpc_url = \"http:\/\/127.0.0.1:3000\"/sequencer_rpc_url = \"http:\/\/$HOST:3000\"/g" $config_file_path
 
