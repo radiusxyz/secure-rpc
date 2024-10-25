@@ -26,6 +26,8 @@ impl RequestToSendRawTransaction {
             raw_transaction: parameter.raw_transaction,
         };
 
+        tracing::info!("Send raw transaction: {:?}", send_raw_transaction);
+
         context
             .sequencer_rpc_client()
             .rpc_client()

@@ -34,32 +34,20 @@ impl RequestToSendEncryptedTransaction {
         })
         .to_string();
 
-        println!("raw_transaction_string: {:?}", raw_transaction_string);
         let encrypt_transaction_static_str = LeakedStrGuard::new(raw_transaction_string);
-
         let encrypt_transaction_params = RpcParameter::new(Some(*encrypt_transaction_static_str));
-
-        println!(
-            "encrypt_transaction_params: {:?}",
-            encrypt_transaction_params
-        );
 
         // encrypt transaction
         let encrypt_transaction_response =
             EncryptTransaction::handler(encrypt_transaction_params, context.clone()).await?;
-
-        print!(
-            "encrypt_transaction_response: {:?}",
-            encrypt_transaction_response
-        );
 
         let send_encrypted_transaction = SendEncryptedTransaction {
             rollup_id: parameter.rollup_id,
             encrypted_transaction: encrypt_transaction_response.encrypted_transaction,
         };
 
-        println!(
-            "send_encrypted_transaction: {:?}",
+        tracing::info!(
+            "Send encrypted transaction: {:?}",
             send_encrypted_transaction
         );
 
@@ -71,6 +59,8 @@ impl RequestToSendEncryptedTransaction {
                 send_encrypted_transaction,
             )
             .await?;
+
+        tracing::info!("Order commitment: {:?}", order_commitment);
 
         Ok(order_commitment)
     }

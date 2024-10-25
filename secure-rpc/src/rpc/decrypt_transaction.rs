@@ -158,12 +158,7 @@ impl DecryptTransaction {
 
                 let encrypted_data = transaction_data.encrypted_data().clone().into_inner();
 
-                // let mut encrypted_data_iter = encrypted_data.split("/");
-
-                // let c1 = encrypted_data_iter.next().unwrap().to_string();
-                // let c2 = encrypted_data_iter.next().unwrap().to_string();
-
-                // let cipher_text = CipherPair { c1, c2 };
+                tracing::info!("Decrypt SKDE encrypted data");
 
                 skde::delay_encryption::decrypt(
                     &skde_params,

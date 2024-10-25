@@ -51,7 +51,7 @@ impl EncryptTransaction {
         let parameter = parameter.parse::<Self>()?;
 
         info!(
-            "EncryptTransaction - raw_transaction: {:?}",
+            "Encrypt transaction - raw transaction: {:?}",
             parameter.raw_transaction
         );
 
