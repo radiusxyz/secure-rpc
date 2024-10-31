@@ -148,9 +148,10 @@ impl DecryptTransaction {
                 decrypted_data
             }
             EncryptedTransaction::Skde(skde_encrypted_transaction) => {
-                let key_management_system_client = context.key_management_client().clone().unwrap();
+                let distributed_key_generation_client =
+                    context.distributed_key_generation_client().clone().unwrap();
 
-                let get_decryption_key_response = key_management_system_client
+                let get_decryption_key_response = distributed_key_generation_client
                     .get_decryption_key(skde_encrypted_transaction.key_id())
                     .await?;
 

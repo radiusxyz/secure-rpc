@@ -30,7 +30,7 @@ pub struct Config {
     is_using_zkp: bool,
 
     // (when using SKDE)
-    key_management_rpc_url: String,
+    distributed_key_generation_rpc_url: String,
 }
 
 impl Config {
@@ -66,7 +66,9 @@ impl Config {
             is_using_encryption: merged_config_option.is_using_encryption.unwrap(),
             is_using_zkp: merged_config_option.is_using_zkp.unwrap(),
             encrypted_transaction_type: EncryptedTransactionType::from(encrypted_transaction_type),
-            key_management_rpc_url: merged_config_option.key_management_system_rpc_url.unwrap(),
+            distributed_key_generation_rpc_url: merged_config_option
+                .distributed_key_generation_rpc_url
+                .unwrap(),
         })
     }
 
@@ -98,7 +100,7 @@ impl Config {
         &self.encrypted_transaction_type
     }
 
-    pub fn key_management_system_rpc_url(&self) -> &String {
-        &self.key_management_rpc_url
+    pub fn distributed_key_generation_rpc_url(&self) -> &String {
+        &self.distributed_key_generation_rpc_url
     }
 }

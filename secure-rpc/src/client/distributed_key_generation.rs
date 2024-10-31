@@ -4,11 +4,11 @@ use radius_sdk::json_rpc::{Error, RpcClient};
 use serde::{Deserialize, Serialize};
 use skde::delay_encryption::{PublicKey, SecretKey};
 
-pub struct KeyManagementSystemClient {
+pub struct DistributedKeyGenerationClient {
     inner: Arc<RpcClient>,
 }
 
-impl Clone for KeyManagementSystemClient {
+impl Clone for DistributedKeyGenerationClient {
     fn clone(&self) -> Self {
         Self {
             inner: self.inner.clone(),
@@ -16,7 +16,7 @@ impl Clone for KeyManagementSystemClient {
     }
 }
 
-impl KeyManagementSystemClient {
+impl DistributedKeyGenerationClient {
     pub fn new(rpc_url: impl AsRef<str>) -> Result<Self, Error> {
         let rpc_client = RpcClient::new(rpc_url)?;
 

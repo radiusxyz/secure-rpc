@@ -26,7 +26,7 @@ use pvde::{
 };
 use secure_rpc::{
     cli::{Cli, Commands, Config, ConfigPath},
-    client::KeyManagementSystemClient,
+    client::DistributedKeyGenerationClient,
     error::Error,
     rpc::*,
     state::{AppState, PvdeParams},
@@ -52,19 +52,23 @@ async fn main() -> Result<(), Error> {
 
             let is_using_zkp = config.is_using_zkp();
 
-            let key_management_system_rpc_url = config.key_management_system_rpc_url();
-            let key_management_system_client =
-                KeyManagementSystemClient::new(key_management_system_rpc_url)?;
+            let distributed_key_generation_rpc_url = config.distributed_key_generation_rpc_url();
+            let distributed_key_generation_client =
+                DistributedKeyGenerationClient::new(distributed_key_generation_rpc_url)?;
 
-            let skde_params = key_management_system_client
+            tracing::info!("Successfully initialize distributed key generation client.");
+
+            let skde_params = distributed_key_generation_client
                 .get_skde_params()
                 .await?
                 .skde_params;
 
+            println!("skde_params: {:?}", skde_params);
+
             let app_state = Arc::new(AppState::new(
                 config,
                 skde_params,
-                Some(key_management_system_client),
+                Some(distributed_key_generation_client),
             ));
 
             // Initialize the secure RPC server.

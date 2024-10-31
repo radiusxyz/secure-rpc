@@ -22,7 +22,7 @@ struct AppStateInner {
     rollup_rpc_client: RollupRpcClient,
     pvde_params: SharedContext<Option<PvdeParams>>,
     skde_params: skde::delay_encryption::SkdeParams,
-    key_management_client: Option<KeyManagementSystemClient>,
+    distributed_key_generation_client: Option<DistributedKeyGenerationClient>,
 }
 
 unsafe impl Send for AppState {}
@@ -41,7 +41,7 @@ impl AppState {
     pub fn new(
         config: Config,
         skde_params: skde::delay_encryption::SkdeParams,
-        key_management_client: Option<KeyManagementSystemClient>,
+        distributed_key_generation_client: Option<DistributedKeyGenerationClient>,
     ) -> Self {
         let sequencer_rpc_client = SequencerRpcClient::new(config.sequencer_rpc_url()).unwrap();
         let rollup_rpc_client = RollupRpcClient::new(config.rollup_rpc_url()).unwrap();
@@ -52,7 +52,7 @@ impl AppState {
             rollup_rpc_client,
             pvde_params: SharedContext::from(None),
             skde_params,
-            key_management_client,
+            distributed_key_generation_client,
         };
 
         Self {
@@ -80,8 +80,8 @@ impl AppState {
         &self.inner.skde_params
     }
 
-    pub fn key_management_client(&self) -> &Option<KeyManagementSystemClient> {
-        &self.inner.key_management_client
+    pub fn distributed_key_generation_client(&self) -> &Option<DistributedKeyGenerationClient> {
+        &self.inner.distributed_key_generation_client
     }
 }
 

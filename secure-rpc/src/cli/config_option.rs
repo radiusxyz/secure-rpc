@@ -6,12 +6,11 @@ use serde::{Deserialize, Serialize};
 use super::{ConfigPath, CONFIG_FILE_NAME};
 use crate::error::Error;
 
-const DEFAULT_EXTERNAL_RPC_URL: &str = "http://192.168.12.77:9000";
-const DEFAULT_SEQUENCER_RPC_URL: &str = "http://192.168.12.77:3000";
-const DEFAULT_ROLLUP_RPC_URL: &str = "http://192.168.12.77:8123";
-
+const DEFAULT_EXTERNAL_RPC_URL: &str = "http://127.0.0.1:9000";
+const DEFAULT_SEQUENCER_RPC_URL: &str = "http://127.0.0.1:3000";
+const DEFAULT_ROLLUP_RPC_URL: &str = "http://127.0.0.1:8123";
 const DEFAULT_ENCRYPTED_TRANSACTION_TYPE: &str = "skde";
-const DEFAULT_KEY_MANAGEMENT_SYSTEM_RPC_URL: &str = "http://192.168.12.77:7100";
+const DEFAULT_DISTRIBUTED_KEY_GENERATION_RPC_URL: &str = "http://127.0.0.1:7100";
 
 #[derive(Debug, Deserialize, Parser, Serialize)]
 pub struct ConfigOption {
@@ -47,9 +46,9 @@ pub struct ConfigOption {
     #[clap(long = "encrypted-transaction-type")]
     pub encrypted_transaction_type: Option<String>,
 
-    #[doc = "Set the key management system rpc url"]
-    #[clap(long = "key-management-system-rpc-url")]
-    pub key_management_system_rpc_url: Option<String>,
+    #[doc = "Set the distributed key generation rpc url"]
+    #[clap(long = "distributed-key-generation-rpc-url")]
+    pub distributed_key_generation_rpc_url: Option<String>,
 }
 
 impl Default for ConfigOption {
@@ -63,7 +62,9 @@ impl Default for ConfigOption {
             is_using_encryption: Some(true),
             is_using_zkp: Some(false),
             encrypted_transaction_type: Some(DEFAULT_ENCRYPTED_TRANSACTION_TYPE.into()),
-            key_management_system_rpc_url: Some(DEFAULT_KEY_MANAGEMENT_SYSTEM_RPC_URL.into()),
+            distributed_key_generation_rpc_url: Some(
+                DEFAULT_DISTRIBUTED_KEY_GENERATION_RPC_URL.into(),
+            ),
         }
     }
 }
@@ -128,11 +129,11 @@ impl ConfigOption {
             &self.encrypted_transaction_type,
         );
 
-        set_toml_comment(&mut toml_string, "Set key management system rpc url");
+        set_toml_comment(&mut toml_string, "Set distributed key generation rpc url");
         set_toml_name_value(
             &mut toml_string,
-            "key_management_system_rpc_url",
-            &self.key_management_system_rpc_url,
+            "distributed_key_generation_rpc_url",
+            &self.distributed_key_generation_rpc_url,
         );
 
         toml_string
@@ -173,9 +174,9 @@ impl ConfigOption {
                 .clone_from(&other.encrypted_transaction_type);
         }
 
-        if other.key_management_system_rpc_url.is_some() {
-            self.key_management_system_rpc_url
-                .clone_from(&other.key_management_system_rpc_url);
+        if other.distributed_key_generation_rpc_url.is_some() {
+            self.distributed_key_generation_rpc_url
+                .clone_from(&other.distributed_key_generation_rpc_url);
         }
 
         self

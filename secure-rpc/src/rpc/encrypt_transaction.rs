@@ -131,10 +131,11 @@ impl EncryptTransaction {
                 })
             }
             EncryptedTransactionType::Skde => {
-                let key_management_system_client = context.key_management_client().clone().unwrap();
+                let distributed_key_generation_client =
+                    context.distributed_key_generation_client().clone().unwrap();
                 let skde_params = context.skde_params();
 
-                let get_latest_encryption_key_response = key_management_system_client
+                let get_latest_encryption_key_response = distributed_key_generation_client
                     .get_latest_encryption_key()
                     .await?;
 
