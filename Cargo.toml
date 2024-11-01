@@ -20,5 +20,5 @@ tracing-subscriber = "0.3.17"
 pvde = { git = "https://github.com/radiusxyz/pvde", rev="0abc447e775a52ecc5695cf070086fcad9cdaebb"}
 skde = { git = "https://github.com/radiusxyz/skde", rev="f8417e3611f58b7d38a85f209279d096efe0a378"}
 sequencer = { git = "https://github.com/radiusxyz/sequencer", rev="3c9b37ac0f2d64f19d906ee7df292ed94856515c"}
-radius-sdk = { git = "https://github.com/radiusxyz/radius-sdk-rs", rev = "dd43cbcab85caeb1515c15f07019a94c83c724f7", features = ["full"] }
+radius-sdk = { git = "https://github.com/radiusxyz/radius-sdk-rs", rev = "1e645cce57dfc6498bf381a702023c9f1aa2d8a5", features = ["full"] }
 url = "2.5.2"
