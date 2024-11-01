@@ -11,7 +11,7 @@ pub enum Error {
     InvalidSequencerPort,
     InvalidSecureRpcPort,
 
-    KeyManagementSystemClient(RpcClientError),
+    DistributedKeyGenerationClient(RpcClientError),
     RpcServerError(RpcServerError),
 
     LoadConfigOption,
