@@ -1,11 +1,16 @@
 use std::sync::Arc;
 
-use radius_sdk::json_rpc::{Error, RpcClient};
+use radius_sdk::json_rpc::client::{Id, RpcClient, RpcClientError};
 use serde::{Deserialize, Serialize};
 use skde::delay_encryption::{PublicKey, SecretKey};
 
 pub struct DistributedKeyGenerationClient {
-    inner: Arc<RpcClient>,
+    inner: Arc<DistributedKeyGenerationClientInner>,
+}
+
+struct DistributedKeyGenerationClientInner {
+    rpc_url: String,
+    rpc_client: RpcClient,
 }
 
 impl Clone for DistributedKeyGenerationClient {
@@ -17,43 +22,78 @@ impl Clone for DistributedKeyGenerationClient {
 }
 
 impl DistributedKeyGenerationClient {
-    pub fn new(rpc_url: impl AsRef<str>) -> Result<Self, Error> {
-        let rpc_client = RpcClient::new(rpc_url)?;
+    pub fn new(rpc_url: impl AsRef<str>) -> Result<Self, RpcClientError> {
+        let inner = DistributedKeyGenerationClientInner {
+            rpc_url: rpc_url.as_ref().to_owned(),
+            rpc_client: RpcClient::new()?,
+        };
 
         Ok(Self {
-            inner: Arc::new(rpc_client),
+            inner: Arc::new(inner),
         })
     }
 
-    pub async fn get_encryption_key(&self, key_id: u64) -> Result<GetEncryptionKeyReturn, Error> {
-        let rpc_parameter = GetEncryptionKey { key_id };
+    pub async fn get_latest_encryption_key(
+        &self,
+    ) -> Result<GetLatestEncryptionKeyReturn, RpcClientError> {
+        let parameter = GetLatestEncryptionKey {};
 
         self.inner
-            .request(GetEncryptionKey::METHOD_NAME, rpc_parameter)
+            .rpc_client
+            .request(
+                &self.inner.rpc_url,
+                GetLatestEncryptionKey::METHOD_NAME,
+                &parameter,
+                Id::Null,
+            )
             .await
     }
 
-    pub async fn get_latest_encryption_key(&self) -> Result<GetLatestEncryptionKeyReturn, Error> {
-        let rpc_parameter = GetLatestEncryptionKey {};
+    pub async fn get_encryption_key(
+        &self,
+        key_id: u64,
+    ) -> Result<GetEncryptionKeyReturn, RpcClientError> {
+        let parameter = GetEncryptionKey { key_id };
 
         self.inner
-            .request(GetLatestEncryptionKey::METHOD_NAME, rpc_parameter)
+            .rpc_client
+            .request(
+                &self.inner.rpc_url,
+                GetEncryptionKey::METHOD_NAME,
+                &parameter,
+                Id::Null,
+            )
             .await
     }
 
-    pub async fn get_decryption_key(&self, key_id: u64) -> Result<GetDecryptionKeyResponse, Error> {
-        let rpc_parameter = GetDecryptionKey { key_id };
+    pub async fn get_decryption_key(
+        &self,
+        key_id: u64,
+    ) -> Result<GetDecryptionKeyResponse, RpcClientError> {
+        let parameter = GetDecryptionKey { key_id };
 
         self.inner
-            .request(GetDecryptionKey::METHOD_NAME, rpc_parameter)
+            .rpc_client
+            .request(
+                &self.inner.rpc_url,
+                GetDecryptionKey::METHOD_NAME,
+                &parameter,
+                Id::Null,
+            )
             .await
     }
 
-    pub async fn get_skde_params(&self) -> Result<GetSkdeParamsResponse, Error> {
-        let rpc_parameter = GetSkdeParams {};
+    pub async fn get_skde_params(&self) -> Result<GetSkdeParamsResponse, RpcClientError> {
+        let parameter = GetSkdeParams {};
 
         self.inner
-            .request(GetSkdeParams::METHOD_NAME, rpc_parameter)
+            .rpc_client
+            .request(
+                &self.inner.rpc_url,
+                GetSkdeParams::METHOD_NAME,
+                &parameter,
+                Id::Null,
+            )
             .await
     }
 }
@@ -82,7 +122,7 @@ impl GetEncryptionKey {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct GetEncryptionKeyReturn {
-    pub encryption_key: PublicKey,
+    pub key: PublicKey,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

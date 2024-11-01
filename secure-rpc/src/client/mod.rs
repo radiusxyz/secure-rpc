@@ -1,7 +1,7 @@
 mod distributed_key_generation;
-mod rollup_rpc_client;
-mod sequencer_rpc_client;
+mod rollup;
+mod sequencer;
 
 pub use distributed_key_generation::DistributedKeyGenerationClient;
-pub use rollup_rpc_client::RollupRpcClient;
-pub use sequencer_rpc_client::SequencerRpcClient;
+pub use rollup::RollupRpcClient;
+pub use sequencer::SequencerRpcClient;

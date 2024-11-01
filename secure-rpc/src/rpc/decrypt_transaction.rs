@@ -15,6 +15,7 @@ use pvde::{
         solve_time_lock_puzzle,
     },
 };
+use radius_sdk::json_rpc::server::RpcError;
 
 use crate::{rpc::prelude::*, state::AppState};
 
@@ -162,7 +163,7 @@ impl DecryptTransaction {
                 tracing::info!("Decrypt SKDE encrypted data");
 
                 skde::delay_encryption::decrypt(
-                    &skde_params,
+                    skde_params,
                     &encrypted_data,
                     &get_decryption_key_response.decryption_key,
                 )

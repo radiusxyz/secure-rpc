@@ -1,3 +1,5 @@
+use radius_sdk::json_rpc::server::RpcError;
+
 use crate::{rpc::prelude::*, state::AppState};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -21,21 +23,11 @@ impl RequestToSendRawTransaction {
     ) -> Result<OrderCommitment, RpcError> {
         let parameter = parameter.parse::<Self>()?;
 
-        let send_raw_transaction = SendRawTransaction {
-            rollup_id: parameter.rollup_id,
-            raw_transaction: parameter.raw_transaction,
-        };
-
-        tracing::info!("Send raw transaction: {:?}", send_raw_transaction);
-
-        context
+        let order_commitment = context
             .sequencer_rpc_client()
-            .rpc_client()
-            .request(
-                RequestToSendRawTransaction::METHOD_NAME,
-                send_raw_transaction,
-            )
-            .await
-            .map_err(|error| error.into())
+            .send_raw_transaction(parameter.rollup_id, parameter.raw_transaction)
+            .await?;
+
+        Ok(order_commitment)
     }
 }

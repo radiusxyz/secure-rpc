@@ -12,3 +12,4 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true, features = ["time"] }
 radius-sdk = { workspace = true, feature = ["json-rpc"] }
+url = { workspace = true }

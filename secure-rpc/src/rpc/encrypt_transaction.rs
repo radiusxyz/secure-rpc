@@ -25,6 +25,7 @@ use pvde::{
         TimeLockPuzzleParam,
     },
 };
+use radius_sdk::json_rpc::server::RpcError;
 use rand::{thread_rng, Rng};
 use skde::delay_encryption::{PublicKey, SkdeParams};
 use tracing::info;
@@ -225,15 +226,12 @@ pub fn skde_encrypt_transaction(
     let (open_data, to_encrypt_data) = get_open_and_encrypted_data(raw_transaction)?;
 
     let encrypted_data =
-        skde::delay_encryption::encrypt(skde_params, &to_encrypt_data, &encryption_key).unwrap();
+        skde::delay_encryption::encrypt(skde_params, &to_encrypt_data, encryption_key).unwrap();
 
     let encrypted_data = EncryptedData::from(encrypted_data);
     let transaction_data = TransactionData::Eth(EthTransactionData::new(encrypted_data, open_data));
 
-    Ok(SkdeEncryptedTransaction::new(
-        transaction_data,
-        key_id.clone(),
-    ))
+    Ok(SkdeEncryptedTransaction::new(transaction_data, *key_id))
 }
 
 pub fn pvde_encrypt_transaction(

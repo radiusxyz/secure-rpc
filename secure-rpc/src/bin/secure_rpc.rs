@@ -54,16 +54,18 @@ async fn main() -> Result<(), Error> {
 
             let distributed_key_generation_rpc_url = config.distributed_key_generation_rpc_url();
             let distributed_key_generation_client =
-                DistributedKeyGenerationClient::new(distributed_key_generation_rpc_url)?;
+                DistributedKeyGenerationClient::new(distributed_key_generation_rpc_url)
+                    .map_err(Error::DistributedKeyGenerationClient)?;
 
             tracing::info!("Successfully initialize distributed key generation client.");
 
             let skde_params = distributed_key_generation_client
                 .get_skde_params()
-                .await?
+                .await
+                .map_err(Error::DistributedKeyGenerationClient)?
                 .skde_params;
 
-            println!("skde_params: {:?}", skde_params);
+            tracing::info!("skde params: {:?}", skde_params);
 
             let app_state = Arc::new(AppState::new(
                 config,

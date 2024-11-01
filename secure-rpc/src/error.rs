@@ -1,3 +1,6 @@
+use json_rpc::RpcServerError;
+use radius_sdk::json_rpc::client::RpcClientError;
+
 #[derive(Debug)]
 pub enum Error {
     OpenConfig(std::io::Error),
@@ -7,6 +10,9 @@ pub enum Error {
     FetchResponse,
     InvalidSequencerPort,
     InvalidSecureRpcPort,
+
+    KeyManagementSystemClient(RpcClientError),
+    RpcServerError(RpcServerError),
 
     LoadConfigOption,
     ParseTomlString,
@@ -42,5 +48,11 @@ impl std::error::Error for Error {}
 impl From<json_rpc::Error> for Error {
     fn from(value: json_rpc::Error) -> Self {
         Self::JsonRPC(value)
+    }
+}
+
+impl From<RpcServerError> for Error {
+    fn from(value: RpcServerError) -> Self {
+        Self::RpcServerError(value)
     }
 }
