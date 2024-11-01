@@ -1,3 +1,4 @@
+use radius_sdk::json_rpc::server::RpcError;
 use serde_json::json;
 
 use super::EncryptTransaction;
@@ -7,12 +8,6 @@ use crate::{rpc::prelude::*, state::AppState};
 pub struct RequestToSendEncryptedTransaction {
     rollup_id: String,
     pub raw_transaction: RawTransaction,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct SendEncryptedTransaction {
-    pub rollup_id: String,
-    pub encrypted_transaction: EncryptedTransaction,
 }
 
 // TODO: Refactoring
@@ -41,22 +36,11 @@ impl RequestToSendEncryptedTransaction {
         let encrypt_transaction_response =
             EncryptTransaction::handler(encrypt_transaction_params, context.clone()).await?;
 
-        let send_encrypted_transaction = SendEncryptedTransaction {
-            rollup_id: parameter.rollup_id,
-            encrypted_transaction: encrypt_transaction_response.encrypted_transaction,
-        };
-
-        tracing::info!(
-            "Send encrypted transaction: {:?}",
-            send_encrypted_transaction
-        );
-
         let order_commitment: OrderCommitment = context
             .sequencer_rpc_client()
-            .rpc_client()
-            .request(
-                RequestToSendEncryptedTransaction::METHOD_NAME,
-                send_encrypted_transaction,
+            .send_encrypted_transaction(
+                parameter.rollup_id,
+                encrypt_transaction_response.encrypted_transaction,
             )
             .await?;
 

@@ -1,3 +1,4 @@
+use radius_sdk::json_rpc::server::RpcError;
 use serde_json::json;
 
 use crate::{

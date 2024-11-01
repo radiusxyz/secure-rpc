@@ -1,7 +1,7 @@
 pub mod prelude {
     pub use std::sync::Arc;
 
-    pub use json_rpc::{RpcClient, RpcError, RpcParameter};
+    pub use json_rpc::{RpcClient, RpcParameter, RpcServerError};
     pub use sequencer::types::*;
     pub use serde::{Deserialize, Serialize};
 
@@ -20,6 +20,7 @@ use async_trait::async_trait;
 pub use decrypt_transaction::DecryptTransaction;
 pub use encrypt_transaction::EncryptTransaction;
 use json_rpc::ArrayRpcClient;
+use radius_sdk::json_rpc::server::RpcError;
 pub use request_to_send_encrypted_transaction::*;
 pub use request_to_send_raw_transaction::*;
 use serde::de::DeserializeOwned;
@@ -69,7 +70,7 @@ macro_rules! impl_external_array_rpc_forwarder {
             async fn handler(
                 parameter: RpcParameter,
                 context: Arc<$crate::state::AppState>,
-            ) -> Result<Self::Output, RpcError> {
+            ) -> Result<Self::Output, radius_sdk::json_rpc::server::RpcError> {
                 let parameter = parameter.parse::<Self>()?;
 
                 let array_rpc_client = context.rollup_rpc_client().rpc_client();
