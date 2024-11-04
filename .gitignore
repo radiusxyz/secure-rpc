@@ -1,4 +1,4 @@
 /target
 
-
-/scripts/data
+/data
+/scripts/secure-rpc
