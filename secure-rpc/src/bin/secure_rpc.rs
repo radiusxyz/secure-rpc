@@ -35,6 +35,11 @@ use tokio::task::JoinHandle;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
+    tracing_subscriber::fmt().init();
+    std::panic::set_hook(Box::new(|panic_info| {
+        tracing::error!("{:?}", panic_info);
+    }));
+
     let mut cli = Cli::init();
 
     match cli.command {
@@ -42,9 +47,6 @@ async fn main() -> Result<(), Error> {
         Commands::Start {
             ref mut config_option,
         } => {
-            tracing_subscriber::fmt().init();
-            std::panic::set_hook(Box::new(|panic_info| tracing::error!("{}", panic_info)));
-
             let config = Config::load(config_option)?;
             let config_path = config_option.path.clone();
 

@@ -27,7 +27,7 @@ use pvde::{
 };
 use radius_sdk::json_rpc::server::RpcError;
 use rand::{thread_rng, Rng};
-use skde::delay_encryption::{PublicKey, SkdeParams};
+use skde::delay_encryption::SkdeParams;
 use tracing::info;
 
 use crate::{rpc::prelude::*, state::AppState};
@@ -221,7 +221,7 @@ pub fn skde_encrypt_transaction(
     skde_params: &SkdeParams,
     raw_transaction: &str,
     key_id: &u64,
-    encryption_key: &PublicKey,
+    encryption_key: &str,
 ) -> Result<SkdeEncryptedTransaction, Error> {
     let (open_data, to_encrypt_data) = get_open_and_encrypted_data(raw_transaction)?;
 
