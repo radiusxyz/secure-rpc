@@ -1200,7 +1200,7 @@ dependencies = [
 [[package]]
 name = "block-commitment"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66#d5dea4d83feade6651feeb19e190185e281caa66"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
 dependencies = [
  "ark-bls12-377",
  "ark-bls12-381",
@@ -1216,7 +1216,7 @@ dependencies = [
 [[package]]
 name = "block-commitment"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e#df4b24469a221b2e084ca8255cef1223ebba538e"
 dependencies = [
  "ark-bls12-377",
  "ark-bls12-381",
@@ -1435,7 +1435,7 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 [[package]]
 name = "context"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66#d5dea4d83feade6651feeb19e190185e281caa66"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
 dependencies = [
  "crossbeam-epoch",
 ]
@@ -1443,7 +1443,7 @@ dependencies = [
 [[package]]
 name = "context"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e#df4b24469a221b2e084ca8255cef1223ebba538e"
 dependencies = [
  "crossbeam-epoch",
 ]
@@ -2680,7 +2680,7 @@ name = "json-rpc"
 version = "0.1.0"
 dependencies = [
  "jsonrpsee",
- "radius-sdk 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66)",
+ "radius-sdk 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e)",
  "serde",
  "serde_json",
  "tokio",
@@ -2690,7 +2690,7 @@ dependencies = [
 [[package]]
 name = "json-rpc"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66#d5dea4d83feade6651feeb19e190185e281caa66"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
 dependencies = [
  "futures",
  "hyper 0.14.31",
@@ -2706,7 +2706,7 @@ dependencies = [
 [[package]]
 name = "json-rpc"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e#df4b24469a221b2e084ca8255cef1223ebba538e"
 dependencies = [
  "futures",
  "hyper 0.14.31",
@@ -2932,18 +2932,6 @@ dependencies = [
 [[package]]
 name = "kvstore"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66#d5dea4d83feade6651feeb19e190185e281caa66"
-dependencies = [
- "kvstore-macros 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66)",
- "rocksdb",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "kvstore"
-version = "0.1.0"
 source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
 dependencies = [
  "kvstore-macros 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7)",
@@ -2954,9 +2942,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "kvstore"
+version = "0.1.0"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e#df4b24469a221b2e084ca8255cef1223ebba538e"
+dependencies = [
+ "kvstore-macros 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e)",
+ "rocksdb",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "kvstore-macros"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66#d5dea4d83feade6651feeb19e190185e281caa66"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2966,7 +2966,7 @@ dependencies = [
 [[package]]
 name = "kvstore-macros"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e#df4b24469a221b2e084ca8255cef1223ebba538e"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3046,7 +3046,7 @@ checksum = "78b3ae25bc7c8c38cec158d1f2757ee79e9b3740fbc7ccf0e59e4b08d793fa89"
 [[package]]
 name = "liveness-radius"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66#d5dea4d83feade6651feeb19e190185e281caa66"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
 dependencies = [
  "alloy",
  "futures",
@@ -3056,7 +3056,7 @@ dependencies = [
 [[package]]
 name = "liveness-radius"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e#df4b24469a221b2e084ca8255cef1223ebba538e"
 dependencies = [
  "alloy",
  "futures",
@@ -3698,21 +3698,6 @@ checksum = "dc33ff2d4973d518d823d61aa239014831e521c75da58e3df4840d3f47749d09"
 [[package]]
 name = "radius-sdk"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66#d5dea4d83feade6651feeb19e190185e281caa66"
-dependencies = [
- "block-commitment 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66)",
- "context 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66)",
- "json-rpc 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66)",
- "kvstore 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66)",
- "liveness-radius 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66)",
- "signature 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66)",
- "validation-eigenlayer 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66)",
- "validation-symbiotic 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66)",
-]
-
-[[package]]
-name = "radius-sdk"
-version = "0.1.0"
 source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
 dependencies = [
  "block-commitment 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7)",
@@ -3724,6 +3709,21 @@ dependencies = [
  "signature 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7)",
  "validation-eigenlayer 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7)",
  "validation-symbiotic 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7)",
+]
+
+[[package]]
+name = "radius-sdk"
+version = "0.1.0"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e#df4b24469a221b2e084ca8255cef1223ebba538e"
+dependencies = [
+ "block-commitment 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e)",
+ "context 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e)",
+ "json-rpc 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e)",
+ "kvstore 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e)",
+ "liveness-radius 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e)",
+ "signature 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e)",
+ "validation-eigenlayer 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e)",
+ "validation-symbiotic 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e)",
 ]
 
 [[package]]
@@ -4235,7 +4235,7 @@ dependencies = [
  "futures",
  "json-rpc 0.1.0",
  "pvde",
- "radius-sdk 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66)",
+ "radius-sdk 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e)",
  "rand",
  "sequencer",
  "serde",
@@ -4485,7 +4485,7 @@ dependencies = [
 [[package]]
 name = "signature"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66#d5dea4d83feade6651feeb19e190185e281caa66"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
 dependencies = [
  "bincode",
  "const-hex",
@@ -4500,7 +4500,7 @@ dependencies = [
 [[package]]
 name = "signature"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e#df4b24469a221b2e084ca8255cef1223ebba538e"
 dependencies = [
  "bincode",
  "const-hex",
@@ -5232,7 +5232,7 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 [[package]]
 name = "validation-eigenlayer"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66#d5dea4d83feade6651feeb19e190185e281caa66"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
 dependencies = [
  "alloy",
  "chrono",
@@ -5243,18 +5243,7 @@ dependencies = [
 [[package]]
 name = "validation-eigenlayer"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
-dependencies = [
- "alloy",
- "chrono",
- "futures",
- "rand",
-]
-
-[[package]]
-name = "validation-symbiotic"
-version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=d5dea4d83feade6651feeb19e190185e281caa66#d5dea4d83feade6651feeb19e190185e281caa66"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e#df4b24469a221b2e084ca8255cef1223ebba538e"
 dependencies = [
  "alloy",
  "chrono",
@@ -5266,6 +5255,17 @@ dependencies = [
 name = "validation-symbiotic"
 version = "0.1.0"
 source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=dd43cbcab85caeb1515c15f07019a94c83c724f7#dd43cbcab85caeb1515c15f07019a94c83c724f7"
+dependencies = [
+ "alloy",
+ "chrono",
+ "futures",
+ "rand",
+]
+
+[[package]]
+name = "validation-symbiotic"
+version = "0.1.0"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=df4b24469a221b2e084ca8255cef1223ebba538e#df4b24469a221b2e084ca8255cef1223ebba538e"
 dependencies = [
  "alloy",
  "chrono",
