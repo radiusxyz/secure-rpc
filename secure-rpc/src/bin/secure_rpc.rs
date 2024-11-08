@@ -67,7 +67,7 @@ async fn main() -> Result<(), Error> {
                 .map_err(Error::DistributedKeyGenerationClient)?
                 .skde_params;
 
-            tracing::info!("skde params: {:?}", skde_params);
+            tracing::info!("Complete to skde params: {:?}", skde_params);
 
             let app_state = Arc::new(AppState::new(
                 config,
