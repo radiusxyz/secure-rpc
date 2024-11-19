@@ -3,8 +3,7 @@ use std::{fs, path::PathBuf};
 use sequencer::types::EncryptedTransactionType;
 use serde::{Deserialize, Serialize};
 
-use super::{ConfigOption, ConfigPath, CONFIG_FILE_NAME};
-use crate::error::Error;
+use super::{ConfigError, ConfigOption, ConfigPath, CONFIG_FILE_NAME};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Config {
@@ -34,7 +33,7 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn load(config_option: &mut ConfigOption) -> Result<Self, Error> {
+    pub fn load(config_option: &mut ConfigOption) -> Result<Self, ConfigError> {
         let config_path = match config_option.path.as_mut() {
             Some(config_path) => config_path.clone(),
             None => {
@@ -46,12 +45,11 @@ impl Config {
 
         // Read config file
         let config_file_path = config_path.join(CONFIG_FILE_NAME);
-        let config_string =
-            fs::read_to_string(config_file_path).map_err(|_| Error::LoadConfigOption)?;
+        let config_string = fs::read_to_string(config_file_path).map_err(ConfigError::Load)?;
 
         // Parse String to TOML String
         let config_file: ConfigOption =
-            toml::from_str(&config_string).map_err(|_| Error::ParseTomlString)?;
+            toml::from_str(&config_string).map_err(ConfigError::Parse)?;
 
         // Merge configs from CLI input
         let merged_config_option = config_file.merge(config_option);
@@ -78,6 +76,15 @@ impl Config {
 
     pub fn external_rpc_url(&self) -> &String {
         &self.external_rpc_url
+    }
+
+    pub fn external_port(&self) -> Result<String, ConfigError> {
+        Ok(self
+            .external_rpc_url()
+            .split(':')
+            .last()
+            .ok_or(ConfigError::InvalidExternalPort)?
+            .to_string())
     }
 
     pub fn sequencer_rpc_url(&self) -> &String {

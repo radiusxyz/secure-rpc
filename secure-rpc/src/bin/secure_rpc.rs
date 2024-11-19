@@ -93,7 +93,7 @@ async fn main() -> Result<(), Error> {
 async fn initialize_external_rpc_server(
     context: &AppState, // rpc_client: &RpcClient,
 ) -> Result<JoinHandle<()>, Error> {
-    let external_rpc_url = context.config().external_rpc_url().to_string();
+    let external_rpc_url = anywhere(&context.config().external_port()?);
 
     // Initialize the external RPC server.
     let external_rpc_server = RpcServer::new(context.clone())
@@ -285,4 +285,8 @@ pub async fn store_time_lock_puzzle_param(
     }
 
     Ok(())
+}
+
+pub fn anywhere(port: &str) -> String {
+    format!("0.0.0.0:{}", port)
 }

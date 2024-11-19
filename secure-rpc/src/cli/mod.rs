@@ -39,3 +39,23 @@ pub enum Commands {
         config_option: Box<ConfigOption>,
     },
 }
+
+#[derive(Debug)]
+pub enum ConfigError {
+    Load(std::io::Error),
+    Parse(toml::de::Error),
+    RemoveConfigDirectory(std::io::Error),
+    CreateConfigDirectory(std::io::Error),
+    CreateConfigFile(std::io::Error),
+    CreatePrivateKeyFile(std::io::Error),
+    InvalidExternalPort,
+    InvalidClusterPort,
+}
+
+impl std::fmt::Display for ConfigError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+impl std::error::Error for ConfigError {}

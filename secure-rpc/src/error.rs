@@ -1,8 +1,11 @@
 use json_rpc::RpcServerError;
 use radius_sdk::json_rpc::client::RpcClientError;
 
+use crate::cli::ConfigError;
+
 #[derive(Debug)]
 pub enum Error {
+    Config(ConfigError),
     OpenConfig(std::io::Error),
     ParseConfig(toml::de::Error),
     JsonRPC(json_rpc::Error),
@@ -44,6 +47,12 @@ impl std::fmt::Display for Error {
 }
 
 impl std::error::Error for Error {}
+
+impl From<ConfigError> for Error {
+    fn from(value: ConfigError) -> Self {
+        Self::Config(value)
+    }
+}
 
 impl From<json_rpc::Error> for Error {
     fn from(value: json_rpc::Error) -> Self {
