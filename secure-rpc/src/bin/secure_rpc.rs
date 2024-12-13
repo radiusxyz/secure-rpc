@@ -35,6 +35,11 @@ use tokio::task::JoinHandle;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
+    tracing_subscriber::fmt().init();
+    std::panic::set_hook(Box::new(|panic_info| {
+        tracing::error!("{:?}", panic_info);
+    }));
+
     let mut cli = Cli::init();
 
     match cli.command {
@@ -42,9 +47,6 @@ async fn main() -> Result<(), Error> {
         Commands::Start {
             ref mut config_option,
         } => {
-            tracing_subscriber::fmt().init();
-            std::panic::set_hook(Box::new(|panic_info| tracing::error!("{}", panic_info)));
-
             let config = Config::load(config_option)?;
             let config_path = config_option.path.clone();
 
@@ -65,7 +67,7 @@ async fn main() -> Result<(), Error> {
                 .map_err(Error::DistributedKeyGenerationClient)?
                 .skde_params;
 
-            tracing::info!("skde params: {:?}", skde_params);
+            tracing::info!("Complete to skde params: {:?}", skde_params);
 
             let app_state = Arc::new(AppState::new(
                 config,
@@ -91,7 +93,7 @@ async fn main() -> Result<(), Error> {
 async fn initialize_external_rpc_server(
     context: &AppState, // rpc_client: &RpcClient,
 ) -> Result<JoinHandle<()>, Error> {
-    let external_rpc_url = context.config().external_rpc_url().to_string();
+    let external_rpc_url = anywhere(&context.config().external_port()?);
 
     // Initialize the external RPC server.
     let external_rpc_server = RpcServer::new(context.clone())
@@ -283,4 +285,8 @@ pub async fn store_time_lock_puzzle_param(
     }
 
     Ok(())
+}
+
+pub fn anywhere(port: &str) -> String {
+    format!("0.0.0.0:{}", port)
 }

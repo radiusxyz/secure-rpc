@@ -2,7 +2,6 @@ use std::sync::Arc;
 
 use radius_sdk::json_rpc::client::{Id, RpcClient, RpcClientError};
 use serde::{Deserialize, Serialize};
-use skde::delay_encryption::{PublicKey, SecretKey};
 
 pub struct DistributedKeyGenerationClient {
     inner: Arc<DistributedKeyGenerationClientInner>,
@@ -107,7 +106,7 @@ impl GetLatestEncryptionKey {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct GetLatestEncryptionKeyReturn {
-    pub encryption_key: PublicKey,
+    pub encryption_key: String,
     pub key_id: u64,
 }
 
@@ -122,7 +121,7 @@ impl GetEncryptionKey {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct GetEncryptionKeyReturn {
-    pub key: PublicKey,
+    pub encryption_key: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -136,7 +135,7 @@ impl GetDecryptionKey {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct GetDecryptionKeyResponse {
-    pub decryption_key: SecretKey,
+    pub decryption_key: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
