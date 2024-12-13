@@ -6,10 +6,6 @@ use crate::error::Error;
 
 pub struct RollupRpcClient(Arc<ArrayRpcClient>);
 
-unsafe impl Send for RollupRpcClient {}
-
-unsafe impl Sync for RollupRpcClient {}
-
 impl Clone for RollupRpcClient {
     fn clone(&self) -> Self {
         Self(self.0.clone())

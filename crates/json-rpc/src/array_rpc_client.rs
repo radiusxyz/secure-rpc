@@ -17,10 +17,6 @@ pub struct ArrayRpcClient {
     retry_interval: u64,
 }
 
-unsafe impl Send for ArrayRpcClient {}
-
-unsafe impl Sync for ArrayRpcClient {}
-
 impl Clone for ArrayRpcClient {
     fn clone(&self) -> Self {
         Self {

@@ -25,10 +25,6 @@ struct AppStateInner {
     distributed_key_generation_client: Option<DistributedKeyGenerationClient>,
 }
 
-unsafe impl Send for AppState {}
-
-unsafe impl Sync for AppState {}
-
 impl Clone for AppState {
     fn clone(&self) -> Self {
         Self {
