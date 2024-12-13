@@ -1,3 +1,4 @@
+#![allow(unused)]
 use std::str::FromStr;
 
 use pvde::{
@@ -42,111 +43,112 @@ impl DecryptTransaction {
         let encrypted_data = transaction_data.encrypted_data();
 
         let decrypted_data = match &parameter.encrypted_transaction {
-            EncryptedTransaction::Pvde(pvde_encrypted_transaction) => {
-                match context.config().is_using_zkp() {
-                    true => {
-                        let pvde_params = context.pvde_params().load().as_ref().clone().unwrap();
+            EncryptedTransaction::Pvde(_pvde_encrypted_transaction) => {
+                // match context.config().is_using_zkp() {
+                //     true => {
+                //         let pvde_params = context.pvde_params().load().as_ref().clone().unwrap();
 
-                        let key_validation_zkp_param = pvde_params
-                            .key_validation_zkp_param()
-                            .as_ref()
-                            .unwrap()
-                            .clone();
-                        let key_validation_verify_key = pvde_params
-                            .key_validation_verifying_key()
-                            .as_ref()
-                            .unwrap()
-                            .clone();
+                //         let key_validation_zkp_param = pvde_params
+                //             .key_validation_zkp_param()
+                //             .as_ref()
+                //             .unwrap()
+                //             .clone();
+                //         let key_validation_verify_key = pvde_params
+                //             .key_validation_verifying_key()
+                //             .as_ref()
+                //             .unwrap()
+                //             .clone();
 
-                        let poseidon_encryption_zkp_param = pvde_params
-                            .poseidon_encryption_zkp_param()
-                            .as_ref()
-                            .unwrap()
-                            .clone();
+                //         let poseidon_encryption_zkp_param = pvde_params
+                //             .poseidon_encryption_zkp_param()
+                //             .as_ref()
+                //             .unwrap()
+                //             .clone();
 
-                        let poseidon_encryption_verify_key = pvde_params
-                            .poseidon_encryption_verifying_key()
-                            .as_ref()
-                            .unwrap()
-                            .clone();
+                //         let poseidon_encryption_verify_key = pvde_params
+                //             .poseidon_encryption_verifying_key()
+                //             .as_ref()
+                //             .unwrap()
+                //             .clone();
 
-                        let time_lock_puzzle_param = pvde_params
-                            .time_lock_puzzle_param()
-                            .as_ref()
-                            .unwrap()
-                            .clone();
+                //         let time_lock_puzzle_param = pvde_params
+                //             .time_lock_puzzle_param()
+                //             .as_ref()
+                //             .unwrap()
+                //             .clone();
 
-                        let pvde_zkp = pvde_encrypted_transaction.pvde_zkp().unwrap();
+                //         let pvde_zkp = pvde_encrypted_transaction.pvde_zkp().unwrap();
 
-                        let sigma_protocol_public_input =
-                            pvde_zkp.public_input().to_sigma_protocol_public_input();
+                //         let sigma_protocol_public_input =
+                //             pvde_zkp.public_input().to_sigma_protocol_public_input();
 
-                        let sigma_protocol_param = SigmaProtocolParam {
-                            n: time_lock_puzzle_param.n.clone(),
-                            g: time_lock_puzzle_param.g.clone(),
-                            y_two: time_lock_puzzle_param.y_two.clone(),
-                        };
-                        let is_valid = verify_sigma_protocol(
-                            &sigma_protocol_public_input,
-                            &sigma_protocol_param,
-                        );
+                //         let sigma_protocol_param = SigmaProtocolParam {
+                //             n: time_lock_puzzle_param.n.clone(),
+                //             g: time_lock_puzzle_param.g.clone(),
+                //             y_two: time_lock_puzzle_param.y_two.clone(),
+                //         };
+                //         let is_valid = verify_sigma_protocol(
+                //             &sigma_protocol_public_input,
+                //             &sigma_protocol_param,
+                //         );
 
-                        if !is_valid {
-                            return Err(RpcError::from(Error::PvdeZkpInvalid));
-                        }
-                        // log::info!("Done verify_sigma_protocol: {:?}", is_valid);
+                //         if !is_valid {
+                //             return Err(RpcError::from(Error::PvdeZkpInvalid));
+                //         }
+                //         // log::info!("Done verify_sigma_protocol: {:?}", is_valid);
 
-                        let key_validation_public_input =
-                            pvde_zkp.public_input().to_key_validation_public_input();
-                        // let key_validation_public_input = KeyValidationPublicInput {
-                        //     k_two: pvde_zkp.public_input.k_two.clone(),
-                        //     k_hash_value: pvde_zkp.public_input.k_hash_value.clone(),
-                        // };
-                        let is_valid = verify_key_validation(
-                            &key_validation_zkp_param,
-                            &key_validation_verify_key,
-                            &key_validation_public_input,
-                            &pvde_zkp.time_lock_puzzle_proof().clone().into_inner(),
-                        );
+                //         let key_validation_public_input =
+                //             pvde_zkp.public_input().to_key_validation_public_input();
+                //         // let key_validation_public_input = KeyValidationPublicInput {
+                //         //     k_two: pvde_zkp.public_input.k_two.clone(),
+                //         //     k_hash_value: pvde_zkp.public_input.k_hash_value.clone(),
+                //         // };
+                //         let is_valid = verify_key_validation(
+                //             &key_validation_zkp_param,
+                //             &key_validation_verify_key,
+                //             &key_validation_public_input,
+                //             &pvde_zkp.time_lock_puzzle_proof().clone().into_inner(),
+                //         );
 
-                        if !is_valid {
-                            return Err(RpcError::from(Error::PvdeZkpInvalid));
-                        }
-                        // log::info!("Done verify_key_validation: {:?}", is_valid);
+                //         if !is_valid {
+                //             return Err(RpcError::from(Error::PvdeZkpInvalid));
+                //         }
+                //         // log::info!("Done verify_key_validation: {:?}", is_valid);
 
-                        let poseidon_encryption_public_input = PoseidonEncryptionPublicInput {
-                            encrypted_data: encrypted_data.clone().into_inner(),
-                            k_hash_value: pvde_zkp.public_input().k_hash_value().clone(),
-                        };
-                        let is_valid = verify_poseidon_encryption(
-                            &poseidon_encryption_zkp_param,
-                            &poseidon_encryption_verify_key,
-                            &poseidon_encryption_public_input,
-                            &pvde_zkp.encryption_proof().clone().into_inner(),
-                        );
+                //         let poseidon_encryption_public_input = PoseidonEncryptionPublicInput {
+                //             encrypted_data: encrypted_data.clone().into_inner(),
+                //             k_hash_value: pvde_zkp.public_input().k_hash_value().clone(),
+                //         };
+                //         let is_valid = verify_poseidon_encryption(
+                //             &poseidon_encryption_zkp_param,
+                //             &poseidon_encryption_verify_key,
+                //             &poseidon_encryption_public_input,
+                //             &pvde_zkp.encryption_proof().clone().into_inner(),
+                //         );
 
-                        if !is_valid {
-                            return Err(RpcError::from(Error::PvdeZkpInvalid));
-                        }
-                        // log::info!("Done verify_poseidon_encryption: {:?}", is_valid);
-                    }
-                    false => {}
-                }
+                //         if !is_valid {
+                //             return Err(RpcError::from(Error::PvdeZkpInvalid));
+                //         }
+                //         log::info!("Done verify_poseidon_encryption: {:?}", is_valid);
+                //     }
+                //     false => {}
+                // }
 
-                let time_lock_puzzle = pvde_encrypted_transaction.time_lock_puzzle();
+                // let time_lock_puzzle = pvde_encrypted_transaction.time_lock_puzzle();
 
-                let o = BigUint::from_str(time_lock_puzzle.o()).unwrap();
-                let t = time_lock_puzzle.t();
-                let n = BigUint::from_str(time_lock_puzzle.n()).unwrap();
-                let solved_k = solve_time_lock_puzzle(o, t, n);
-                let solved_k_hash_value = hash::hash(solved_k.clone());
+                // let o = BigUint::from_str(time_lock_puzzle.o()).unwrap();
+                // let t = time_lock_puzzle.t();
+                // let n = BigUint::from_str(time_lock_puzzle.n()).unwrap();
+                // let solved_k = solve_time_lock_puzzle(o, t, n);
+                // let solved_k_hash_value = hash::hash(solved_k.clone());
 
-                let decrypted_data = poseidon_encryption::decrypt(
-                    encrypted_data.clone().into_inner().as_str(),
-                    &solved_k_hash_value,
-                );
+                // let decrypted_data = poseidon_encryption::decrypt(
+                //     encrypted_data.clone().into_inner().as_str(),
+                //     &solved_k_hash_value,
+                // );
 
-                decrypted_data
+                // decrypted_data
+                return Err(Error::UnsupportedDecryptionType.into());
             }
             EncryptedTransaction::Skde(skde_encrypted_transaction) => {
                 let distributed_key_generation_client =
@@ -184,9 +186,7 @@ impl DecryptTransaction {
 
                 Ok(DecryptTransactionResponse { raw_transaction })
             }
-            _ => {
-                unimplemented!()
-            }
+            _ => Err(Error::UnsupportedTransactionType.into()),
         }
     }
 }

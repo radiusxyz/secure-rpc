@@ -33,6 +33,9 @@ pub enum Error {
     DecryptionError(skde::delay_encryption::DecryptionError),
 
     EncryptionNotEnabled,
+    UnsupportedEncryptionType,
+    UnsupportedDecryptionType,
+    UnsupportedTransactionType,
 }
 
 unsafe impl Send for Error {}
