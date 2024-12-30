@@ -15,7 +15,7 @@ pub struct SendRawTransaction {
 }
 
 impl RequestToSendRawTransaction {
-    pub const METHOD_NAME: &'static str = "send_raw_transaction";
+    pub const METHOD_NAME: &'static str = "request_to_send_raw_transaction";
 
     pub async fn handler(
         parameter: RpcParameter,
@@ -23,11 +23,19 @@ impl RequestToSendRawTransaction {
     ) -> Result<OrderCommitment, RpcError> {
         let parameter = parameter.parse::<Self>()?;
 
-        let order_commitment = context
+        match context
             .sequencer_rpc_client()
             .send_raw_transaction(parameter.rollup_id, parameter.raw_transaction)
-            .await?;
-
-        Ok(order_commitment)
+            .await
+        {
+            Ok(order_commitment) => {
+                tracing::info!("Order commitment: {:?}", order_commitment);
+                Ok(order_commitment)
+            }
+            Err(e) => {
+                tracing::error!("Failed to send raw transaction: {:?}", e);
+                Err(e.into())
+            }
+        }
     }
 }

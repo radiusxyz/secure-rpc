@@ -7,8 +7,8 @@ use clap::Parser;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    cli::{ConfigOption, CONFIG_FILE_NAME},
     error::Error,
+    types::{ConfigOption, CONFIG_FILE_NAME},
 };
 
 #[derive(Debug, Deserialize, Parser, Serialize)]

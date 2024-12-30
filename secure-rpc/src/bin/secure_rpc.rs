@@ -1,5 +1,6 @@
 use std::{fs, path::PathBuf, sync::Arc};
 
+use clap::{Parser, Subcommand};
 use json_rpc::RpcServer;
 use pvde::{
     encryption::poseidon_encryption_zkp::{
@@ -24,14 +25,45 @@ use pvde::{
         setup as setup_time_lock_puzzle_param,
     },
 };
+use radius_sdk::util::{get_resource_limit, set_resource_limit, ResourceType};
 use secure_rpc::{
-    cli::{Cli, Commands, Config, ConfigPath},
     client::DistributedKeyGenerationClient,
     error::Error,
     rpc::*,
     state::{AppState, PvdeParams},
+    types::{Config, ConfigOption, ConfigPath},
 };
+use serde::{Deserialize, Serialize};
 use tokio::task::JoinHandle;
+
+#[derive(Debug, Deserialize, Parser, Serialize)]
+#[command(author, version, about, long_about = None)]
+#[command(propagate_version = true)]
+pub struct Cli {
+    #[command(subcommand)]
+    pub command: Commands,
+}
+
+impl Cli {
+    pub fn init() -> Self {
+        Cli::parse()
+    }
+}
+
+#[derive(Subcommand, Debug, Deserialize, Serialize)]
+pub enum Commands {
+    /// Initializes a node
+    Init {
+        #[clap(flatten)]
+        config_path: Box<ConfigPath>,
+    },
+
+    /// Starts the node
+    Start {
+        #[clap(flatten)]
+        config_option: Box<ConfigOption>,
+    },
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -47,6 +79,9 @@ async fn main() -> Result<(), Error> {
         Commands::Start {
             ref mut config_option,
         } => {
+            let rlimit = get_resource_limit(ResourceType::RLIMIT_NOFILE)?;
+            set_resource_limit(ResourceType::RLIMIT_NOFILE, rlimit.hard_limit)?;
+
             let config = Config::load(config_option)?;
             let config_path = config_option.path.clone();
 

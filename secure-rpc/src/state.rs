@@ -10,7 +10,7 @@ use pvde::{
 };
 use radius_sdk::context::SharedContext;
 
-use crate::{cli::Config, client::*};
+use crate::{client::*, types::Config};
 
 pub struct AppState {
     inner: Arc<AppStateInner>,

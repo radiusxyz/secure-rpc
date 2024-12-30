@@ -1,9 +1,16 @@
+mod config_option;
+mod config_path;
+
 use std::{fs, path::PathBuf};
 
+pub use config_option::ConfigOption;
+pub use config_path::ConfigPath;
 use sequencer::types::EncryptedTransactionType;
-use serde::{Deserialize, Serialize};
+pub use serde::{Deserialize, Serialize};
 
-use super::{ConfigError, ConfigOption, ConfigPath, CONFIG_FILE_NAME};
+pub const DEFAULT_HOME_PATH: &str = ".secure-rpc";
+pub const LOG_DIR_NAME: &str = "logs";
+pub const CONFIG_FILE_NAME: &str = "Config.toml";
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Config {
@@ -111,3 +118,23 @@ impl Config {
         &self.distributed_key_generation_rpc_url
     }
 }
+
+#[derive(Debug)]
+pub enum ConfigError {
+    Load(std::io::Error),
+    Parse(toml::de::Error),
+    RemoveConfigDirectory(std::io::Error),
+    CreateConfigDirectory(std::io::Error),
+    CreateConfigFile(std::io::Error),
+    CreatePrivateKeyFile(std::io::Error),
+    InvalidExternalPort,
+    InvalidClusterPort,
+}
+
+impl std::fmt::Display for ConfigError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+impl std::error::Error for ConfigError {}
