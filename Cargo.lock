@@ -51,6 +51,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "alloc-no-stdlib"
+version = "2.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cc7bb162ec39d46ab1ca8c77bf72e890535becd1751bb45f64c597edb4c8c6b3"
+
+[[package]]
+name = "alloc-stdlib"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "94fb8275041c72129eb51b7d0322c29b8387a0386127718b096429201a5d6ece"
+dependencies = [
+ "alloc-no-stdlib",
+]
+
+[[package]]
 name = "allocator-api2"
 version = "0.2.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -292,7 +307,7 @@ dependencies = [
  "foldhash",
  "hashbrown 0.15.2",
  "hex-literal",
- "indexmap",
+ "indexmap 2.7.0",
  "itoa",
  "k256",
  "keccak-asm",
@@ -537,8 +552,8 @@ dependencies = [
  "alloy-json-abi",
  "alloy-sol-macro-input",
  "const-hex",
- "heck 0.5.0",
- "indexmap",
+ "heck",
+ "indexmap 2.7.0",
  "proc-macro-error2",
  "proc-macro2",
  "quote",
@@ -556,7 +571,7 @@ dependencies = [
  "alloy-json-abi",
  "const-hex",
  "dunce",
- "heck 0.5.0",
+ "heck",
  "proc-macro2",
  "quote",
  "serde_json",
@@ -651,7 +666,7 @@ dependencies = [
  "alloy-transport",
  "futures",
  "http 1.2.0",
- "rustls 0.23.20",
+ "rustls",
  "serde_json",
  "tokio",
  "tokio-tungstenite",
@@ -1026,6 +1041,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-compression"
+version = "0.4.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "df895a515f70646414f4b45c0b79082783b80552b373a68283012928df56f522"
+dependencies = [
+ "brotli",
+ "flate2",
+ "futures-core",
+ "memchr",
+ "pin-project-lite",
+ "tokio",
+ "zstd",
+ "zstd-safe",
+]
+
+[[package]]
 name = "async-stream"
 version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1305,6 +1336,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "brotli"
+version = "7.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cc97b8f16f944bba54f0433f07e30be199b6dc2bd25937444bbad560bcea29bd"
+dependencies = [
+ "alloc-no-stdlib",
+ "alloc-stdlib",
+ "brotli-decompressor",
+]
+
+[[package]]
+name = "brotli-decompressor"
+version = "4.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9a45bd2e4095a8b518033b128020dd4a55aab1c0a381ba4404a472630f4bc362"
+dependencies = [
+ "alloc-no-stdlib",
+ "alloc-stdlib",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1436,7 +1488,7 @@ version = "4.5.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ac6a0c7b1a9e9a5186361f67dfa1b88213572f427fb9ab038efb2bd8c582dab"
 dependencies = [
- "heck 0.5.0",
+ "heck",
  "proc-macro2",
  "quote",
  "syn 2.0.90",
@@ -1492,7 +1544,7 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 [[package]]
 name = "context"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef#57908ba80172ae8bff3a3c10d13a9e9509814fef"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1#207099c43a1662ffe0a8c838e2779a4dc68e6396"
 dependencies = [
  "crossbeam-epoch",
 ]
@@ -1500,7 +1552,7 @@ dependencies = [
 [[package]]
 name = "context"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9#b48dee48c69c91e1a87c88499dcac98b44062ae9"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef#57908ba80172ae8bff3a3c10d13a9e9509814fef"
 dependencies = [
  "crossbeam-epoch",
 ]
@@ -1528,6 +1580,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "16b80225097f2e5ae4e7179dd2266824648f3e2f49d9134d584b76389d31c4c3"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "crc32fast"
+version = "1.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a97769d94ddab943e4510d138150169a2758b5ef3eb191a9ee688de3e23ef7b3"
+dependencies = [
+ "cfg-if",
 ]
 
 [[package]]
@@ -1935,6 +1996,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "flate2"
+version = "1.0.35"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c936bfdafb507ebbf50b8074c54fa31c5be9a1e7e5f467dd659697041407d07c"
+dependencies = [
+ "crc32fast",
+ "miniz_oxide",
+]
+
+[[package]]
 name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2048,16 +2119,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f90f7dce0722e95104fcb095585910c0977252f286e354b5e3bd38902cd99988"
 
 [[package]]
-name = "futures-timer"
-version = "3.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f288b0a4f20f9a56b5d1da57e2227c661b7b16168e2f72365f57b63326e29b24"
-dependencies = [
- "gloo-timers",
- "send_wrapper 0.4.0",
-]
-
-[[package]]
 name = "futures-util"
 version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2118,52 +2179,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2fabcfbdc87f4758337ca535fb41a6d701b65693ce38287d856d1674551ec9b"
 
 [[package]]
-name = "gloo-net"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43aaa242d1239a8822c15c645f02166398da4f8b5c4bae795c1f5b44e9eee173"
-dependencies = [
- "futures-channel",
- "futures-core",
- "futures-sink",
- "gloo-utils",
- "http 0.2.12",
- "js-sys",
- "pin-project",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
-
-[[package]]
-name = "gloo-timers"
-version = "0.2.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b995a66bb87bebce9a0f4a95aed01daca4872c050bfcb21653361c03bc35e5c"
-dependencies = [
- "futures-channel",
- "futures-core",
- "js-sys",
- "wasm-bindgen",
-]
-
-[[package]]
-name = "gloo-utils"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0b5555354113b18c547c1d3a98fbf7fb32a9ff4f6fa112ce823a21641a0ba3aa"
-dependencies = [
- "js-sys",
- "serde",
- "serde_json",
- "wasm-bindgen",
- "web-sys",
-]
-
-[[package]]
 name = "group"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2186,7 +2201,7 @@ dependencies = [
  "futures-sink",
  "futures-util",
  "http 0.2.12",
- "indexmap",
+ "indexmap 2.7.0",
  "slab",
  "tokio",
  "tokio-util",
@@ -2205,7 +2220,7 @@ dependencies = [
  "futures-core",
  "futures-sink",
  "http 1.2.0",
- "indexmap",
+ "indexmap 2.7.0",
  "slab",
  "tokio",
  "tokio-util",
@@ -2292,6 +2307,12 @@ dependencies = [
 
 [[package]]
 name = "hashbrown"
+version = "0.12.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8a9ee70c43aaf417c914396645a0fa852624801b24ebb7ae78fe8272889ac888"
+
+[[package]]
+name = "hashbrown"
 version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "43a3c133739dddd0d2990f9a4bdf8eb4b21ef50e4851ca85ab661199821d510e"
@@ -2315,10 +2336,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "heck"
-version = "0.4.1"
+name = "hdrhistogram"
+version = "7.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95505c38b4572b2d910cecb0281560f54b440a19336cbbcb27bf6ce6adc6f5a8"
+checksum = "765c9198f173dd59ce26ff9f95ef0aafd0a0fe01fb9d72841bc5066a4c06511d"
+dependencies = [
+ "byteorder",
+ "num-traits",
+]
 
 [[package]]
 name = "heck"
@@ -2419,6 +2444,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "add0ab9360ddbd88cfeb3bd9574a1d85cfdfa14db10b3e21d3700dbc4328758f"
 
 [[package]]
+name = "http-range-header"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9171a2ea8a68358193d15dd5d70c1c10a2afc3e7e4c5bc92bc9f025cebd7359c"
+
+[[package]]
 name = "httparse"
 version = "1.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2447,7 +2478,6 @@ dependencies = [
  "httpdate",
  "itoa",
  "pin-project-lite",
- "socket2",
  "tokio",
  "tower-service",
  "tracing",
@@ -2467,27 +2497,12 @@ dependencies = [
  "http 1.2.0",
  "http-body 1.0.1",
  "httparse",
+ "httpdate",
  "itoa",
  "pin-project-lite",
  "smallvec",
  "tokio",
  "want",
-]
-
-[[package]]
-name = "hyper-rustls"
-version = "0.24.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec3efd23720e2049821a693cbc7e65ea87c72f1c58ff2f9522ff332b1491e590"
-dependencies = [
- "futures-util",
- "http 0.2.12",
- "hyper 0.14.32",
- "log",
- "rustls 0.21.12",
- "rustls-native-certs 0.6.3",
- "tokio",
- "tokio-rustls 0.24.1",
 ]
 
 [[package]]
@@ -2500,10 +2515,10 @@ dependencies = [
  "http 1.2.0",
  "hyper 1.5.2",
  "hyper-util",
- "rustls 0.23.20",
+ "rustls",
  "rustls-pki-types",
  "tokio",
- "tokio-rustls 0.26.1",
+ "tokio-rustls",
  "tower-service",
 ]
 
@@ -2744,6 +2759,16 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
+version = "1.9.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bd070e393353796e801d209ad339e89596eb4c8d430d18ede6a1cced8fafbd99"
+dependencies = [
+ "autocfg",
+ "hashbrown 0.12.3",
+]
+
+[[package]]
+name = "indexmap"
 version = "2.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "62f822373a4fe84d4bb149bf54e584a7f4abec90e072ed49cda0edea5b95471f"
@@ -2773,6 +2798,16 @@ name = "ipnet"
 version = "2.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ddc24109865250148c2e0f3d25d4f0f479571723792d3802153c60922a4fb708"
+
+[[package]]
+name = "iri-string"
+version = "0.7.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dc0f0a572e8ffe56e2ff4f769f32ffe919282c3916799f8b68688b6030063bea"
+dependencies = [
+ "memchr",
+ "serde",
+]
 
 [[package]]
 name = "is_terminal_polyfill"
@@ -2835,44 +2870,42 @@ dependencies = [
 [[package]]
 name = "json-rpc"
 version = "0.1.0"
-dependencies = [
- "jsonrpsee",
- "radius-sdk 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9)",
- "serde",
- "serde_json",
- "tokio",
- "url",
-]
-
-[[package]]
-name = "json-rpc"
-version = "0.1.0"
 source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef#57908ba80172ae8bff3a3c10d13a9e9509814fef"
 dependencies = [
  "futures",
  "hyper 0.14.32",
- "jsonrpsee",
+ "jsonrpsee 0.22.5",
  "reqwest",
  "serde",
  "serde_json",
  "tower 0.4.13",
- "tower-http",
+ "tower-http 0.4.4",
  "url",
 ]
 
 [[package]]
-name = "json-rpc"
+name = "json-rpc-client"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9#b48dee48c69c91e1a87c88499dcac98b44062ae9"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1#207099c43a1662ffe0a8c838e2779a4dc68e6396"
 dependencies = [
  "futures",
- "hyper 0.14.32",
- "jsonrpsee",
  "reqwest",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "json-rpc-server"
+version = "0.1.0"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1#207099c43a1662ffe0a8c838e2779a4dc68e6396"
+dependencies = [
+ "http 1.2.0",
+ "hyper 0.14.32",
+ "jsonrpsee 0.23.2",
+ "serde",
+ "serde_json",
  "tower 0.4.13",
- "tower-http",
+ "tower-http 0.5.2",
  "url",
 ]
 
@@ -2882,40 +2915,22 @@ version = "0.22.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cfdb12a2381ea5b2e68c3469ec604a007b367778cdb14d09612c8069ebd616ad"
 dependencies = [
- "jsonrpsee-client-transport",
- "jsonrpsee-core",
- "jsonrpsee-http-client",
- "jsonrpsee-proc-macros",
- "jsonrpsee-server",
- "jsonrpsee-types",
- "jsonrpsee-wasm-client",
- "jsonrpsee-ws-client",
+ "jsonrpsee-core 0.22.5",
+ "jsonrpsee-server 0.22.5",
+ "jsonrpsee-types 0.22.5",
  "tokio",
- "tracing",
 ]
 
 [[package]]
-name = "jsonrpsee-client-transport"
-version = "0.22.5"
+name = "jsonrpsee"
+version = "0.23.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4978087a58c3ab02efc5b07c5e5e2803024536106fd5506f558db172c889b3aa"
+checksum = "62b089779ad7f80768693755a031cc14a7766aba707cbe886674e3f79e9b7e47"
 dependencies = [
- "futures-channel",
- "futures-util",
- "gloo-net",
- "http 0.2.12",
- "jsonrpsee-core",
- "pin-project",
- "rustls-native-certs 0.7.3",
- "rustls-pki-types",
- "soketto",
- "thiserror 1.0.69",
+ "jsonrpsee-core 0.23.2",
+ "jsonrpsee-server 0.23.2",
+ "jsonrpsee-types 0.23.2",
  "tokio",
- "tokio-rustls 0.25.0",
- "tokio-util",
- "tracing",
- "url",
- "webpki-roots",
 ]
 
 [[package]]
@@ -2927,54 +2942,42 @@ dependencies = [
  "anyhow",
  "async-trait",
  "beef",
- "futures-timer",
  "futures-util",
  "hyper 0.14.32",
- "jsonrpsee-types",
+ "jsonrpsee-types 0.22.5",
  "parking_lot",
- "pin-project",
  "rand",
  "rustc-hash 1.1.0",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
  "tokio",
- "tokio-stream",
  "tracing",
- "wasm-bindgen-futures",
 ]
 
 [[package]]
-name = "jsonrpsee-http-client"
-version = "0.22.5"
+name = "jsonrpsee-core"
+version = "0.23.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ccf93fc4a0bfe05d851d37d7c32b7f370fe94336b52a2f0efc5f1981895c2e5"
+checksum = "79712302e737d23ca0daa178e752c9334846b08321d439fd89af9a384f8c830b"
 dependencies = [
+ "anyhow",
  "async-trait",
- "hyper 0.14.32",
- "hyper-rustls 0.24.2",
- "jsonrpsee-core",
- "jsonrpsee-types",
+ "beef",
+ "bytes",
+ "futures-util",
+ "http 1.2.0",
+ "http-body 1.0.1",
+ "http-body-util",
+ "jsonrpsee-types 0.23.2",
+ "parking_lot",
+ "rand",
+ "rustc-hash 1.1.0",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
  "tokio",
- "tower 0.4.13",
  "tracing",
- "url",
-]
-
-[[package]]
-name = "jsonrpsee-proc-macros"
-version = "0.22.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7d0bb047e79a143b32ea03974a6bf59b62c2a4c5f5d42a381c907a8bbb3f75c0"
-dependencies = [
- "heck 0.4.1",
- "proc-macro-crate",
- "proc-macro2",
- "quote",
- "syn 2.0.90",
 ]
 
 [[package]]
@@ -2986,13 +2989,41 @@ dependencies = [
  "futures-util",
  "http 0.2.12",
  "hyper 0.14.32",
- "jsonrpsee-core",
- "jsonrpsee-types",
+ "jsonrpsee-core 0.22.5",
+ "jsonrpsee-types 0.22.5",
  "pin-project",
  "route-recognizer",
  "serde",
  "serde_json",
- "soketto",
+ "soketto 0.7.1",
+ "thiserror 1.0.69",
+ "tokio",
+ "tokio-stream",
+ "tokio-util",
+ "tower 0.4.13",
+ "tracing",
+]
+
+[[package]]
+name = "jsonrpsee-server"
+version = "0.23.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "654afab2e92e5d88ebd8a39d6074483f3f2bfdf91c5ac57fe285e7127cdd4f51"
+dependencies = [
+ "anyhow",
+ "futures-util",
+ "http 1.2.0",
+ "http-body 1.0.1",
+ "http-body-util",
+ "hyper 1.5.2",
+ "hyper-util",
+ "jsonrpsee-core 0.23.2",
+ "jsonrpsee-types 0.23.2",
+ "pin-project",
+ "route-recognizer",
+ "serde",
+ "serde_json",
+ "soketto 0.8.1",
  "thiserror 1.0.69",
  "tokio",
  "tokio-stream",
@@ -3015,27 +3046,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "jsonrpsee-wasm-client"
-version = "0.22.5"
+name = "jsonrpsee-types"
+version = "0.23.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f448d8eacd945cc17b6c0b42c361531ca36a962ee186342a97cdb8fca679cd77"
+checksum = "d9c465fbe385238e861fdc4d1c85e04ada6c1fd246161d26385c1b311724d2af"
 dependencies = [
- "jsonrpsee-client-transport",
- "jsonrpsee-core",
- "jsonrpsee-types",
-]
-
-[[package]]
-name = "jsonrpsee-ws-client"
-version = "0.22.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58b9db2dfd5bb1194b0ce921504df9ceae210a345bc2f6c5a61432089bbab070"
-dependencies = [
- "http 0.2.12",
- "jsonrpsee-client-transport",
- "jsonrpsee-core",
- "jsonrpsee-types",
- "url",
+ "beef",
+ "http 1.2.0",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
 ]
 
 [[package]]
@@ -3074,6 +3094,18 @@ dependencies = [
 [[package]]
 name = "kvstore"
 version = "0.1.0"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1#207099c43a1662ffe0a8c838e2779a4dc68e6396"
+dependencies = [
+ "kvstore-macros 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1)",
+ "rocksdb",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "kvstore"
+version = "0.1.0"
 source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef#57908ba80172ae8bff3a3c10d13a9e9509814fef"
 dependencies = [
  "kvstore-macros 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef)",
@@ -3084,21 +3116,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "kvstore"
-version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9#b48dee48c69c91e1a87c88499dcac98b44062ae9"
-dependencies = [
- "kvstore-macros 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9)",
- "rocksdb",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
 name = "kvstore-macros"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef#57908ba80172ae8bff3a3c10d13a9e9509814fef"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1#207099c43a1662ffe0a8c838e2779a4dc68e6396"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3108,7 +3128,7 @@ dependencies = [
 [[package]]
 name = "kvstore-macros"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9#b48dee48c69c91e1a87c88499dcac98b44062ae9"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef#57908ba80172ae8bff3a3c10d13a9e9509814fef"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3188,7 +3208,7 @@ checksum = "4ee93343901ab17bd981295f2cf0026d4ad018c7c31ba84549a4ddbb47a45104"
 [[package]]
 name = "liveness-radius"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef#57908ba80172ae8bff3a3c10d13a9e9509814fef"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1#207099c43a1662ffe0a8c838e2779a4dc68e6396"
 dependencies = [
  "alloy",
  "futures",
@@ -3198,7 +3218,7 @@ dependencies = [
 [[package]]
 name = "liveness-radius"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9#b48dee48c69c91e1a87c88499dcac98b44062ae9"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef#57908ba80172ae8bff3a3c10d13a9e9509814fef"
 dependencies = [
  "alloy",
  "futures",
@@ -3289,6 +3309,16 @@ name = "mime"
 version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
+
+[[package]]
+name = "mime_guess"
+version = "2.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f7c44f8e672c00fe5308fa235f821cb4198414e1c77935c1ab6948d3fd78550e"
+dependencies = [
+ "mime",
+ "unicase",
+]
 
 [[package]]
 name = "minimal-lexical"
@@ -3851,31 +3881,32 @@ checksum = "dc33ff2d4973d518d823d61aa239014831e521c75da58e3df4840d3f47749d09"
 [[package]]
 name = "radius-sdk"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef#57908ba80172ae8bff3a3c10d13a9e9509814fef"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1#207099c43a1662ffe0a8c838e2779a4dc68e6396"
 dependencies = [
- "block-commitment",
- "context 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef)",
- "json-rpc 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef)",
- "kvstore 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef)",
- "liveness-radius 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef)",
- "signature 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef)",
- "validation-eigenlayer 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef)",
- "validation-symbiotic 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef)",
+ "context 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1)",
+ "json-rpc-client",
+ "json-rpc-server",
+ "kvstore 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1)",
+ "libc",
+ "liveness-radius 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1)",
+ "signature 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1)",
+ "validation-eigenlayer 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1)",
+ "validation-symbiotic 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1)",
 ]
 
 [[package]]
 name = "radius-sdk"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9#b48dee48c69c91e1a87c88499dcac98b44062ae9"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef#57908ba80172ae8bff3a3c10d13a9e9509814fef"
 dependencies = [
- "context 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9)",
- "json-rpc 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9)",
- "kvstore 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9)",
- "libc",
- "liveness-radius 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9)",
- "signature 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9)",
- "validation-eigenlayer 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9)",
- "validation-symbiotic 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9)",
+ "block-commitment",
+ "context 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef)",
+ "json-rpc",
+ "kvstore 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef)",
+ "liveness-radius 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef)",
+ "signature 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef)",
+ "validation-eigenlayer 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef)",
+ "validation-symbiotic 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef)",
 ]
 
 [[package]]
@@ -4000,7 +4031,7 @@ dependencies = [
  "http-body 1.0.1",
  "http-body-util",
  "hyper 1.5.2",
- "hyper-rustls 0.27.3",
+ "hyper-rustls",
  "hyper-tls",
  "hyper-util",
  "ipnet",
@@ -4011,7 +4042,7 @@ dependencies = [
  "once_cell",
  "percent-encoding",
  "pin-project-lite",
- "rustls-pemfile 2.2.0",
+ "rustls-pemfile",
  "serde",
  "serde_json",
  "serde_urlencoded",
@@ -4190,32 +4221,6 @@ dependencies = [
 
 [[package]]
 name = "rustls"
-version = "0.21.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f56a14d1f48b391359b22f731fd4bd7e43c97f3c50eee276f3aa09c94784d3e"
-dependencies = [
- "log",
- "ring",
- "rustls-webpki 0.101.7",
- "sct",
-]
-
-[[package]]
-name = "rustls"
-version = "0.22.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf4ef73721ac7bcd79b2b315da7779d8fc09718c6b3d2d1b2d94850eb8c18432"
-dependencies = [
- "log",
- "ring",
- "rustls-pki-types",
- "rustls-webpki 0.102.8",
- "subtle",
- "zeroize",
-]
-
-[[package]]
-name = "rustls"
 version = "0.23.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5065c3f250cbd332cd894be57c40fa52387247659b14a2d6041d121547903b1b"
@@ -4223,43 +4228,9 @@ dependencies = [
  "once_cell",
  "ring",
  "rustls-pki-types",
- "rustls-webpki 0.102.8",
+ "rustls-webpki",
  "subtle",
  "zeroize",
-]
-
-[[package]]
-name = "rustls-native-certs"
-version = "0.6.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a9aace74cb666635c918e9c12bc0d348266037aa8eb599b5cba565709a8dff00"
-dependencies = [
- "openssl-probe",
- "rustls-pemfile 1.0.4",
- "schannel",
- "security-framework",
-]
-
-[[package]]
-name = "rustls-native-certs"
-version = "0.7.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5bfb394eeed242e909609f56089eecfe5fda225042e8b171791b9c95f5931e5"
-dependencies = [
- "openssl-probe",
- "rustls-pemfile 2.2.0",
- "rustls-pki-types",
- "schannel",
- "security-framework",
-]
-
-[[package]]
-name = "rustls-pemfile"
-version = "1.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1c74cae0a4cf6ccbbf5f359f08efdf8ee7e1dc532573bf0db71968cb56b1448c"
-dependencies = [
- "base64 0.21.7",
 ]
 
 [[package]]
@@ -4276,16 +4247,6 @@ name = "rustls-pki-types"
 version = "1.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2bf47e6ff922db3825eb750c4e2ff784c6ff8fb9e13046ef6a1d1c5401b0b37"
-
-[[package]]
-name = "rustls-webpki"
-version = "0.101.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b6275d1ee7a1cd780b64aca7726599a1dbc893b1e64144529e55c3c2f745765"
-dependencies = [
- "ring",
- "untrusted",
-]
 
 [[package]]
 name = "rustls-webpki"
@@ -4373,16 +4334,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
-name = "sct"
-version = "0.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da046153aa2352493d6cb7da4b6e5c0c057d8a1d0a9aa8560baffdd945acd414"
-dependencies = [
- "ring",
- "untrusted",
-]
-
-[[package]]
 name = "sec1"
 version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4400,13 +4351,11 @@ dependencies = [
 name = "secure-rpc"
 version = "0.1.0"
 dependencies = [
- "async-trait",
  "clap",
- "futures",
- "json-rpc 0.1.0",
  "pvde",
- "radius-sdk 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9)",
+ "radius-sdk 0.1.0 (git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1)",
  "rand",
+ "reqwest",
  "sequencer",
  "serde",
  "serde_json",
@@ -4463,12 +4412,6 @@ checksum = "9900206b54a3527fdc7b8a938bffd94a568bac4f4aa8113b209df75a09c0dec2"
 dependencies = [
  "pest",
 ]
-
-[[package]]
-name = "send_wrapper"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f638d531eccd6e23b980caf34876660d38e265409d8e99b397ab71eb3612fad0"
 
 [[package]]
 name = "send_wrapper"
@@ -4655,7 +4598,7 @@ dependencies = [
 [[package]]
 name = "signature"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef#57908ba80172ae8bff3a3c10d13a9e9509814fef"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1#207099c43a1662ffe0a8c838e2779a4dc68e6396"
 dependencies = [
  "bincode",
  "const-hex",
@@ -4670,7 +4613,7 @@ dependencies = [
 [[package]]
 name = "signature"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9#b48dee48c69c91e1a87c88499dcac98b44062ae9"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef#57908ba80172ae8bff3a3c10d13a9e9509814fef"
 dependencies = [
  "bincode",
  "const-hex",
@@ -4762,6 +4705,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "soketto"
+version = "0.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2e859df029d160cb88608f5d7df7fb4753fd20fdfb4de5644f3d8b8440841721"
+dependencies = [
+ "base64 0.22.1",
+ "bytes",
+ "futures",
+ "http 1.2.0",
+ "httparse",
+ "log",
+ "rand",
+ "sha1",
+]
+
+[[package]]
 name = "spin"
 version = "0.9.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4810,7 +4769,7 @@ version = "0.26.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4c6bee85a5a24955dc440386795aa378cd9cf82acd5f764469152d2270e581be"
 dependencies = [
- "heck 0.5.0",
+ "heck",
  "proc-macro2",
  "quote",
  "rustversion",
@@ -5036,32 +4995,11 @@ dependencies = [
 
 [[package]]
 name = "tokio-rustls"
-version = "0.24.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c28327cf380ac148141087fbfb9de9d7bd4e84ab5d2c28fbc911d753de8a7081"
-dependencies = [
- "rustls 0.21.12",
- "tokio",
-]
-
-[[package]]
-name = "tokio-rustls"
-version = "0.25.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "775e0c0f0adb3a2f22a00c4745d728b479985fc15ee7ca6a2608388c5569860f"
-dependencies = [
- "rustls 0.22.4",
- "rustls-pki-types",
- "tokio",
-]
-
-[[package]]
-name = "tokio-rustls"
 version = "0.26.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5f6d0975eaace0cf0fcadee4e4aaa5da15b5c079146f2cffb67c113be122bf37"
 dependencies = [
- "rustls 0.23.20",
+ "rustls",
  "tokio",
 ]
 
@@ -5085,10 +5023,10 @@ checksum = "edc5f74e248dc973e0dbb7b74c7e0d6fcc301c694ff50049504004ef4d0cdcd9"
 dependencies = [
  "futures-util",
  "log",
- "rustls 0.23.20",
+ "rustls",
  "rustls-pki-types",
  "tokio",
- "tokio-rustls 0.26.1",
+ "tokio-rustls",
  "tungstenite",
  "webpki-roots",
 ]
@@ -5134,7 +5072,7 @@ version = "0.22.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ae48d6208a266e853d946088ed816055e556cc6028c5e8e2b84d9fa5dd7c7f5"
 dependencies = [
- "indexmap",
+ "indexmap 2.7.0",
  "serde",
  "serde_spanned",
  "toml_datetime",
@@ -5149,8 +5087,14 @@ checksum = "b8fa9be0de6cf49e536ce1851f987bd21a43b771b09473c3549a6c853db37c1c"
 dependencies = [
  "futures-core",
  "futures-util",
+ "hdrhistogram",
+ "indexmap 1.9.3",
  "pin-project",
  "pin-project-lite",
+ "rand",
+ "slab",
+ "tokio",
+ "tokio-util",
  "tower-layer",
  "tower-service",
  "tracing",
@@ -5182,10 +5126,41 @@ dependencies = [
  "futures-util",
  "http 0.2.12",
  "http-body 0.4.6",
- "http-range-header",
+ "http-range-header 0.3.1",
  "pin-project-lite",
  "tower-layer",
  "tower-service",
+]
+
+[[package]]
+name = "tower-http"
+version = "0.5.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e9cd434a998747dd2c4276bc96ee2e0c7a2eadf3cae88e52be55a05fa9053f5"
+dependencies = [
+ "async-compression",
+ "base64 0.21.7",
+ "bitflags",
+ "bytes",
+ "futures-core",
+ "futures-util",
+ "http 1.2.0",
+ "http-body 1.0.1",
+ "http-body-util",
+ "http-range-header 0.4.2",
+ "httpdate",
+ "iri-string",
+ "mime",
+ "mime_guess",
+ "percent-encoding",
+ "pin-project-lite",
+ "tokio",
+ "tokio-util",
+ "tower 0.4.13",
+ "tower-layer",
+ "tower-service",
+ "tracing",
+ "uuid",
 ]
 
 [[package]]
@@ -5286,7 +5261,7 @@ dependencies = [
  "httparse",
  "log",
  "rand",
- "rustls 0.23.20",
+ "rustls",
  "rustls-pki-types",
  "sha1",
  "thiserror 1.0.69",
@@ -5322,6 +5297,12 @@ name = "unarray"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eaea85b334db583fe3274d12b4cd1880032beab409c0d774be044d4480ab9a94"
+
+[[package]]
+name = "unicase"
+version = "2.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "75b844d17643ee918803943289730bec8aac480150456169e647ed0b576ba539"
 
 [[package]]
 name = "unicode-ident"
@@ -5377,6 +5358,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
+name = "uuid"
+version = "1.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b913a3b5fe84142e269d63cc62b64319ccaf89b748fc31fe025177f767a756c4"
+dependencies = [
+ "getrandom",
+]
+
+[[package]]
+name = "validation-eigenlayer"
+version = "0.1.0"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1#207099c43a1662ffe0a8c838e2779a4dc68e6396"
+dependencies = [
+ "alloy",
+ "chrono",
+ "futures",
+ "rand",
+]
+
+[[package]]
 name = "validation-eigenlayer"
 version = "0.1.0"
 source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef#57908ba80172ae8bff3a3c10d13a9e9509814fef"
@@ -5388,9 +5389,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "validation-eigenlayer"
+name = "validation-symbiotic"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9#b48dee48c69c91e1a87c88499dcac98b44062ae9"
+source = "git+https://github.com/radiusxyz/radius-sdk-rs?tag=v0.1#207099c43a1662ffe0a8c838e2779a4dc68e6396"
 dependencies = [
  "alloy",
  "chrono",
@@ -5402,17 +5403,6 @@ dependencies = [
 name = "validation-symbiotic"
 version = "0.1.0"
 source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=57908ba80172ae8bff3a3c10d13a9e9509814fef#57908ba80172ae8bff3a3c10d13a9e9509814fef"
-dependencies = [
- "alloy",
- "chrono",
- "futures",
- "rand",
-]
-
-[[package]]
-name = "validation-symbiotic"
-version = "0.1.0"
-source = "git+https://github.com/radiusxyz/radius-sdk-rs?rev=b48dee48c69c91e1a87c88499dcac98b44062ae9#b48dee48c69c91e1a87c88499dcac98b44062ae9"
 dependencies = [
  "alloy",
  "chrono",
@@ -5769,7 +5759,7 @@ dependencies = [
  "log",
  "pharos",
  "rustc_version 0.4.1",
- "send_wrapper 0.6.0",
+ "send_wrapper",
  "thiserror 1.0.69",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -5891,6 +5881,24 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.90",
+]
+
+[[package]]
+name = "zstd"
+version = "0.13.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fcf2b778a664581e31e389454a7072dab1647606d44f7feea22cd5abb9c9f3f9"
+dependencies = [
+ "zstd-safe",
+]
+
+[[package]]
+name = "zstd-safe"
+version = "7.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "54a3ab4db68cea366acc5c897c7b4d4d1b8994a9cd6e6f841f8964566a419059"
+dependencies = [
+ "zstd-sys",
 ]
 
 [[package]]
