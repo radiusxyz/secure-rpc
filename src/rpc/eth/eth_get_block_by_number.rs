@@ -1,95 +1,16 @@
-use crate::rpc::prelude::*;
+use crate::rpc::eth::prelude::*;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct EthGetBlockByNumber {
-    pub block_number: String,
-    pub full_tx: bool,
-}
-
-#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
-pub struct EthBlock<TX> {
-    #[serde(default, rename = "parentHash")]
-    pub parent_hash: String,
-    #[serde(default, rename = "sha3Uncles")]
-    pub uncles_hash: String,
-    #[serde(default, rename = "miner")]
-    pub author: Option<String>,
-    #[serde(default, rename = "stateRoot")]
-    pub state_root: String,
-    #[serde(default, rename = "transactionsRoot")]
-    pub transactions_root: String,
-    #[serde(default, rename = "receiptsRoot")]
-    pub receipts_root: String,
-    #[serde(rename = "logsBloom")]
-    pub logs_bloom: Option<String>,
-    #[serde(default)]
-    pub difficulty: String,
-    #[serde(rename = "totalDifficulty")]
-    pub total_difficulty: Option<String>,
-    pub size: Option<String>,
-    pub number: Option<String>,
-    #[serde(default, rename = "gasLimit")]
-    pub gas_limit: String,
-    #[serde(default, rename = "gasUsed")]
-    pub gas_used: String,
-    #[serde(default)]
-    pub timestamp: String,
-    #[serde(default, rename = "extraData")]
-    pub extra_data: String,
-    #[serde(rename = "mixHash")]
-    pub mix_hash: Option<String>,
-    pub nonce: Option<String>,
-    pub hash: Option<String>,
-    #[serde(bound = "TX: Serialize + serde::de::DeserializeOwned", default)]
-    pub transactions: Vec<TX>,
-    #[serde(default)]
-    pub uncles: Vec<String>,
-    #[serde(rename = "baseFeePerGas", skip_serializing_if = "Option::is_none")]
-    pub base_fee_per_gas: Option<String>,
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        rename = "blobGasUsed"
-    )]
-    pub blob_gas_used: Option<String>,
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        rename = "excessBlobGas"
-    )]
-    pub excess_blob_gas: Option<String>,
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        rename = "withdrawalsRoot"
-    )]
-    pub withdrawals_root: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub withdrawals: Option<Vec<String>>,
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        rename = "parentBeaconBlockRoot"
-    )]
-    pub parent_beacon_block_root: Option<String>,
-}
+pub struct EthGetBlockByNumber(Value);
 
 impl RpcParameter<AppState> for EthGetBlockByNumber {
-    type Response = EthBlock<String>;
+    type Response = Value;
 
     fn method() -> &'static str {
         "eth_getBlockByNumber"
     }
 
     async fn handler(self, context: AppState) -> Result<Self::Response, RpcError> {
-        super::forward(
-            Self::method(),
-            vec![
-                serde_json::to_value(self.block_number)?,
-                serde_json::to_value(self.full_tx)?,
-            ],
-            context,
-        )
-        .await
+        super::forward(Self::method(), self, context).await
     }
 }

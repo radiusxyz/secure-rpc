@@ -1,3 +1,5 @@
+use serde_json::Value;
+
 use crate::rpc::prelude::*;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -17,7 +19,7 @@ struct RawTransactionRequestData<'a> {
 }
 
 impl RpcParameter<AppState> for EthSendRawTransaction {
-    type Response = String;
+    type Response = Value;
 
     fn method() -> &'static str {
         "eth_sendRawTransaction"
@@ -40,7 +42,7 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
             },
         };
 
-        let _response: String = context
+        let order_commitment: OrderCommitment = context
             .rpc_client()
             .request(
                 context.config().sequencer_rpc_url(),
@@ -50,6 +52,8 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
             )
             .await?;
 
-        Ok(raw_transaction_hash.as_string())
+        println!("Order commitment: {:?}", order_commitment);
+
+        Ok(serde_json::to_value(raw_transaction_hash.as_string())?)
     }
 }

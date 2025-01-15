@@ -1,13 +1,13 @@
 use crate::rpc::eth::prelude::*;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct EthEstimateGas(Value);
+pub struct EthGetTransactionByHash(Value);
 
-impl RpcParameter<AppState> for EthEstimateGas {
+impl RpcParameter<AppState> for EthGetTransactionByHash {
     type Response = Value;
 
     fn method() -> &'static str {
-        "eth_estimateGas"
+        "eth_getTransactionByHash"
     }
 
     async fn handler(self, context: AppState) -> Result<Self::Response, RpcError> {

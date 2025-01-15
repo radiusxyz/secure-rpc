@@ -145,6 +145,7 @@ async fn initialize_external_rpc_server(
         .register_rpc_method::<eth::EthGetBlockByHash>()?
         .register_rpc_method::<eth::EthGetBlockByNumber>()?
         .register_rpc_method::<eth::EthGetCode>()?
+        .register_rpc_method::<eth::EthGetTransactionByHash>()?
         .register_rpc_method::<eth::EthGetTransactionCount>()?
         .register_rpc_method::<eth::EthGetTransactionReceipt>()?
         .register_rpc_method::<eth::EthNetVersion>()?

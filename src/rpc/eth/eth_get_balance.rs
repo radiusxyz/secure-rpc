@@ -1,24 +1,16 @@
-use crate::rpc::prelude::*;
+use crate::rpc::eth::prelude::*;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct EthGetBalance {
-    pub address: String,
-    pub block_number: String,
-}
+pub struct EthGetBalance(Value);
 
 impl RpcParameter<AppState> for EthGetBalance {
-    type Response = String;
+    type Response = Value;
 
     fn method() -> &'static str {
         "eth_getBalance"
     }
 
     async fn handler(self, context: AppState) -> Result<Self::Response, RpcError> {
-        super::forward(
-            Self::method(),
-            vec![self.address, self.block_number],
-            context,
-        )
-        .await
+        super::forward(Self::method(), self, context).await
     }
 }
