@@ -10,9 +10,7 @@ path = "src/bin/secure_rpc.rs"
 [dependencies]
 clap = { version = "4.4.7", features = ["derive"] }
 rand = "0.8.5"
-radius-sdk = { git = "https://github.com/radiusxyz/radius-sdk-rs", tag = "v0.1", features = ["full"] }
 reqwest = { version = "0.12.4", features = ["json"] }
-sequencer = { git = "https://github.com/radiusxyz/sequencer", rev="e43a7be044f083145dcdc0f450da4ba4e1bf30bd"}
 serde = { version = "1.0.197", features = ["derive"] }
 serde_json = "1.0.128"
 tokio = { version = "1.37.0", default-features = false }
@@ -22,4 +20,7 @@ tracing-subscriber = "0.3.17"
 
 # Encryption libraries
 pvde = { git = "https://github.com/radiusxyz/pvde", rev="0abc447e775a52ecc5695cf070086fcad9cdaebb"}
-skde = { git = "https://github.com/radiusxyz/skde", rev="13f18a4a6846795bb0ca20c4cd5ad494b7b6444f"}
+skde = { git = "https://github.com/radiusxyz/skde", rev="d46d66fa1e59aa5d555a1124cf3b89cef4753fd1"}
+
+radius-sdk = { git = "https://github.com/radiusxyz/radius-sdk-rs", tag = "v0.1", features = ["full"] }
+sequencer = { git = "https://github.com/radiusxyz/sequencer", rev="9567b7267df1455c4491d494f4be75065583c517"}

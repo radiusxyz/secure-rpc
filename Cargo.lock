@@ -1040,20 +1040,6 @@ dependencies = [
 [[package]]
 name = "big-integer"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/skde?rev=13f18a4a6846795bb0ca20c4cd5ad494b7b6444f#13f18a4a6846795bb0ca20c4cd5ad494b7b6444f"
-dependencies = [
- "ff",
- "halo2wrong 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
- "maingate 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
- "num-bigint",
- "num-traits",
- "poseidon 0.1.0 (git+https://github.com/radiusxyz/skde?rev=13f18a4a6846795bb0ca20c4cd5ad494b7b6444f)",
- "rand",
-]
-
-[[package]]
-name = "big-integer"
-version = "0.1.0"
 source = "git+https://github.com/radiusxyz/skde?rev=d46d66fa1e59aa5d555a1124cf3b89cef4753fd1#d46d66fa1e59aa5d555a1124cf3b89cef4753fd1"
 dependencies = [
  "ff",
@@ -2136,19 +2122,6 @@ dependencies = [
  "num-bigint",
  "num-integer",
  "num-traits",
-]
-
-[[package]]
-name = "hash"
-version = "0.1.0"
-source = "git+https://github.com/radiusxyz/skde?rev=13f18a4a6846795bb0ca20c4cd5ad494b7b6444f#13f18a4a6846795bb0ca20c4cd5ad494b7b6444f"
-dependencies = [
- "ff",
- "halo2wrong 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
- "maingate 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
- "num-bigint",
- "poseidon 0.1.0 (git+https://github.com/radiusxyz/skde?rev=13f18a4a6846795bb0ca20c4cd5ad494b7b6444f)",
- "rand",
 ]
 
 [[package]]
@@ -3515,17 +3488,6 @@ dependencies = [
 [[package]]
 name = "poseidon"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/skde?rev=13f18a4a6846795bb0ca20c4cd5ad494b7b6444f#13f18a4a6846795bb0ca20c4cd5ad494b7b6444f"
-dependencies = [
- "ff",
- "halo2wrong 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
- "maingate 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
- "rand_core",
-]
-
-[[package]]
-name = "poseidon"
-version = "0.1.0"
 source = "git+https://github.com/radiusxyz/skde?rev=d46d66fa1e59aa5d555a1124cf3b89cef4753fd1#d46d66fa1e59aa5d555a1124cf3b89cef4753fd1"
 dependencies = [
  "ff",
@@ -4273,7 +4235,7 @@ dependencies = [
  "sequencer",
  "serde",
  "serde_json",
- "skde 0.1.0 (git+https://github.com/radiusxyz/skde?rev=13f18a4a6846795bb0ca20c4cd5ad494b7b6444f)",
+ "skde",
  "tokio",
  "toml",
  "tracing",
@@ -4336,7 +4298,7 @@ checksum = "cd0b0ec5f1c1ca621c432a25813d8d60c88abe6d3e08a3eb9cf37d97a0fe3d73"
 [[package]]
 name = "sequencer"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/sequencer?rev=e43a7be044f083145dcdc0f450da4ba4e1bf30bd#e43a7be044f083145dcdc0f450da4ba4e1bf30bd"
+source = "git+https://github.com/radiusxyz/sequencer?rev=9567b7267df1455c4491d494f4be75065583c517#9567b7267df1455c4491d494f4be75065583c517"
 dependencies = [
  "chrono",
  "clap",
@@ -4349,7 +4311,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha3 0.10.8",
- "skde 0.1.0 (git+https://github.com/radiusxyz/skde?rev=d46d66fa1e59aa5d555a1124cf3b89cef4753fd1)",
+ "skde",
  "tokio",
  "toml",
  "tracing",
@@ -4526,31 +4488,6 @@ dependencies = [
 [[package]]
 name = "skde"
 version = "0.1.0"
-source = "git+https://github.com/radiusxyz/skde?rev=13f18a4a6846795bb0ca20c4cd5ad494b7b6444f#13f18a4a6846795bb0ca20c4cd5ad494b7b6444f"
-dependencies = [
- "big-integer 0.1.0 (git+https://github.com/radiusxyz/skde?rev=13f18a4a6846795bb0ca20c4cd5ad494b7b6444f)",
- "bincode",
- "bitvec",
- "const-hex",
- "ff",
- "group",
- "halo2wrong 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
- "hash 0.1.0 (git+https://github.com/radiusxyz/skde?rev=13f18a4a6846795bb0ca20c4cd5ad494b7b6444f)",
- "maingate 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
- "num-bigint",
- "num-traits",
- "poseidon 0.1.0 (git+https://github.com/radiusxyz/skde?rev=13f18a4a6846795bb0ca20c4cd5ad494b7b6444f)",
- "rand",
- "rand_core",
- "rayon",
- "serde",
- "sha2",
- "subtle",
-]
-
-[[package]]
-name = "skde"
-version = "0.1.0"
 source = "git+https://github.com/radiusxyz/skde?rev=d46d66fa1e59aa5d555a1124cf3b89cef4753fd1#d46d66fa1e59aa5d555a1124cf3b89cef4753fd1"
 dependencies = [
  "big-integer 0.1.0 (git+https://github.com/radiusxyz/skde?rev=d46d66fa1e59aa5d555a1124cf3b89cef4753fd1)",
@@ -4560,7 +4497,7 @@ dependencies = [
  "ff",
  "group",
  "halo2wrong 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
- "hash 0.1.0 (git+https://github.com/radiusxyz/skde?rev=d46d66fa1e59aa5d555a1124cf3b89cef4753fd1)",
+ "hash",
  "maingate 0.1.0 (git+https://github.com/privacy-scaling-explorations/halo2wrong?tag=v2023_04_20)",
  "num-bigint",
  "num-traits",
