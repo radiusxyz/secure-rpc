@@ -1,5 +1,3 @@
-use radius_sdk::json_rpc::server::RpcError;
-
 use crate::rpc::prelude::*;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -16,14 +14,23 @@ impl RpcParameter<AppState> for SendRawTransaction {
     }
 
     async fn handler(self, context: AppState) -> Result<Self::Response, RpcError> {
-        match context.rpc_client().request().await {
+        match context
+            .rpc_client()
+            .request(
+                context.config().sequencer_rpc_url(),
+                Self::method(),
+                self,
+                Id::Null,
+            )
+            .await
+        {
             Ok(order_commitment) => {
                 tracing::info!("Order commitment: {:?}", order_commitment);
                 Ok(order_commitment)
             }
             Err(error) => {
-                tracing::error!("Failed to send raw transaction: {:?}", e);
-                Err(e.into())
+                tracing::error!("Failed to send raw transaction: {:?}", error);
+                Err(error.into())
             }
         }
     }
