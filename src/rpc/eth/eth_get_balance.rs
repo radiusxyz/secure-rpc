@@ -2,8 +2,8 @@ use crate::rpc::prelude::*;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct EthGetBalance {
-    address: String,
-    block_number: String,
+    pub address: String,
+    pub block_number: String,
 }
 
 impl RpcParameter<AppState> for EthGetBalance {

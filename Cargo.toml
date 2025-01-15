@@ -5,14 +5,14 @@ edition = "2021"
 
 [[bin]]
 name = "secure-rpc"
-path = "src/bin/secure-rpc.rs"
+path = "src/bin/secure_rpc.rs"
 
 [dependencies]
 clap = { version = "4.4.7", features = ["derive"] }
 rand = "0.8.5"
 radius-sdk = { git = "https://github.com/radiusxyz/radius-sdk-rs", tag = "v0.1", features = ["full"] }
 reqwest = { version = "0.12.4", features = ["json"] }
-sequencer = { git = "https://github.com/radiusxyz/sequencer", rev="76a55a547032c9156e57f7f3ad75ca24823632e8"}
+sequencer = { git = "https://github.com/radiusxyz/sequencer", rev="e43a7be044f083145dcdc0f450da4ba4e1bf30bd"}
 serde = { version = "1.0.197", features = ["derive"] }
 serde_json = "1.0.128"
 tokio = { version = "1.37.0", default-features = false }

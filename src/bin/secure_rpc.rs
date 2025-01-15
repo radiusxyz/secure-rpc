@@ -1,7 +1,6 @@
 use std::{fs, path::PathBuf, sync::Arc};
 
 use clap::{Parser, Subcommand};
-use json_rpc::RpcServer;
 use pvde::{
     encryption::poseidon_encryption_zkp::{
         export_proving_key as export_poseidon_encryption_proving_key,
@@ -25,13 +24,16 @@ use pvde::{
         setup as setup_time_lock_puzzle_param,
     },
 };
-use radius_sdk::util::{get_resource_limit, set_resource_limit, ResourceType};
+use radius_sdk::{
+    json_rpc::server::RpcServer,
+    util::{get_resource_limit, set_resource_limit, ResourceType},
+};
 use secure_rpc::{
-    client::DistributedKeyGenerationClient,
+    client::distributed_key_generation::DistributedKeyGenerationClient,
     error::Error,
-    rpc::*,
+    rpc::{eth, *},
     state::{AppState, PvdeParams},
-    types::{Config, ConfigOption, ConfigPath},
+    types::config::{Config, ConfigOption, ConfigPath},
 };
 use serde::{Deserialize, Serialize};
 use tokio::task::JoinHandle;
@@ -133,52 +135,26 @@ async fn initialize_external_rpc_server(
     // Initialize the external RPC server.
     let external_rpc_server = RpcServer::new(context.clone())
         // eth
-        .register_rpc_method(
-            eth::EthBlockNumber::METHOD_NAME,
-            eth::EthBlockNumber::handler,
-        )?
-        .register_rpc_method(eth::EthCall::METHOD_NAME, eth::EthCall::handler)?
-        .register_rpc_method(eth::EthChainId::METHOD_NAME, eth::EthChainId::handler)?
-        .register_rpc_method(
-            eth::EthEstimateGas::METHOD_NAME,
-            eth::EthEstimateGas::handler,
-        )?
-        .register_rpc_method(eth::EthGasPrice::METHOD_NAME, eth::EthGasPrice::handler)?
-        .register_rpc_method(eth::EthGetBalance::METHOD_NAME, eth::EthGetBalance::handler)?
-        .register_rpc_method(
-            eth::EthGetBlockByNumber::METHOD_NAME,
-            eth::EthGetBlockByNumber::handler,
-        )?
-        .register_rpc_method(eth::EthGetCode::METHOD_NAME, eth::EthGetCode::handler)?
-        .register_rpc_method(
-            eth::EthGetTransactionCount::METHOD_NAME,
-            eth::EthGetTransactionCount::handler,
-        )?
-        .register_rpc_method(
-            eth::EthGetTransactionReceipt::METHOD_NAME,
-            eth::EthGetTransactionReceipt::handler,
-        )?
-        .register_rpc_method(eth::EthNetVersion::METHOD_NAME, eth::EthNetVersion::handler)?
-        .register_rpc_method(
-            eth::EthSendRawTransaction::METHOD_NAME,
-            eth::EthSendRawTransaction::handler,
-        )?
-        .register_rpc_method(
-            eth::EthGetBlockByHash::METHOD_NAME,
-            eth::EthGetBlockByHash::handler,
-        )?
+        .register_rpc_method::<eth::EthBlockNumber>()?
+        .register_rpc_method::<eth::EthCall>()?
+        .register_rpc_method::<eth::EthChainId>()?
+        .register_rpc_method::<eth::EthEstimateGas>()?
+        .register_rpc_method::<eth::EthFeeHistory>()?
+        .register_rpc_method::<eth::EthGasPrice>()?
+        .register_rpc_method::<eth::EthGetBalance>()?
+        .register_rpc_method::<eth::EthGetBlockByHash>()?
+        .register_rpc_method::<eth::EthGetBlockByNumber>()?
+        .register_rpc_method::<eth::EthGetCode>()?
+        .register_rpc_method::<eth::EthGetTransactionCount>()?
+        .register_rpc_method::<eth::EthGetTransactionReceipt>()?
+        .register_rpc_method::<eth::EthNetVersion>()?
+        .register_rpc_method::<eth::EthSendRawTransaction>()?
         // cryptography
-        .register_rpc_method(EncryptTransaction::METHOD_NAME, EncryptTransaction::handler)?
-        .register_rpc_method(DecryptTransaction::METHOD_NAME, DecryptTransaction::handler)?
+        .register_rpc_method::<DecryptTransaction>()?
+        .register_rpc_method::<EncryptTransaction>()?
         // sequencer
-        .register_rpc_method(
-            RequestToSendEncryptedTransaction::METHOD_NAME,
-            RequestToSendEncryptedTransaction::handler,
-        )?
-        .register_rpc_method(
-            RequestToSendRawTransaction::METHOD_NAME,
-            RequestToSendRawTransaction::handler,
-        )?
+        .register_rpc_method::<SendEncryptedTransaction>()?
+        .register_rpc_method::<SendRawTransaction>()?
         .init(external_rpc_url.clone())
         .await?;
 

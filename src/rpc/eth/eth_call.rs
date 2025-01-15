@@ -2,15 +2,15 @@ use crate::rpc::prelude::*;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct EthCall {
-    tx_data: EthTxData,
-    _something: String,
+    pub tx_data: EthTxData,
+    pub _placeholder: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-struct EthTxData {
-    to: String,
-    data: String,
-    from: Option<String>,
+pub struct EthTxData {
+    pub to: String,
+    pub data: String,
+    pub from: Option<String>,
 }
 
 impl RpcParameter<AppState> for EthCall {

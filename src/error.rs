@@ -10,7 +10,7 @@ pub enum Error {
 
     EmptyRawTransaction,
 
-    // DistributedKeyGenerationClient(RpcClientError),
+    DistributedKeyGenerationClient(radius_sdk::json_rpc::client::RpcClientError),
     LoadConfigOption,
     ParseTomlString,
     RemoveConfigDirectory,
@@ -54,5 +54,11 @@ impl From<std::io::Error> for Error {
 impl From<crate::types::config::ConfigError> for Error {
     fn from(value: crate::types::config::ConfigError) -> Self {
         Self::Config(value)
+    }
+}
+
+impl From<radius_sdk::json_rpc::server::RpcServerError> for Error {
+    fn from(value: radius_sdk::json_rpc::server::RpcServerError) -> Self {
+        Self::RpcServer(value)
     }
 }

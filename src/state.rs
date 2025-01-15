@@ -8,11 +8,10 @@ use pvde::{
     },
     time_lock_puzzle::TimeLockPuzzleParam,
 };
-use radius_sdk::json_rpc::client::RpcClient;
+use radius_sdk::{context::SharedContext, json_rpc::client::RpcClient};
 
 use crate::{
-    client::{rollup::RollupRpcClient, sequencer::SequencerRpcClient},
-    types::config::Config,
+    client::distributed_key_generation::DistributedKeyGenerationClient, types::config::Config,
 };
 
 pub struct AppState {
@@ -22,9 +21,7 @@ pub struct AppState {
 struct AppStateInner {
     config: Config,
     rpc_client: RpcClient,
-    sequencer_rpc_client: client::sequencer::SequencerRpcClient,
-    rollup_rpc_client: client::rollup::RollupRpcClient,
-    pvde_params: Arc<Option<PvdeParams>>,
+    pvde_params: SharedContext<Option<PvdeParams>>,
     skde_params: skde::delay_encryption::SkdeParams,
     distributed_key_generation_client: Option<DistributedKeyGenerationClient>,
 }
@@ -43,13 +40,9 @@ impl AppState {
         skde_params: skde::delay_encryption::SkdeParams,
         distributed_key_generation_client: Option<DistributedKeyGenerationClient>,
     ) -> Self {
-        let sequencer_rpc_client = SequencerRpcClient::new(config.sequencer_rpc_url()).unwrap();
-        let rollup_rpc_client = RollupRpcClient::new(config.rollup_rpc_url()).unwrap();
-
         let inner = AppStateInner {
             config,
-            sequencer_rpc_client,
-            rollup_rpc_client,
+            rpc_client: RpcClient::new().unwrap(),
             pvde_params: SharedContext::from(None),
             skde_params,
             distributed_key_generation_client,
@@ -66,14 +59,6 @@ impl AppState {
 
     pub fn rpc_client(&self) -> &RpcClient {
         &self.inner.rpc_client
-    }
-
-    pub fn sequencer_rpc_client(&self) -> SequencerRpcClient {
-        self.inner.sequencer_rpc_client.clone()
-    }
-
-    pub fn rollup_rpc_client(&self) -> &RollupRpcClient {
-        &self.inner.rollup_rpc_client
     }
 
     pub fn pvde_params(&self) -> SharedContext<Option<PvdeParams>> {

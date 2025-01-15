@@ -2,7 +2,7 @@ use crate::rpc::prelude::*;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct EthGetTransactionReceipt {
-    transaction_hash: String,
+    pub transaction_hash: String,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]

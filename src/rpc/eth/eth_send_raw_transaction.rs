@@ -5,8 +5,8 @@ pub struct EthSendRawTransaction(Vec<String>);
 
 #[derive(Debug, Serialize)]
 struct RawTransactionRequest<'a> {
-    rollup_id: &'a str,
-    raw_transaction: RawTransactionRequestData<'a>,
+    pub rollup_id: &'a str,
+    pub raw_transaction: RawTransactionRequestData<'a>,
 }
 
 #[derive(Debug, Serialize)]
@@ -28,11 +28,15 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
             return Err(Error::EmptyRawTransaction.into());
         }
 
-        let raw_transaction = RawTransactionRequest {
+        let raw_transaction_string = self.0.get(0).unwrap();
+        let eth_raw_transaction = EthRawTransaction(raw_transaction_string.clone());
+        let raw_transaction_hash = eth_raw_transaction.raw_transaction_hash();
+
+        let parameter = RawTransactionRequest {
             rollup_id: context.config().rollup_id(),
             raw_transaction: RawTransactionRequestData {
                 transaction_type: "eth",
-                data: self.0.get(0).unwrap(),
+                data: raw_transaction_string,
             },
         };
 
@@ -41,11 +45,11 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
             .request(
                 context.config().sequencer_rpc_url(),
                 "send_raw_transaction",
-                raw_transaction,
+                parameter,
                 Id::Null,
             )
             .await?;
 
-        Ok(String::from(""))
+        Ok(raw_transaction_hash.as_string())
     }
 }

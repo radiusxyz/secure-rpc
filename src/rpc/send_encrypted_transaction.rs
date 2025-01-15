@@ -1,13 +1,15 @@
-use radius_sdk::json_rpc::server::RpcError;
-use serde_json::json;
-
-use super::EncryptTransaction;
-use crate::{rpc::prelude::*, state::AppState};
+use crate::rpc::{prelude::*, EncryptTransaction};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SendEncryptedTransaction {
     pub rollup_id: String,
     pub raw_transaction: RawTransaction,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+struct SendEncryptedTransactionRequest {
+    rollup_id: String,
+    encrypted_transaction: EncryptedTransaction,
 }
 
 impl RpcParameter<AppState> for SendEncryptedTransaction {
@@ -22,23 +24,25 @@ impl RpcParameter<AppState> for SendEncryptedTransaction {
             return Err(Error::EncryptionNotEnabled.into());
         }
 
-        let encrypt_transaction_static_str = LeakedStrGuard::new(raw_transaction_string);
-        let encrypt_transaction_params = RpcParameter::new(Some(*encrypt_transaction_static_str));
-
-        println!(
-            "encrypt_transaction_params: {:?}",
-            encrypt_transaction_params
-        );
-
-        // encrypt transaction
+        tracing::info!("encrypt_transaction_params: {:?}", self.raw_transaction);
+        let encrypt_transaction_request = EncryptTransaction {
+            raw_transaction: self.raw_transaction,
+        };
         let encrypt_transaction_response =
-            EncryptTransaction::handler(encrypt_transaction_params, context.clone()).await?;
+            encrypt_transaction_request.handler(context.clone()).await?;
+
+        let parameter = SendEncryptedTransactionRequest {
+            rollup_id: self.rollup_id,
+            encrypted_transaction: encrypt_transaction_response.encrypted_transaction,
+        };
 
         match context
-            .sequencer_rpc_client()
-            .send_encrypted_transaction(
-                self.rollup_id,
-                encrypt_transaction_response.encrypted_transaction,
+            .rpc_client()
+            .request(
+                context.config().sequencer_rpc_url(),
+                Self::method(),
+                parameter,
+                Id::Null,
             )
             .await
         {
@@ -46,9 +50,9 @@ impl RpcParameter<AppState> for SendEncryptedTransaction {
                 tracing::info!("Order commitment: {:?}", order_commitment);
                 Ok(order_commitment)
             }
-            Err(e) => {
-                tracing::error!("Failed to send encrypted transaction: {:?}", e);
-                Err(e.into())
+            Err(error) => {
+                tracing::error!("Failed to send encrypted transaction: {:?}", error);
+                Err(error.into())
             }
         }
     }
