@@ -19,10 +19,8 @@ impl EthSendRawTransaction {
         let parameter = parameter.parse::<Self>()?;
 
         let raw_transaction_string = parameter.0.first().unwrap();
-
         let raw_transaction = EthRawTransaction(raw_transaction_string.clone());
         let raw_transaction_hash = raw_transaction.raw_transaction_hash();
-
         let raw_transaction_request_string = json!({
             "rollup_id": context.config().rollup_id(),
             "raw_transaction": {
@@ -34,8 +32,11 @@ impl EthSendRawTransaction {
 
         let raw_transaction_static_str = LeakedStrGuard::new(raw_transaction_request_string);
         let raw_transaction_params = RpcParameter::new(Some(*raw_transaction_static_str));
+        let order_commitment =
+            RequestToSendEncryptedTransaction::handler(raw_transaction_params, context).await?;
 
-        RequestToSendEncryptedTransaction::handler(raw_transaction_params, context).await?;
+        tracing::info!("Order commitment: {:?}", order_commitment);
+        // RequestToSendRawTransaction::handler(raw_transaction_params, context).await?;
 
         Ok(raw_transaction_hash.as_string())
     }

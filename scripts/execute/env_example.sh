@@ -28,7 +28,7 @@ ROLLUP_ID="rollup_id"                  # Please change this rollup id.
 ROLLUP_RPC_URL="http://127.0.0.1:8123" # Please change this rollup rpc url.
 
 # Sequencer
-SEQUENCER_RPC_RPC_URL="http://127.0.0.1:6000" # Please change this sequencer (external) rpc url.
+SEQUENCER_RPC_URL="http://127.0.0.1:6000" # Please change this sequencer (external) rpc url.
 
 # Encrypted Transaction Type - skde / pvde
 ENCRYPTED_TRANSACTION_TYPE="skde"

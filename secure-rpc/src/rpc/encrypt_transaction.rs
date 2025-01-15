@@ -236,25 +236,25 @@ pub fn skde_encrypt_transaction(
     Ok(SkdeEncryptedTransaction::new(transaction_data, *key_id))
 }
 
-pub fn pvde_encrypt_transaction(
-    raw_tx: &str,
-    k: &BigUint,
-    time_lock_puzzle: &TimeLockPuzzle,
-) -> Result<PvdeEncryptedTransaction, Error> {
-    let (open_data, to_encrypt_data) = get_open_and_encrypted_data(raw_tx)?;
+// pub fn pvde_encrypt_transaction(
+//     raw_tx: &str,
+//     k: &BigUint,
+//     time_lock_puzzle: &TimeLockPuzzle,
+// ) -> Result<PvdeEncryptedTransaction, Error> {
+//     let (open_data, to_encrypt_data) = get_open_and_encrypted_data(raw_tx)?;
 
-    let encryption_key = hash::hash(k.clone());
+//     let encryption_key = hash::hash(k.clone());
 
-    let encrypted_data = poseidon_encryption::encrypt(&to_encrypt_data, &encryption_key);
-    let encrypted_data = EncryptedData::from(encrypted_data);
-    let transaction_data = TransactionData::Eth(EthTransactionData::new(encrypted_data, open_data));
+//     let encrypted_data = poseidon_encryption::encrypt(&to_encrypt_data, &encryption_key);
+//     let encrypted_data = EncryptedData::from(encrypted_data);
+//     let transaction_data = TransactionData::Eth(EthTransactionData::new(encrypted_data, open_data));
 
-    Ok(PvdeEncryptedTransaction::new(
-        transaction_data,
-        time_lock_puzzle.clone(),
-        None,
-    ))
-}
+//     Ok(PvdeEncryptedTransaction::new(
+//         transaction_data,
+//         time_lock_puzzle.clone(),
+//         None,
+//     ))
+// }
 
 // #[allow(clippy::too_many_arguments)]
 // pub fn pvde_encrypt_tx_with_zkp(

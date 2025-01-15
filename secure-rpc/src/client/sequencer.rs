@@ -52,7 +52,7 @@ impl SequencerRpcClient {
             .rpc_client
             .request(
                 &self.inner.rpc_url,
-                SendEncryptedTransaction::METHOD_NAME,
+                "send_encrypted_transaction",
                 &parameter,
                 Id::Null,
             )
@@ -75,7 +75,7 @@ impl SequencerRpcClient {
             .rpc_client
             .request(
                 &self.inner.rpc_url,
-                SendRawTransaction::METHOD_NAME,
+                "send_raw_transaction",
                 &parameter,
                 Id::Null,
             )
