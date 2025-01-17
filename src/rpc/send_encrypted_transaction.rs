@@ -38,13 +38,20 @@ impl RpcParameter<AppState> for SendEncryptedTransaction {
             encrypted_transaction: encrypt_transaction_response.encrypted_transaction,
         };
 
+        let seed: u64 = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+            .try_into()
+            .unwrap();
+
         match context
             .rpc_client()
             .request(
                 context
                     .config()
                     .sequencer_rpc_url_list()
-                    .choose(&mut StdRng::seed_from_u64(0))
+                    .choose(&mut StdRng::seed_from_u64(seed))
                     .ok_or(Error::EmptySequencerRpcUrl)?,
                 Self::method(),
                 parameter,
