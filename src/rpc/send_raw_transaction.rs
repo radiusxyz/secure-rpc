@@ -1,3 +1,5 @@
+use rand::seq::SliceRandom;
+
 use crate::rpc::prelude::*;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -14,10 +16,15 @@ impl RpcParameter<AppState> for SendRawTransaction {
     }
 
     async fn handler(self, context: AppState) -> Result<Self::Response, RpcError> {
+        let rnd = &mut rand::thread_rng();
         match context
             .rpc_client()
             .request(
-                context.config().sequencer_rpc_url(),
+                context
+                    .config()
+                    .sequencer_rpc_url_list()
+                    .choose(rnd)
+                    .ok_or(Error::EmptySequencerRpcUrl)?,
                 Self::method(),
                 self,
                 Id::Null,

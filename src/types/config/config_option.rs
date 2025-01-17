@@ -7,7 +7,7 @@ use super::{ConfigPath, CONFIG_FILE_NAME};
 use crate::error::Error;
 
 const DEFAULT_EXTERNAL_RPC_URL: &str = "http://127.0.0.1:9000";
-const DEFAULT_SEQUENCER_RPC_URL: &str = "http://127.0.0.1:3000";
+const DEFAULT_SEQUENCER_RPC_URL_LIST: &str = "[http://127.0.0.1:3000]";
 const DEFAULT_ROLLUP_RPC_URL: &str = "http://127.0.0.1:8123";
 const DEFAULT_ENCRYPTED_TRANSACTION_TYPE: &str = "skde";
 const DEFAULT_DISTRIBUTED_KEY_GENERATION_RPC_URL: &str = "http://127.0.0.1:7100";
@@ -26,9 +26,9 @@ pub struct ConfigOption {
     #[clap(long = "external-rpc-url")]
     pub external_rpc_url: Option<String>,
 
-    #[doc = "Set the sequencer rpc url"]
-    #[clap(long = "sequencer-rpc-url")]
-    pub sequencer_rpc_url: Option<String>,
+    #[doc = "Set the sequencer rpc url list"]
+    #[clap(long = "sequencer-rpc-url-list")]
+    pub sequencer_rpc_url_list: Option<String>,
 
     #[doc = "Set the rollup rpc url"]
     #[clap(long = "rollup-rpc-url")]
@@ -57,7 +57,7 @@ impl Default for ConfigOption {
             path: Some(ConfigPath::default().as_ref().into()),
             rollup_id: Some("0".into()),
             external_rpc_url: Some(DEFAULT_EXTERNAL_RPC_URL.into()),
-            sequencer_rpc_url: Some(DEFAULT_SEQUENCER_RPC_URL.into()),
+            sequencer_rpc_url_list: Some(DEFAULT_SEQUENCER_RPC_URL_LIST.into()),
             rollup_rpc_url: Some(DEFAULT_ROLLUP_RPC_URL.into()),
             is_using_encryption: Some(true),
             is_using_zkp: Some(false),
@@ -105,8 +105,8 @@ impl ConfigOption {
         set_toml_comment(&mut toml_string, "Set sequencer rpc url");
         set_toml_name_value(
             &mut toml_string,
-            "sequencer_rpc_url",
-            &self.sequencer_rpc_url,
+            "sequencer_rpc_url_list",
+            &self.sequencer_rpc_url_list,
         );
 
         set_toml_comment(&mut toml_string, "Set rollup rpc url");
@@ -152,8 +152,9 @@ impl ConfigOption {
             self.external_rpc_url.clone_from(&other.external_rpc_url);
         }
 
-        if other.sequencer_rpc_url.is_some() {
-            self.sequencer_rpc_url.clone_from(&other.sequencer_rpc_url);
+        if other.sequencer_rpc_url_list.is_some() {
+            self.sequencer_rpc_url_list
+                .clone_from(&other.sequencer_rpc_url_list);
         }
 
         if other.rollup_rpc_url.is_some() {

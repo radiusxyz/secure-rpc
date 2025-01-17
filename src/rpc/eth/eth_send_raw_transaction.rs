@@ -1,3 +1,4 @@
+use rand::seq::SliceRandom;
 use serde_json::Value;
 
 use crate::rpc::prelude::*;
@@ -45,7 +46,11 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
         let order_commitment: OrderCommitment = context
             .rpc_client()
             .request(
-                context.config().sequencer_rpc_url(),
+                context
+                    .config()
+                    .sequencer_rpc_url_list()
+                    .choose(&mut rand::thread_rng())
+                    .ok_or(Error::EmptySequencerRpcUrl)?,
                 "send_raw_transaction",
                 parameter,
                 Id::Null,

@@ -21,7 +21,7 @@ pub struct Config {
     external_rpc_url: String,
 
     // Sequencer
-    sequencer_rpc_url: String,
+    sequencer_rpc_url_list: Vec<String>,
 
     // Rollup
     rollup_rpc_url: String,
@@ -63,10 +63,19 @@ impl Config {
 
         let encrypted_transaction_type = merged_config_option.encrypted_transaction_type.unwrap();
 
+        let sequencer_rpc_url_list = merged_config_option.sequencer_rpc_url_list.unwrap();
+
+        let sequencer_rpc_url_list: Vec<String> =
+            serde_json::from_str::<Vec<String>>(&sequencer_rpc_url_list)
+                .expect("Failed to parse JSON")
+                .into_iter()
+                .map(|url| url.to_string())
+                .collect();
+
         Ok(Config {
             rollup_id: merged_config_option.rollup_id.unwrap(),
             external_rpc_url: merged_config_option.external_rpc_url.unwrap(),
-            sequencer_rpc_url: merged_config_option.sequencer_rpc_url.unwrap(),
+            sequencer_rpc_url_list: sequencer_rpc_url_list,
             rollup_rpc_url: merged_config_option.rollup_rpc_url.unwrap(),
             is_using_encryption: merged_config_option.is_using_encryption.unwrap(),
             is_using_zkp: merged_config_option.is_using_zkp.unwrap(),
@@ -94,8 +103,8 @@ impl Config {
             .to_string())
     }
 
-    pub fn sequencer_rpc_url(&self) -> &String {
-        &self.sequencer_rpc_url
+    pub fn sequencer_rpc_url_list(&self) -> &Vec<String> {
+        &self.sequencer_rpc_url_list
     }
 
     pub fn rollup_rpc_url(&self) -> &String {

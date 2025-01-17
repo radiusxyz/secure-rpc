@@ -9,6 +9,7 @@ pub enum Error {
     InvalidSecureRpcPort,
 
     EmptyRawTransaction,
+    EmptySequencerRpcUrl,
 
     DistributedKeyGenerationClient(radius_sdk::json_rpc::client::RpcClientError),
     LoadConfigOption,
