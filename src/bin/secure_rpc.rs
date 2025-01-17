@@ -71,7 +71,16 @@ pub enum Commands {
 async fn main() -> Result<(), Error> {
     tracing_subscriber::fmt().init();
     std::panic::set_hook(Box::new(|panic_info| {
-        tracing::error!("{:?}", panic_info);
+        let payload = panic_info.payload();
+        let location = panic_info.location();
+
+        if let Some(panic_log) = payload.downcast_ref::<&'static str>() {
+            tracing::error!("{:?} at {:?}", panic_log, location);
+        } else if let Some(panic_log) = payload.downcast_ref::<String>() {
+            tracing::error!("{:?} at {:?}", panic_log, location);
+        } else {
+            tracing::error!("Panic at {:?}", location);
+        }
     }));
 
     let mut cli = Cli::init();
