@@ -1,4 +1,4 @@
-use rand::seq::SliceRandom;
+use rand::{rngs::StdRng, seq::SliceRandom, SeedableRng};
 
 use crate::rpc::{prelude::*, EncryptTransaction};
 
@@ -44,7 +44,7 @@ impl RpcParameter<AppState> for SendEncryptedTransaction {
                 context
                     .config()
                     .sequencer_rpc_url_list()
-                    .choose(&mut rand::thread_rng())
+                    .choose(&mut StdRng::seed_from_u64(0))
                     .ok_or(Error::EmptySequencerRpcUrl)?,
                 Self::method(),
                 parameter,

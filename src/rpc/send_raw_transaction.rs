@@ -1,4 +1,4 @@
-use rand::seq::SliceRandom;
+use rand::{rngs::StdRng, seq::SliceRandom, SeedableRng};
 
 use crate::rpc::prelude::*;
 
@@ -16,14 +16,13 @@ impl RpcParameter<AppState> for SendRawTransaction {
     }
 
     async fn handler(self, context: AppState) -> Result<Self::Response, RpcError> {
-        let rnd = &mut rand::thread_rng();
         match context
             .rpc_client()
             .request(
                 context
                     .config()
                     .sequencer_rpc_url_list()
-                    .choose(rnd)
+                    .choose(&mut StdRng::seed_from_u64(0))
                     .ok_or(Error::EmptySequencerRpcUrl)?,
                 Self::method(),
                 self,
