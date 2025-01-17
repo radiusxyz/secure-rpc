@@ -7,7 +7,7 @@ use super::{ConfigPath, CONFIG_FILE_NAME};
 use crate::error::Error;
 
 const DEFAULT_EXTERNAL_RPC_URL: &str = "http://127.0.0.1:9000";
-const DEFAULT_SEQUENCER_RPC_URL_LIST: &str = "[http://127.0.0.1:3000]";
+const DEFAULT_SEQUENCER_RPC_URL_LIST: &str = "http://127.0.0.1:3000";
 const DEFAULT_ROLLUP_RPC_URL: &str = "http://127.0.0.1:8123";
 const DEFAULT_ENCRYPTED_TRANSACTION_TYPE: &str = "skde";
 const DEFAULT_DISTRIBUTED_KEY_GENERATION_RPC_URL: &str = "http://127.0.0.1:7100";
@@ -102,7 +102,7 @@ impl ConfigOption {
         set_toml_comment(&mut toml_string, "Set external rpc url");
         set_toml_name_value(&mut toml_string, "external_rpc_url", &self.external_rpc_url);
 
-        set_toml_comment(&mut toml_string, "Set sequencer rpc url");
+        set_toml_comment(&mut toml_string, "Set sequencer rpc url list");
         set_toml_name_value(
             &mut toml_string,
             "sequencer_rpc_url_list",

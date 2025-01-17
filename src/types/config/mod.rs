@@ -63,14 +63,12 @@ impl Config {
 
         let encrypted_transaction_type = merged_config_option.encrypted_transaction_type.unwrap();
 
-        let sequencer_rpc_url_list = merged_config_option.sequencer_rpc_url_list.unwrap();
-
-        let sequencer_rpc_url_list: Vec<String> =
-            serde_json::from_str::<Vec<String>>(&sequencer_rpc_url_list)
-                .expect("Failed to parse JSON")
-                .into_iter()
-                .map(|url| url.to_string())
-                .collect();
+        let sequencer_rpc_url_list = merged_config_option
+            .sequencer_rpc_url_list
+            .unwrap()
+            .split(',')
+            .map(|s| s.trim().to_owned())
+            .collect();
 
         Ok(Config {
             rollup_id: merged_config_option.rollup_id.unwrap(),
