@@ -50,7 +50,7 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
             .try_into()
             .unwrap();
 
-        let order_commitment: OrderCommitment = context
+        let _order_commitment: OrderCommitment = context
             .rpc_client()
             .request(
                 context
@@ -62,9 +62,11 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
                 parameter,
                 Id::Null,
             )
-            .await?;
-
-        println!("Order commitment: {:?}", order_commitment);
+            .await
+            .map_err(|e| {
+                tracing::error!("Failed to send raw transaction: {:?}", e);
+                e
+            })?;
 
         Ok(serde_json::to_value(raw_transaction_hash.as_string())?)
     }
