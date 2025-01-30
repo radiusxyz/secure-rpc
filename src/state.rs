@@ -9,6 +9,7 @@ use pvde::{
     time_lock_puzzle::TimeLockPuzzleParam,
 };
 use radius_sdk::{context::SharedContext, json_rpc::client::RpcClient};
+use tokio::sync::{Mutex, MutexGuard};
 
 use crate::{
     client::distributed_key_generation::DistributedKeyGenerationClient, types::config::Config,
@@ -24,6 +25,7 @@ struct AppStateInner {
     pvde_params: SharedContext<Option<PvdeParams>>,
     skde_params: skde::delay_encryption::SkdeParams,
     distributed_key_generation_client: Option<DistributedKeyGenerationClient>,
+    transaction_count: Mutex<u64>,
 }
 
 impl Clone for AppState {
@@ -46,6 +48,7 @@ impl AppState {
             pvde_params: SharedContext::from(None),
             skde_params,
             distributed_key_generation_client,
+            transaction_count: Mutex::new(0),
         };
 
         Self {
@@ -71,6 +74,15 @@ impl AppState {
 
     pub fn distributed_key_generation_client(&self) -> &Option<DistributedKeyGenerationClient> {
         &self.inner.distributed_key_generation_client
+    }
+
+    pub async fn get_mut_transaction_count(&self) -> MutexGuard<'_, u64> {
+        self.inner.transaction_count.lock().await
+    }
+
+    pub async fn reset_transaction_count(&self) {
+        let mut transaction_count = self.inner.transaction_count.lock().await;
+        *transaction_count = 0;
     }
 }
 

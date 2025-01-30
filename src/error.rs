@@ -34,6 +34,8 @@ pub enum Error {
     UnsupportedEncryptionType,
     UnsupportedDecryptionType,
     UnsupportedTransactionType,
+
+    TransactionCountExceed,
 }
 
 unsafe impl Send for Error {}

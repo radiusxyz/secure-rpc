@@ -1,5 +1,8 @@
+use std::{thread::sleep, time::Duration};
+
 use rand::{rngs::StdRng, seq::SliceRandom, SeedableRng};
 use serde_json::Value;
+use tracing::info;
 
 use crate::rpc::prelude::*;
 
@@ -30,6 +33,24 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
         if self.0.is_empty() {
             return Err(Error::EmptyRawTransaction.into());
         }
+
+        let mut transaction_count = context.get_mut_transaction_count().await;
+
+        println!("transaction_count: {:?}", transaction_count);
+
+        let cloned_context = context.clone();
+        if *transaction_count == 0 {
+            tokio::spawn(async move {
+                sleep(Duration::from_secs(5));
+                cloned_context.reset_transaction_count().await;
+            });
+        } else if *transaction_count > 30 {
+            info!("Transaction count exceed: {}", *transaction_count);
+
+            return Err(Error::TransactionCountExceed.into());
+        }
+        *transaction_count += 1;
+        drop(transaction_count);
 
         let raw_transaction_string = self.0.get(0).unwrap();
         let eth_raw_transaction = EthRawTransaction(raw_transaction_string.clone());
