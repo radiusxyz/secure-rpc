@@ -36,8 +36,6 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
 
         let mut transaction_count = context.get_mut_transaction_count().await;
 
-        println!("transaction_count: {:?}", transaction_count);
-
         let cloned_context = context.clone();
         if *transaction_count == 0 {
             tokio::spawn(async move {
@@ -71,7 +69,7 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
             .try_into()
             .unwrap();
 
-        let _order_commitment: OrderCommitment = context
+        let order_commitment: OrderCommitment = context
             .rpc_client()
             .request(
                 context
@@ -88,6 +86,8 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
                 tracing::error!("Failed to send raw transaction: {:?}", e);
                 e
             })?;
+
+        info!("order_commitment: {:?}", order_commitment);
 
         Ok(serde_json::to_value(raw_transaction_hash.as_string())?)
     }
