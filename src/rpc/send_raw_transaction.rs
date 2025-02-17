@@ -28,9 +28,9 @@ impl RpcParameter<AppState> for SendRawTransaction {
             .request(
                 context
                     .config()
-                    .sequencer_rpc_url_list()
+                    .tx_orderer_rpc_url_list()
                     .choose(&mut StdRng::seed_from_u64(seed))
-                    .ok_or(Error::EmptySequencerRpcUrl)?,
+                    .ok_or(Error::EmptyTxOrdererRpcUrl)?,
                 Self::method(),
                 self,
                 Id::Null,

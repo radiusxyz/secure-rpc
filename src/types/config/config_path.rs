@@ -13,7 +13,7 @@ use crate::{
 
 #[derive(Debug, Deserialize, Parser, Serialize)]
 pub struct ConfigPath {
-    #[doc = "Set the sequencer configuration path"]
+    #[doc = "Set the secure-rpc configuration path"]
     #[clap(long = "path", default_value_t = Self::default().to_string())]
     path: String,
 }

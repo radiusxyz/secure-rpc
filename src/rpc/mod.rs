@@ -3,8 +3,8 @@ pub mod prelude {
         client::{Id, RpcClient},
         server::{RpcError, RpcParameter},
     };
-    pub use sequencer::types::*;
     pub use serde::{de::DeserializeOwned, Deserialize, Serialize};
+    pub use tx_orderer::types::*;
 
     pub use crate::{error::Error, state::AppState};
 }

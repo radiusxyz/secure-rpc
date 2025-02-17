@@ -5,7 +5,7 @@
 
 Secure RPC server of [Radius Block Building Solution](https://github.com/radiusxyz/radius-docs-bbs/blob/main/docs/radius_block_building_solution.md) written in Rust programming language.
 
-Secure RPC is a layer between wallet interface and sequencer that can receive unencrypted user transactions, encrypt them and forward them to sequencers belonging to a particular cluster. Except for encryption functionality, it works just like a proxy between users and sequencers. Secure RPC exists solely because the wallet interface does not support Radius encryption methods (PVDE and SKDE) and will be removed if the wallet supports a plugin or add-on features (e.g. MetaMask Snaps) and allows third-party modules.
+Secure RPC is a layer between wallet interface and tx_orderer that can receive unencrypted user transactions, encrypt them and forward them to tx_orderers belonging to a particular cluster. Except for encryption functionality, it works just like a proxy between users and tx_orderers. Secure RPC exists solely because the wallet interface does not support Radius encryption methods (PVDE and SKDE) and will be removed if the wallet supports a plugin or add-on features (e.g. MetaMask Snaps) and allows third-party modules.
 
 ## Contributing
 We appreciate your contributions to our project. Visit [issues](https://github.com/radiusxyz/secure-rpc/issues) page to start with or refer to the [Contributing guide](https://github.com/radiusxyz/radius-docs-bbs/blob/main/docs/contributing_guide.md).

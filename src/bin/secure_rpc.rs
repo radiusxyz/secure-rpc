@@ -162,7 +162,7 @@ async fn initialize_external_rpc_server(
         // cryptography
         .register_rpc_method::<DecryptTransaction>()?
         .register_rpc_method::<EncryptTransaction>()?
-        // sequencer
+        // tx_orderer
         .register_rpc_method::<SendEncryptedTransaction>()?
         .register_rpc_method::<SendRawTransaction>()?
         .init(external_rpc_url.clone())

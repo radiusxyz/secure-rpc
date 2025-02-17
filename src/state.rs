@@ -74,7 +74,7 @@ impl AppState {
     }
 }
 
-// TODO: Import from sequencer
+// TODO: Import from tx_orderer
 #[derive(Clone, Debug, Default)]
 pub struct PvdeParams {
     time_lock_puzzle_param: Option<TimeLockPuzzleParam>,

@@ -27,8 +27,8 @@ SECURE_RPC_EXTERNAL_RPC_URL="http://127.0.0.1:5000" # External IP - Please chang
 ROLLUP_ID="rollup_id"                  # Please change this rollup id.
 ROLLUP_RPC_URL="http://127.0.0.1:8123" # Please change this rollup rpc url.
 
-# Sequencer
-SEQUENCER_RPC_URL="http://127.0.0.1:6000" # Please change this sequencer (external) rpc url.
+# Tx_orderer
+TX_ORDERER_RPC_URL="http://127.0.0.1:6000" # Please change this tx orderer (external) rpc url.
 
 # Encrypted Transaction Type - skde / pvde
 ENCRYPTED_TRANSACTION_TYPE="skde"

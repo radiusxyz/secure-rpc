@@ -5,11 +5,11 @@ pub enum Error {
     RpcServer(radius_sdk::json_rpc::server::RpcServerError),
     Uninitialized,
     FetchResponse,
-    InvalidSequencerPort,
+    InvalidTxOrdererPort,
     InvalidSecureRpcPort,
 
     EmptyRawTransaction,
-    EmptySequencerRpcUrl,
+    EmptyTxOrdererRpcUrl,
 
     DistributedKeyGenerationClient(radius_sdk::json_rpc::client::RpcClientError),
     LoadConfigOption,
