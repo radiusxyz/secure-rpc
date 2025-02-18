@@ -39,7 +39,7 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
 
         tracing::info!("encrypt_transaction_params: {:?}", eth_raw_transaction);
         let encrypt_transaction_request = EncryptTransaction {
-            raw_transaction: eth_raw_transaction,
+            raw_transaction: eth_raw_transaction.clone(),
         };
         let encrypt_transaction_response =
             encrypt_transaction_request.handler(context.clone()).await?;
@@ -55,10 +55,11 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
             .as_nanos()
             .try_into()
             .unwrap();
+        let raw_transaction_hash = eth_raw_transaction.raw_transaction_hash();
 
         match context
             .rpc_client()
-            .request(
+            .request::<_, Value>(
                 context
                     .config()
                     .tx_orderer_rpc_url_list()
@@ -72,7 +73,9 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
         {
             Ok(order_commitment) => {
                 tracing::info!("Order commitment: {:?}", order_commitment);
-                Ok(order_commitment)
+
+                // Ok(order_commitment)
+                Ok(serde_json::to_value(raw_transaction_hash.as_string())?)
             }
             Err(error) => {
                 tracing::error!("Failed to send encrypted transaction: {:?}", error);
