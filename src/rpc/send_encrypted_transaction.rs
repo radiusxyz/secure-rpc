@@ -9,9 +9,9 @@ pub struct SendEncryptedTransaction {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-struct SendEncryptedTransactionRequest {
-    rollup_id: String,
-    encrypted_transaction: EncryptedTransaction,
+pub struct SendEncryptedTransactionRequest {
+    pub rollup_id: String,
+    pub encrypted_transaction: EncryptedTransaction,
 }
 
 impl RpcParameter<AppState> for SendEncryptedTransaction {
