@@ -64,7 +64,7 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
                     .tx_orderer_rpc_url_list()
                     .choose(&mut StdRng::seed_from_u64(seed))
                     .ok_or(Error::EmptyTxOrdererRpcUrl)?,
-                Self::method(),
+                "send_encrypted_transaction",
                 parameter,
                 Id::Null,
             )
