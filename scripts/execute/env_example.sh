@@ -34,4 +34,4 @@ SEQUENCER_RPC_URL="http://127.0.0.1:6000" # Please change this sequencer (extern
 ENCRYPTED_TRANSACTION_TYPE="skde"
 
 # DKG (for ENCRYPTED_TRANSACTION_TYPE=skde)
-DISTRIBUTED_KEY_GENERATOR_RPC_URL="http://127.0.0.1:7100" # Please change this distribured key generator rpc url.
+KEY_GENERATOR_EXTERNAL_RPC_URL="http://127.0.0.1:7100" # Please change this distribured key generator rpc url.
