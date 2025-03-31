@@ -1,25 +1,19 @@
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use rand::{rngs::StdRng, seq::SliceRandom, SeedableRng};
 use serde_json::Value;
+use tx_orderer::types::EthRawTransaction;
 
-use crate::rpc::{
-    prelude::*, send_encrypted_transaction::SendEncryptedTransactionRequest, EncryptTransaction,
+use crate::{
+    rpc::{
+        prelude::*, send_encrypted_transaction::SendEncryptedTransactionRequest,
+        send_raw_transaction::SendRawTransaction, EncryptTransaction,
+    },
+    types::transaction::EncryptedTransactionType,
 };
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct EthSendRawTransaction(Vec<String>);
-
-// #[derive(Debug, Serialize)]
-// struct RawTransactionRequest<'a> {
-//     pub rollup_id: &'a str,
-//     pub raw_transaction: RawTransactionRequestData<'a>,
-// }
-
-// #[derive(Debug, Serialize)]
-// struct RawTransactionRequestData<'a> {
-//     #[serde(rename = "type")]
-//     transaction_type: &'a str,
-//     data: &'a str,
-// }
 
 impl RpcParameter<AppState> for EthSendRawTransaction {
     type Response = Value;
@@ -28,98 +22,72 @@ impl RpcParameter<AppState> for EthSendRawTransaction {
         "eth_sendRawTransaction"
     }
 
-    async fn handler(self, context: AppState) -> Result<Self::Response, RpcError> {
-        if self.0.is_empty() {
-            return Err(Error::EmptyRawTransaction.into());
-        }
+    async fn handler(self, context: AppState) -> Result<Value, RpcError> {
+        let raw_transaction_str = self.0.get(0).ok_or(Error::EmptyRawTransaction)?.to_owned();
 
-        let raw_transaction_string = self.0.get(0).unwrap();
-        let eth_raw_transaction =
-            RawTransaction::from(EthRawTransaction(raw_transaction_string.clone()));
+        let eth_raw_transaction = EthRawTransaction(raw_transaction_str.clone());
+        let transaction_hash = eth_raw_transaction.raw_transaction_hash();
+        let rollup_id = context.config().rollup_id().to_owned();
 
-        tracing::info!("encrypt_transaction_params: {:?}", eth_raw_transaction);
-        let encrypt_transaction_request = EncryptTransaction {
-            raw_transaction: eth_raw_transaction.clone(),
+        let rpc_url = {
+            let seed: u64 = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+                .try_into()
+                .unwrap();
+
+            context
+                .config()
+                .tx_orderer_rpc_url_list()
+                .choose(&mut StdRng::seed_from_u64(seed))
+                .ok_or(Error::EmptyTxOrdererRpcUrl)?
+                .to_owned()
         };
-        let encrypt_transaction_response =
-            encrypt_transaction_request.handler(context.clone()).await?;
 
-        let parameter = SendEncryptedTransactionRequest {
-            rollup_id: context.config().rollup_id().to_owned(),
-            encrypted_transaction: encrypt_transaction_response.encrypted_transaction,
-        };
+        let transaction_hash_value = serde_json::to_value(transaction_hash.as_string())?;
 
-        let seed: u64 = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap()
-            .as_nanos()
-            .try_into()
-            .unwrap();
-        let raw_transaction_hash = eth_raw_transaction.raw_transaction_hash();
+        match context.config().encrypted_transaction_type() {
+            EncryptedTransactionType::Skde => {
+                let param = SendRawTransaction {
+                    rollup_id,
+                    raw_transaction: tx_orderer::types::RawTransaction::Eth(eth_raw_transaction),
+                };
 
-        match context
-            .rpc_client()
-            .request::<_, Value>(
                 context
-                    .config()
-                    .tx_orderer_rpc_url_list()
-                    .choose(&mut StdRng::seed_from_u64(seed))
-                    .ok_or(Error::EmptyTxOrdererRpcUrl)?,
-                "send_encrypted_transaction",
-                parameter,
-                Id::Null,
-            )
-            .await
-        {
-            Ok(order_commitment) => {
-                tracing::info!("Order commitment: {:?}", order_commitment);
+                    .rpc_client()
+                    .request::<_, Value>(rpc_url, "send_raw_transaction", param, Id::Null)
+                    .await
+                    .map_err(|e| {
+                        tracing::error!("Failed to send raw transaction: {:?}", e);
+                        e
+                    })?;
 
-                // Ok(order_commitment)
-                Ok(serde_json::to_value(raw_transaction_hash.as_string())?)
+                Ok(transaction_hash_value)
             }
-            Err(error) => {
-                tracing::error!("Failed to send encrypted transaction: {:?}", error);
-                Err(error.into())
+            _ => {
+                // Handle encrypted transaction
+                let encrypt_req = EncryptTransaction {
+                    raw_transaction: tx_orderer::types::RawTransaction::Eth(eth_raw_transaction),
+                };
+
+                let encrypt_res = encrypt_req.handler(context.clone()).await?;
+
+                let param = SendEncryptedTransactionRequest {
+                    rollup_id,
+                    encrypted_transaction: encrypt_res.encrypted_transaction,
+                };
+
+                context
+                    .rpc_client()
+                    .request::<_, Value>(rpc_url, "send_encrypted_transaction", param, Id::Null)
+                    .await
+                    .map(|_| transaction_hash_value)
+                    .map_err(|e| {
+                        tracing::error!("Failed to send encrypted transaction: {:?}", e);
+                        e.into()
+                    })
             }
         }
-
-        // let raw_transaction_string = self.0.get(0).unwrap();
-        // let eth_raw_transaction = EthRawTransaction(raw_transaction_string.clone());
-        // let raw_transaction_hash = eth_raw_transaction.raw_transaction_hash();
-
-        // let parameter = RawTransactionRequest {
-        //     rollup_id: context.config().rollup_id(),
-        //     raw_transaction: RawTransactionRequestData {
-        //         transaction_type: "eth",
-        //         data: raw_transaction_string,
-        //     },
-        // };
-
-        // let seed: u64 = std::time::SystemTime::now()
-        //     .duration_since(std::time::UNIX_EPOCH)
-        //     .unwrap()
-        //     .as_nanos()
-        //     .try_into()
-        //     .unwrap();
-
-        // let _order_commitment: OrderCommitment = context
-        //     .rpc_client()
-        //     .request(
-        //         context
-        //             .config()
-        //             .tx_orderer_rpc_url_list()
-        //             .choose(&mut StdRng::seed_from_u64(seed))
-        //             .ok_or(Error::EmptyTxOrdererRpcUrl)?,
-        //         "send_raw_transaction",
-        //         parameter,
-        //         Id::Null,
-        //     )
-        //     .await
-        //     .map_err(|e| {
-        //         tracing::error!("Failed to send raw transaction: {:?}", e);
-        //         e
-        //     })?;
-
-        // Ok(serde_json::to_value(raw_transaction_hash.as_string())?)
     }
 }

@@ -1,33 +1,5 @@
-mod eth_block_number;
-mod eth_call;
-mod eth_chain_id;
-mod eth_estimate_gas;
-mod eth_fee_history;
-mod eth_gas_price;
-mod eth_get_balance;
-mod eth_get_block_by_hash;
-mod eth_get_block_by_number;
-mod eth_get_code;
-mod eth_get_transaction_by_hash;
-mod eth_get_transaction_count;
-mod eth_get_transaction_receipt;
-mod eth_net_version;
 mod eth_send_raw_transaction;
 
-pub use eth_block_number::EthBlockNumber;
-pub use eth_call::EthCall;
-pub use eth_chain_id::EthChainId;
-pub use eth_estimate_gas::EthEstimateGas;
-pub use eth_fee_history::EthFeeHistory;
-pub use eth_gas_price::EthGasPrice;
-pub use eth_get_balance::EthGetBalance;
-pub use eth_get_block_by_hash::EthGetBlockByHash;
-pub use eth_get_block_by_number::EthGetBlockByNumber;
-pub use eth_get_code::EthGetCode;
-pub use eth_get_transaction_by_hash::EthGetTransactionByHash;
-pub use eth_get_transaction_count::EthGetTransactionCount;
-pub use eth_get_transaction_receipt::EthGetTransactionReceipt;
-pub use eth_net_version::EthNetVersion;
 pub use eth_send_raw_transaction::EthSendRawTransaction;
 
 pub mod prelude {
@@ -59,3 +31,42 @@ where
         .await
         .map_err(RpcError::from)
 }
+
+macro_rules! define_fowarding_rpc {
+    ($name:ident, $method:expr) => {
+        #[derive(Clone, Debug, Deserialize, Serialize)]
+        pub struct $name(Value);
+
+        impl RpcParameter<AppState> for $name {
+            type Response = Value;
+
+            fn method() -> &'static str {
+                $method
+            }
+
+            async fn handler(self, context: AppState) -> Result<Self::Response, RpcError> {
+                forward(Self::method(), self, context).await
+            }
+        }
+    };
+}
+
+// // 매크로를 사용하여 각 구조체 정의
+define_fowarding_rpc!(EthBlockNumber, "eth_blockNumber");
+define_fowarding_rpc!(EthCall, "eth_call");
+define_fowarding_rpc!(EthChainId, "eth_chainId");
+define_fowarding_rpc!(EthEstimateGas, "eth_estimateGas");
+define_fowarding_rpc!(EthFeeHistory, "eth_feeHistory");
+define_fowarding_rpc!(EthGasPrice, "eth_gasPrice");
+define_fowarding_rpc!(EthGetBalance, "eth_getBalance");
+define_fowarding_rpc!(EthGetBlockByHash, "eth_getBlockByHash");
+define_fowarding_rpc!(EthGetBlockByNumber, "eth_getBlockByNumber");
+define_fowarding_rpc!(EthGetCode, "eth_getCode");
+define_fowarding_rpc!(EthGetTransactionByHash, "eth_getTransactionByHash");
+define_fowarding_rpc!(EthGetTransactionCount, "eth_getTransactionCount");
+define_fowarding_rpc!(EthGetTransactionReceipt, "eth_getTransactionReceipt");
+define_fowarding_rpc!(EthNetVersion, "eth_netVersion");
+// define_eth_rpc!(EthGetCode, "eth_getCode");
+// define_eth_rpc!(EthGasPrice, "eth_gasPrice");
+// define_eth_rpc!(EthFeeHistory, "eth_feeHistory");
+// define_eth_rpc!(EthGetBalance, "eth_getBalance");
