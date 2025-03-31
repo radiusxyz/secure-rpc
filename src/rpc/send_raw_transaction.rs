@@ -1,4 +1,7 @@
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use rand::{rngs::StdRng, seq::SliceRandom, SeedableRng};
+use tx_orderer::types::RawTransaction;
 
 use crate::rpc::prelude::*;
 
@@ -9,38 +12,35 @@ pub struct SendRawTransaction {
 }
 
 impl RpcParameter<AppState> for SendRawTransaction {
-    type Response = OrderCommitment;
+    type Response = serde_json::Value;
 
     fn method() -> &'static str {
         "send_raw_transaction"
     }
 
     async fn handler(self, context: AppState) -> Result<Self::Response, RpcError> {
-        let seed: u64 = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap()
+        let seed = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
             .as_nanos()
-            .try_into()
-            .unwrap();
+            .wrapping_add(self.rollup_id.len() as u128) as u64;
 
+        let url = context
+            .config()
+            .tx_orderer_rpc_url_list()
+            .choose(&mut StdRng::seed_from_u64(seed))
+            .ok_or_else(|| {
+                tracing::error!("No tx_orderer_rpc_url available in config");
+                Error::EmptyTxOrdererRpcUrl
+            })?;
+
+        // 요청 전송
         match context
             .rpc_client()
-            .request(
-                context
-                    .config()
-                    .tx_orderer_rpc_url_list()
-                    .choose(&mut StdRng::seed_from_u64(seed))
-                    .ok_or(Error::EmptyTxOrdererRpcUrl)?,
-                Self::method(),
-                self,
-                Id::Null,
-            )
+            .request(url, Self::method(), self, Id::Null)
             .await
         {
-            Ok(order_commitment) => {
-                tracing::info!("Order commitment: {:?}", order_commitment);
-                Ok(order_commitment)
-            }
+            Ok(result) => Ok(result),
             Err(error) => {
                 tracing::error!("Failed to send raw transaction: {:?}", error);
                 Err(error.into())

@@ -4,7 +4,6 @@ pub mod prelude {
         server::{RpcError, RpcParameter},
     };
     pub use serde::{de::DeserializeOwned, Deserialize, Serialize};
-    pub use tx_orderer::types::*;
 
     pub use crate::{error::Error, state::AppState};
 }
