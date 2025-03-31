@@ -32,11 +32,14 @@ impl AsRef<Path> for ConfigPath {
 
 impl Default for ConfigPath {
     fn default() -> Self {
-        let path = PathBuf::from(env::var("HOME").unwrap())
+        let home_path = env::var("HOME").unwrap_or_else(|err| {
+            tracing::warn!("Failed to get HOME environment variable: {:?}", err);
+            ".".to_string()
+        });
+        let path = PathBuf::from(home_path)
             .join(super::DEFAULT_HOME_PATH)
-            .to_str()
-            .unwrap()
-            .to_string();
+            .to_string_lossy()
+            .into_owned();
 
         Self { path }
     }
@@ -44,20 +47,28 @@ impl Default for ConfigPath {
 
 impl ConfigPath {
     pub fn init(&self) -> Result<(), Error> {
-        // Remove the directory if it exists.
-        if self.as_ref().exists() {
-            fs::remove_dir_all(self).map_err(|_| Error::RemoveConfigDirectory)?;
+        let path = self.as_ref();
+
+        if path.exists() {
+            fs::remove_dir_all(path).map_err(|err| {
+                tracing::error!("Failed to remove config directory: {:?}", err);
+                Error::RemoveConfigDirectory
+            })?;
         }
 
-        // Create the directory
-        fs::create_dir_all(self).map_err(|_| Error::CreateConfigDirectory)?;
+        fs::create_dir_all(path).map_err(|err| {
+            tracing::error!("Failed to create config directory: {:?}", err);
+            Error::CreateConfigDirectory
+        })?;
 
-        // Create config file
-        let config_file_path = self.as_ref().join(CONFIG_FILE_NAME);
+        let config_file_path = path.join(CONFIG_FILE_NAME);
         let config_toml_string = ConfigOption::default().get_toml_string();
-        fs::write(config_file_path, config_toml_string).map_err(|_| Error::CreateConfigFile)?;
+        fs::write(config_file_path, config_toml_string).map_err(|err| {
+            tracing::error!("Failed to create config file: {:?}", err);
+            Error::CreateConfigFile
+        })?;
 
-        tracing::info!("Created a new config directory at {:?}", self.as_ref());
+        tracing::info!("Created a new config directory at {:?}", path);
         Ok(())
     }
 }
