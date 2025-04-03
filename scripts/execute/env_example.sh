@@ -28,10 +28,10 @@ ROLLUP_ID="rollup_id"                  # Please change this rollup id.
 ROLLUP_RPC_URL="http://127.0.0.1:8123" # Please change this rollup rpc url.
 
 # Tx_orderer
-TX_ORDERER_RPC_URL="http://127.0.0.1:6000" # Please change this tx orderer (external) rpc url.
+TX_ORDERER_EXTERNAL_RPC_URL_LIST="http://127.0.0.1:6000" # Please change this tx orderer (external) rpc url.
 
 # Encrypted Transaction Type - skde / none
 ENCRYPTED_TRANSACTION_TYPE="skde"
 
 # DKG (for ENCRYPTED_TRANSACTION_TYPE=skde)
-DISTRIBUTED_KEY_GENERATOR_RPC_URL="http://127.0.0.1:7100" # Please change this distribured key generator rpc url.
+DISTRIBUTED_KEY_GENERATOR_EXTERNAL_RPC_URL="http://127.0.0.1:7100" # Please change this distribured key generator rpc url.
