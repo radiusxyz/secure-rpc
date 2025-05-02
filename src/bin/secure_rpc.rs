@@ -70,7 +70,10 @@ async fn main() -> Result<(), Error> {
 
             let config = Config::load(config_option)?;
 
-            tracing::info!("Successfully loaded the configuration file.",);
+            tracing::info!(
+                "Successfully loaded the configuration file. config: {:?}",
+                config
+            );
 
             let distributed_key_generation_rpc_url = config.distributed_key_generation_rpc_url();
             let distributed_key_generation_client =
@@ -121,8 +124,9 @@ async fn initialize_external_rpc_server(
         .register_rpc_method::<eth::EthGetTransactionByHash>()?
         .register_rpc_method::<eth::EthGetTransactionCount>()?
         .register_rpc_method::<eth::EthGetTransactionReceipt>()?
-        .register_rpc_method::<eth::EthNetVersion>()?
         .register_rpc_method::<eth::EthSendRawTransaction>()?
+        .register_rpc_method::<eth::EthGetLogs>()?
+        .register_rpc_method::<eth::NetVersion>()?
         // cryptography
         .register_rpc_method::<DecryptTransaction>()?
         .register_rpc_method::<EncryptTransaction>()?

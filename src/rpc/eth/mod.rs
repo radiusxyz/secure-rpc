@@ -51,7 +51,6 @@ macro_rules! define_fowarding_rpc {
     };
 }
 
-// // 매크로를 사용하여 각 구조체 정의
 define_fowarding_rpc!(EthBlockNumber, "eth_blockNumber");
 define_fowarding_rpc!(EthCall, "eth_call");
 define_fowarding_rpc!(EthChainId, "eth_chainId");
@@ -65,7 +64,9 @@ define_fowarding_rpc!(EthGetCode, "eth_getCode");
 define_fowarding_rpc!(EthGetTransactionByHash, "eth_getTransactionByHash");
 define_fowarding_rpc!(EthGetTransactionCount, "eth_getTransactionCount");
 define_fowarding_rpc!(EthGetTransactionReceipt, "eth_getTransactionReceipt");
-define_fowarding_rpc!(EthNetVersion, "eth_netVersion");
+define_fowarding_rpc!(EthGetLogs, "eth_getLogs");
+
+define_fowarding_rpc!(NetVersion, "net_version");
 // define_eth_rpc!(EthGetCode, "eth_getCode");
 // define_eth_rpc!(EthGasPrice, "eth_gasPrice");
 // define_eth_rpc!(EthFeeHistory, "eth_feeHistory");
