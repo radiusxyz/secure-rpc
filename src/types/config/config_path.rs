@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     error::Error,
     types::config::{ConfigOption, CONFIG_FILE_NAME},
+    util::clear_dir,
 };
 
 #[derive(Debug, Deserialize, Parser, Serialize)]
@@ -50,7 +51,7 @@ impl ConfigPath {
         let path = self.as_ref();
 
         if path.exists() {
-            fs::remove_dir_all(path).map_err(|err| {
+            clear_dir(self).map_err(|err| {
                 tracing::error!("Failed to remove config directory: {:?}", err);
                 Error::RemoveConfigDirectory
             })?;
