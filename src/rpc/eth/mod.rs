@@ -51,7 +51,7 @@ macro_rules! define_fowarding_rpc {
     };
 }
 
-// // 매크로를 사용하여 각 구조체 정의
+// Related to Eth rpc
 define_fowarding_rpc!(EthBlockNumber, "eth_blockNumber");
 define_fowarding_rpc!(EthCall, "eth_call");
 define_fowarding_rpc!(EthChainId, "eth_chainId");
@@ -70,3 +70,8 @@ define_fowarding_rpc!(EthNetVersion, "eth_netVersion");
 // define_eth_rpc!(EthGasPrice, "eth_gasPrice");
 // define_eth_rpc!(EthFeeHistory, "eth_feeHistory");
 // define_eth_rpc!(EthGetBalance, "eth_getBalance");
+
+// Related to Zkevm rpc
+define_fowarding_rpc!(ZkevmGetLatestGlobalExitRoot, "zkevm_getLatestGlobalExitRoot");
+define_fowarding_rpc!(ZkevmGetExitRootsByGER, "zkevm_getExitRootsByGER");
+
