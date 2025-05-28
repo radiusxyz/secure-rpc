@@ -24,8 +24,14 @@ impl RpcParameter<AppState> for EncryptTransaction {
     }
 
     async fn handler(self, context: AppState) -> Result<Self::Response, RpcError> {
-        let raw_transaction_string =
-            serde_json::to_string(&self.raw_transaction).map_err(|_| Error::SerializationError)?;
+        let raw_transaction_string: String = match &self.raw_transaction {
+            RawTransaction::Eth(raw_transaction) => {
+                serde_json::from_str(&serde_json::to_string(&raw_transaction).unwrap())?
+            }
+            RawTransaction::EthBundle(raw_transaction) => {
+                serde_json::from_str(&serde_json::to_string(&raw_transaction).unwrap())?
+            }
+        };
 
         match context.config().encrypted_transaction_type() {
             EncryptedTransactionType::Skde => {

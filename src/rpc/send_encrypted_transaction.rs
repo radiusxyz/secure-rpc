@@ -29,7 +29,7 @@ impl RpcParameter<AppState> for SendEncryptedTransaction {
 
     async fn handler(self, context: AppState) -> Result<Self::Response, RpcError> {
         let is_surpported =
-            *context.config().encrypted_transaction_type() == EncryptedTransactionType::NotSupport;
+            *context.config().encrypted_transaction_type() != EncryptedTransactionType::NotSupport;
         if !is_surpported {
             return Err(Error::EncryptionNotEnabled.into());
         }

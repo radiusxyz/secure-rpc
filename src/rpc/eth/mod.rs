@@ -65,7 +65,9 @@ define_fowarding_rpc!(EthGetCode, "eth_getCode");
 define_fowarding_rpc!(EthGetTransactionByHash, "eth_getTransactionByHash");
 define_fowarding_rpc!(EthGetTransactionCount, "eth_getTransactionCount");
 define_fowarding_rpc!(EthGetTransactionReceipt, "eth_getTransactionReceipt");
-define_fowarding_rpc!(EthNetVersion, "eth_netVersion");
+define_fowarding_rpc!(EthGetLogs, "eth_getLogs");
+
+define_fowarding_rpc!(NetVersion, "net_version");
 // define_eth_rpc!(EthGetCode, "eth_getCode");
 // define_eth_rpc!(EthGasPrice, "eth_gasPrice");
 // define_eth_rpc!(EthFeeHistory, "eth_feeHistory");
