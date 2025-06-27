@@ -126,6 +126,7 @@ async fn initialize_external_rpc_server(
         .register_rpc_method::<eth::EthGetTransactionReceipt>()?
         .register_rpc_method::<eth::EthSendRawTransaction>()?
         .register_rpc_method::<eth::EthGetLogs>()?
+        .register_rpc_method::<eth::EthGetStorageAt>()?
         .register_rpc_method::<eth::NetVersion>()?
         // cryptography
         .register_rpc_method::<DecryptTransaction>()?

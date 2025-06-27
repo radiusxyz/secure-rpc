@@ -60,11 +60,18 @@ define_fowarding_rpc!(EthGasPrice, "eth_gasPrice");
 define_fowarding_rpc!(EthGetBalance, "eth_getBalance");
 define_fowarding_rpc!(EthGetBlockByHash, "eth_getBlockByHash");
 define_fowarding_rpc!(EthGetBlockByNumber, "eth_getBlockByNumber");
+
 define_fowarding_rpc!(EthGetCode, "eth_getCode");
 define_fowarding_rpc!(EthGetTransactionByHash, "eth_getTransactionByHash");
 define_fowarding_rpc!(EthGetTransactionCount, "eth_getTransactionCount");
 define_fowarding_rpc!(EthGetTransactionReceipt, "eth_getTransactionReceipt");
 define_fowarding_rpc!(EthGetLogs, "eth_getLogs");
+
+define_fowarding_rpc!(EthGetStorageAt, "eth_getStorageAt");
+
+
+
+
 
 define_fowarding_rpc!(NetVersion, "net_version");
 // define_eth_rpc!(EthGetCode, "eth_getCode");
