@@ -1,0 +1,19 @@
+[package]
+name = "secure-rpc"
+version = "1.0.0"
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "secure-rpc"
+path = "./main.rs"
+
+[dependencies]
+
+# Internal
+secure-rpc-cli.workspace = true
+
+# External
+anyhow.workspace = true

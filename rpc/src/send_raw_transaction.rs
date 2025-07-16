@@ -1,9 +1,9 @@
 use std::time::{SystemTime, UNIX_EPOCH};
-
+use serde::{Deserialize, Serialize};
 use rand::{rngs::StdRng, seq::SliceRandom, SeedableRng};
 use tx_orderer::types::RawTransaction;
-
-use crate::rpc::prelude::*;
+use radius_sdk::json_rpc::server::{RpcError, RpcParameter};
+use secure_rpc_primitives::Context;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SendRawTransaction {
@@ -11,14 +11,14 @@ pub struct SendRawTransaction {
     pub raw_transaction: RawTransaction,
 }
 
-impl RpcParameter<AppState> for SendRawTransaction {
+impl<C: Context> RpcParameter<C> for SendRawTransaction {
     type Response = serde_json::Value;
 
     fn method() -> &'static str {
         "send_raw_transaction"
     }
 
-    async fn handler(self, context: AppState) -> Result<Self::Response, RpcError> {
+    async fn handler(self, context: C) -> Result<Self::Response, RpcError> {
         let seed = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap_or_default()

@@ -1,48 +1,46 @@
 use std::time::{SystemTime, UNIX_EPOCH};
-
+use serde::{Deserialize, Serialize};
 use rand::{rngs::StdRng, seq::SliceRandom, SeedableRng};
 use tx_orderer::types::{EncryptedTransaction, RawTransaction};
-
-use crate::{
-    rpc::{prelude::*, EncryptTransaction},
-    types::transaction::EncryptedTransactionType,
-};
+use radius_sdk::json_rpc::server::{RpcError, RpcParameter};
+use secure_rpc_primitives::{Context, SecureRPCService, ExternalRpcInterface};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct SendEncryptedTransaction {
+pub struct SendEncryptedTx {
     pub rollup_id: String,
     pub raw_transaction: RawTransaction,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct SendEncryptedTransactionRequest {
+pub struct SendEncryptedTxParam<T> {
     pub rollup_id: String,
-    pub encrypted_transaction: EncryptedTransaction,
+    pub encrypted_tx: T,
 }
 
-impl RpcParameter<AppState> for SendEncryptedTransaction {
+impl<C: Context> RpcParameter<C> for SendEncryptedTx {
     type Response = serde_json::Value;
 
     fn method() -> &'static str {
         "send_encrypted_transaction"
     }
 
-    async fn handler(self, context: AppState) -> Result<Self::Response, RpcError> {
-        let is_surpported =
-            *context.config().encrypted_transaction_type() != EncryptedTransactionType::NotSupport;
-        if !is_surpported {
-            return Err(Error::EncryptionNotEnabled.into());
+    async fn handler(self, context: C) -> Result<Self::Response, RpcError> {
+        if !context.is_encrypt_enabled() {
+            return Ok(serde_json::Value::Null)
         }
 
-        tracing::info!("encrypt_transaction_params: {:?}", self.raw_transaction);
+        tracing::info!("{}: {:?}", Self::method(), self.raw_transaction);
 
-        // Encrypt the transaction
-        let encrypted_transaction = self.encrypt_transaction(context.clone()).await?;
-
-        let parameter = SendEncryptedTransactionRequest {
+        let raw_tx: String = serde_json::from_str(&serde_json::to_string(&self.raw_transaction)?)?;
+        let (session_id, enc_key) = context.dkg_client_service().get_enc_key().await.map_err(|e| RpcError::from(e))?;
+        let encrypted_tx = context.secure_rpc_service().encrypt_tx(session_id, &raw_tx, &enc_key).await.map_err(|e| RpcError::from(e))?;
+        
+        let parameter = SendEncryptedTxParam {
             rollup_id: self.rollup_id.clone(),
-            encrypted_transaction,
+            encrypted_tx,
         };
+        
+        let response = context.rpc_client_service().request(Self::method(), parameter).await?;
 
         let url = self.select_url(&context, &parameter)?;
 
@@ -51,20 +49,7 @@ impl RpcParameter<AppState> for SendEncryptedTransaction {
     }
 }
 
-impl SendEncryptedTransaction {
-    async fn encrypt_transaction(
-        &self,
-        context: AppState,
-    ) -> Result<EncryptedTransaction, RpcError> {
-        let encrypted_transaction = EncryptTransaction {
-            raw_transaction: self.raw_transaction.clone(),
-        }
-        .handler(context)
-        .await?
-        .encrypted_transaction;
-
-        Ok(encrypted_transaction)
-    }
+impl SendEncryptedTx {
 
     fn select_url(
         &self,
