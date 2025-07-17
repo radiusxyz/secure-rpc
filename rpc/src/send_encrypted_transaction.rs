@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tx_orderer::types::RawTransaction;
 use radius_sdk::json_rpc::server::{RpcError, RpcParameter};
-use secure_rpc_primitives::{Context, SecureRPCService, ExternalRpcInterface};
+use secure_rpc_primitives::{Context, SecureRpcService, ExternalRpcInterface};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SendEncryptedTx {
@@ -26,6 +26,7 @@ impl<C: Context> RpcParameter<C> for SendEncryptedTx {
         let raw_tx: String = serde_json::from_str(&serde_json::to_string(&self.raw_transaction)?)?;
         let (enc_key, session_id) = context.external_rpc_service().get_enc_key().await.map_err(|e| RpcError::from(e))?;
         let encrypted_tx = context.secure_rpc_service().encrypt_tx(session_id, &raw_tx, &enc_key).await.map_err(|e| RpcError::from(e))?;
+        // `Value` would be order commitment from tx-orderer
         let res = context.external_rpc_service().forward_tx(&self.rollup_id, true, encrypted_tx).await.map_err(|e| RpcError::from(e))?;
 
         Ok(res)

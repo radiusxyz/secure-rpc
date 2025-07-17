@@ -4,11 +4,11 @@ pub use traits::RpcT;
 use async_trait::async_trait;
 use serde::{Serialize, de::DeserializeOwned};
 
-pub type EncryptedTxFor<C> = <<C as Context>::SecureRPCService as SecureRPCService>::EncryptedTx;
+pub type EncryptedTxFor<C> = <<C as Context>::SecureRpcService as SecureRpcService>::EncryptedTx;
 
 #[async_trait]
 pub trait Context: RpcT {
-    type SecureRPCService: SecureRPCService;
+    type SecureRpcService: SecureRpcService;
     type ExternalRpcService: ExternalRpcInterface;
 
     /// Get the rollup ID from the context
@@ -18,7 +18,7 @@ pub trait Context: RpcT {
     fn is_encrypt_enabled(&self) -> bool;
 
     /// Get the secure RPC service
-    fn secure_rpc_service(&self) -> &Self::SecureRPCService;
+    fn secure_rpc_service(&self) -> &Self::SecureRpcService;
 
     /// Get the external RPC service
     fn external_rpc_service(&self) -> &Self::ExternalRpcService;
@@ -26,7 +26,7 @@ pub trait Context: RpcT {
 
 #[async_trait]
 /// Secure RPC service interface
-pub trait SecureRPCService: RpcT {
+pub trait SecureRpcService: RpcT {
 
     /// Type of the encrypted transaction
     type EncryptedTx: Serialize + DeserializeOwned + RpcT;

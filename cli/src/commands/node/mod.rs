@@ -1,23 +1,20 @@
-mod data_dir;
-mod rpc_server;
+
 mod secure_rpc;
 
-use data_dir::DataDirArgs;
-use rpc_server::RpcServerArgs;
+use uuid::Uuid;
 use secure_rpc::SecureRpcArgs;
 
 use crate::Parser;
 
 #[derive(Debug, Parser)]
 pub struct NodeCommand {
-    #[arg(long = "dev")]
+    #[doc = "Run in development mode"]
+    #[arg(long = "dev", default_value_t = true)]
     pub is_dev: bool,
-    #[arg(long = "node-name")]
-    pub node_name: Option<String>,
+    #[doc = "Name of the node to specify on the network"]
+    #[arg(long = "node-name", default_value_t = format!("secure-rpc-provider-{}", Uuid::new_v4()))]
+    pub node_name: String,
+    #[doc = "Secure RPC configuration"]
     #[command(flatten)]
-    pub rpc_server: RpcServerArgs,
-    #[command(flatten)]
-    pub secure_rpc: SecureRpcArgs,
-    #[command(flatten)]
-    pub data_dir: DataDirArgs,
+    pub secure_rpc_args: SecureRpcArgs,
 }

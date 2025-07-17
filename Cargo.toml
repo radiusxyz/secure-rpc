@@ -35,6 +35,7 @@ async-trait = "0.1.88"
 alloy = "0.7"
 jsonrpsee = { version = "0.25.1", features = ["client", "macros"] }
 futures = "0.3.31"
+uuid = { version = "1.17.0", features = ["v4"] }
 
 # Radius
 skde = { git = "https://github.com/radiusxyz/skde", rev = "69e70ac0ab071000b3d13557cdbed43ffeddc878" }

@@ -6232,14 +6232,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "secure-rpc"
-version = "1.0.0"
-dependencies = [
- "anyhow",
- "secure-rpc-cli",
-]
-
-[[package]]
 name = "secure-rpc-cli"
 version = "0.1.0"
 dependencies = [
@@ -6248,6 +6240,7 @@ dependencies = [
  "secure-rpc-node-primitive",
  "secure-rpc-node-service",
  "tokio",
+ "uuid",
 ]
 
 [[package]]
@@ -6296,6 +6289,15 @@ dependencies = [
  "async-trait",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "secure-rpc-provider"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
+ "secure-rpc-cli",
+ "tracing-subscriber 0.3.19",
 ]
 
 [[package]]

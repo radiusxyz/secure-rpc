@@ -1,5 +1,3 @@
-use std::{path::PathBuf, time::Duration};
-
 use secure_rpc_node_primitive::NodeConfig;
 
 use crate::{node::NodeCommand, Cli, Commands};
@@ -13,21 +11,17 @@ pub fn run() -> anyhow::Result<()> {
 }
 
 fn create_configuration(cli: Box<NodeCommand>) -> NodeConfig {
-    let db_path = cli.data_dir.db_path.unwrap();
     NodeConfig::new(
         cli.is_dev,
         cli.node_name,
-        cli.rpc_server.external_rpc_url(),
-        cli.rpc_server.internal_rpc_url(),
-        cli.rpc_server.cluster_rpc_url(),
-        cli.secure_rpc.tx_orderer_rpc_url,
-        cli.secure_rpc.rollup_rpc_url,
-        cli.secure_rpc.dkg_rpc_url,
-        cli.secure_rpc.rollup_id,
-        db_path,
-        cli.secure_rpc.blockchain_url,
-        cli.secure_rpc.contract_address,
-        cli.secure_rpc.encrypt_mode,
+        cli.secure_rpc_args.rpc_url,
+        cli.secure_rpc_args.tx_orderer_rpc_url,
+        cli.secure_rpc_args.rollup_rpc_url,
+        cli.secure_rpc_args.dkg_rpc_url,
+        cli.secure_rpc_args.rollup_id,
+        cli.secure_rpc_args.blockchain_url,
+        cli.secure_rpc_args.contract_address,
+        cli.secure_rpc_args.encrypt_mode,
     )
 }
 
@@ -38,5 +32,6 @@ fn run_node_inner(cli: Box<NodeCommand>) -> anyhow::Result<()> {
         .unwrap();
     let config = create_configuration(cli);
     // TODO: handle the result
-    runtime.block_on(secure_rpc_node_service::run_node(config))
+    runtime.block_on(secure_rpc_node_service::run_node(config))?;
+    Ok(())
 }
