@@ -11,6 +11,9 @@ pub trait Context: RpcT {
     type SecureRPCService: SecureRPCService;
     type ExternalRpcService: ExternalRpcInterface;
 
+    /// Get the rollup ID from the context
+    fn rollup_id(&self) -> &str;
+
     /// Check if the encryption mode is enabled
     fn is_encrypt_enabled(&self) -> bool;
 
@@ -26,7 +29,7 @@ pub trait Context: RpcT {
 pub trait SecureRPCService: RpcT {
 
     /// Type of the encrypted transaction
-    type EncryptedTx: Serialize + DeserializeOwned + Send + Sync + Clone + 'static;
+    type EncryptedTx: Serialize + DeserializeOwned + RpcT;
 
     /// Error type for the secure RPC service
     type Error: std::error::Error + Send + 'static;
@@ -39,9 +42,15 @@ pub trait SecureRPCService: RpcT {
 /// RPC interface for external resources
 pub trait ExternalRpcInterface: RpcT {
 
+    /// Type of the error for the external RPC interface
     type Error: std::error::Error + Send + 'static;
     
+    /// Get the encryption key
     async fn get_enc_key(&self) -> Result<(String, u64), Self::Error>;
+    
+    /// Forward a RPC request to the external service
+    async fn forward_rpc_request<P: Serialize + RpcT>(&self, method: &str, params: P) -> Result<serde_json::Value, Self::Error>;
 
-    async fn send_encrypted_tx(&self, encrypted_tx: &str) -> Result<serde_json::Value, Self::Error>;
+    /// Forward a transaction to the external service
+    async fn forward_tx<T: Serialize + RpcT>(&self, rollup_id: &str, is_encrypted: bool, tx: T) -> Result<serde_json::Value, Self::Error>;
 }

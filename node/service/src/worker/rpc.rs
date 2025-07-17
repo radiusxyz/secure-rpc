@@ -1,14 +1,14 @@
-use jsonrpsee::{core::{params::ArrayParams, traits::ToRpcParams}, rpc_params};
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::mpsc;
+use jsonrpsee::core::traits::ToRpcParams;
 use secure_rpc_node_primitive::service::rpc::{DispatchMessage, ExternalRpcService, RpcError};
-use radius_sdk::json_rpc::server::RpcServer;
+use radius_sdk::json_rpc::client::{RpcClient, Id};
 
-pub async fn start_external_rpc_worker(enc_key_endpoint: impl AsRef<str>, order_commitment_endpoint: impl AsRef<str>) -> (ExternalRpcService, tokio::task::JoinHandle<()>) {
+pub async fn start_external_rpc_worker(enc_key_endpoint: impl AsRef<str>, rollup_rpc_url: impl AsRef<str>, tx_orderer_rpc_list: Vec<String>) -> (ExternalRpcService, tokio::task::JoinHandle<()>) {
     let (rpc_worker, tx) = ExternalRPCWorker::new();
     let handle = tokio::spawn(async move {
         rpc_worker.run().await;
     });
-    (ExternalRpcService::new(tx, enc_key_endpoint, order_commitment_endpoint), handle)
+    (ExternalRpcService::new(tx, enc_key_endpoint, rollup_rpc_url, tx_orderer_rpc_list), handle)
 }
 
 pub struct ExternalRPCWorker {

@@ -11,8 +11,11 @@ anyhow.workspace = true
 clap.workspace = true
 tokio.workspace = true
 futures.workspace = true
+jsonrpsee.workspace = true
+tracing.workspace = true
 
 secure-rpc-primitives.workspace = true
 secure-rpc-node-primitive.workspace = true
 secure-rpc-service.workspace = true
 radius-sdk.workspace = true
+skde.workspace = true

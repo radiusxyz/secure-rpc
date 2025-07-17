@@ -6260,6 +6260,7 @@ dependencies = [
  "clap",
  "jsonrpsee 0.25.1",
  "radius-sdk",
+ "rand 0.8.5",
  "secure-rpc-primitives",
  "serde",
  "serde_json",
@@ -6277,11 +6278,14 @@ dependencies = [
  "anyhow",
  "clap",
  "futures",
+ "jsonrpsee 0.25.1",
  "radius-sdk",
  "secure-rpc-node-primitive",
  "secure-rpc-primitives",
  "secure-rpc-service",
+ "skde 0.1.0 (git+https://github.com/radiusxyz/skde?rev=69e70ac0ab071000b3d13557cdbed43ffeddc878)",
  "tokio",
+ "tracing",
 ]
 
 [[package]]

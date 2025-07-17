@@ -19,6 +19,7 @@ serde.workspace = true
 thiserror.workspace = true
 alloy.workspace = true
 jsonrpsee.workspace = true
+rand.workspace = true
 
 # Internal 
 secure-rpc-primitives.workspace = true

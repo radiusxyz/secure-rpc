@@ -1,4 +1,4 @@
-
+pub mod eth;
 mod send_encrypted_transaction;
 mod send_raw_transaction;
 
