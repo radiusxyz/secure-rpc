@@ -7,8 +7,10 @@ use super::{ConfigPath, CONFIG_FILE_NAME};
 use crate::error::Error;
 
 const DEFAULT_EXTERNAL_RPC_URL: &str = "http://127.0.0.1:9000";
+const DEFAULT_EXTERNAL_WS_URL: &str = "ws://127.0.0.1:9111";
 const DEFAULT_TX_ORDERER_RPC_URL_LIST: &str = "http://127.0.0.1:3000";
 const DEFAULT_ROLLUP_RPC_URL: &str = "http://127.0.0.1:8123";
+const DEFAULT_ROLLUP_WS_URL: &str = "ws://127.0.0.1:8123";
 const DEFAULT_ENCRYPTED_TRANSACTION_TYPE: &str = "skde";
 const DEFAULT_DISTRIBUTED_KEY_GENERATION_RPC_URL: &str = "http://127.0.0.1:7100";
 
@@ -26,6 +28,10 @@ pub struct ConfigOption {
     #[clap(long = "external-rpc-url")]
     pub external_rpc_url: Option<String>,
 
+    #[doc = "Set the external ws url"]
+    #[clap(long = "external-ws-url")]
+    pub external_ws_url: Option<String>,
+
     #[doc = "Set the tx orderer rpc url list"]
     #[clap(long = "tx-orderer-rpc-url-list")]
     pub tx_orderer_rpc_url_list: Option<String>,
@@ -33,6 +39,10 @@ pub struct ConfigOption {
     #[doc = "Set the rollup rpc url"]
     #[clap(long = "rollup-rpc-url")]
     pub rollup_rpc_url: Option<String>,
+
+    #[doc = "Set the rollup websocket url"]
+    #[clap(long = "rollup-websocket-url")]
+    pub rollup_ws_url: Option<String>,
 
     #[doc = "Set encrypted transaction type"]
     #[clap(long = "encrypted-transaction-type")]
@@ -49,8 +59,10 @@ impl Default for ConfigOption {
             path: Some(ConfigPath::default().as_ref().into()),
             rollup_id: Some("0".into()),
             external_rpc_url: Some(DEFAULT_EXTERNAL_RPC_URL.into()),
+            external_ws_url: Some(DEFAULT_EXTERNAL_WS_URL.into()),
             tx_orderer_rpc_url_list: Some(DEFAULT_TX_ORDERER_RPC_URL_LIST.into()),
             rollup_rpc_url: Some(DEFAULT_ROLLUP_RPC_URL.into()),
+            rollup_ws_url: Some(DEFAULT_ROLLUP_WS_URL.into()),
             encrypted_transaction_type: Some(DEFAULT_ENCRYPTED_TRANSACTION_TYPE.into()),
             distributed_key_generation_rpc_url: Some(
                 DEFAULT_DISTRIBUTED_KEY_GENERATION_RPC_URL.into(),
@@ -91,11 +103,21 @@ impl ConfigOption {
                 &self.external_rpc_url,
             ),
             (
+                "Set external ws url",
+                "external_ws_url",
+                &self.external_ws_url,
+            ),
+            (
                 "Set tx orderer rpc url list",
                 "tx_orderer_rpc_url_list",
                 &self.tx_orderer_rpc_url_list,
             ),
             ("Set rollup rpc url", "rollup_rpc_url", &self.rollup_rpc_url),
+            (
+                "Set rollup websocket url",
+                "rollup_ws_url",
+                &self.rollup_ws_url,
+            ),
             (
                 "Set encrypted transaction type",
                 "encrypted_transaction_type",
@@ -128,8 +150,10 @@ impl ConfigOption {
         merge_field!(path);
         merge_field!(rollup_id);
         merge_field!(external_rpc_url);
+        merge_field!(external_ws_url);
         merge_field!(tx_orderer_rpc_url_list);
         merge_field!(rollup_rpc_url);
+        merge_field!(rollup_ws_url);
         merge_field!(encrypted_transaction_type);
         merge_field!(distributed_key_generation_rpc_url);
 

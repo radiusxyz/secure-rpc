@@ -22,10 +22,12 @@ fi
 
 # Secure RPC
 SECURE_RPC_EXTERNAL_RPC_URL="http://127.0.0.1:5000" # External IP - Please change this IP.
+SECURE_RPC_EXTERNAL_WS_URL="http://127.0.0.1:9111" # External IP - Please change this IP.
 
 # Rollup
 ROLLUP_ID="rollup_id"                  # Please change this rollup id.
 ROLLUP_RPC_URL="http://127.0.0.1:8123" # Please change this rollup rpc url.
+ROLLUP_WS_URL="ws://127.0.0.1:8123" # Please change this rollup ws url.
 
 # Tx_orderer
 TX_ORDERER_EXTERNAL_RPC_URL_LIST="http://127.0.0.1:6000" # Please change this tx orderer (external) rpc url.

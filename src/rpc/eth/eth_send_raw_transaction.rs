@@ -13,7 +13,7 @@ use crate::{
 };
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct EthSendRawTransaction(Vec<String>);
+pub struct EthSendRawTransaction(pub Vec<String>);
 
 impl RpcParameter<AppState> for EthSendRawTransaction {
     type Response = Value;

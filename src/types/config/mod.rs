@@ -17,8 +17,10 @@ pub const CONFIG_FILE_NAME: &str = "Config.toml";
 pub struct Config {
     rollup_id: String,
     external_rpc_url: String,
+    external_ws_url: String,
     tx_orderer_rpc_url_list: Vec<String>,
     rollup_rpc_url: String,
+    rollup_ws_url: String,
     encrypted_transaction_type: EncryptedTransactionType,
     distributed_key_generation_rpc_url: String,
 }
@@ -54,8 +56,10 @@ impl Config {
         Ok(Config {
             rollup_id: merged_config_option.rollup_id.unwrap(),
             external_rpc_url: merged_config_option.external_rpc_url.unwrap(),
+            external_ws_url: merged_config_option.external_ws_url.unwrap(),
             tx_orderer_rpc_url_list,
             rollup_rpc_url: merged_config_option.rollup_rpc_url.unwrap(),
+            rollup_ws_url: merged_config_option.rollup_ws_url.unwrap(),
             encrypted_transaction_type: EncryptedTransactionType::from(encrypted_transaction_type),
             distributed_key_generation_rpc_url: merged_config_option
                 .distributed_key_generation_rpc_url
@@ -71,8 +75,20 @@ impl Config {
         &self.external_rpc_url
     }
 
-    pub fn external_port(&self) -> Result<String, ConfigError> {
+    pub fn external_rpc_port(&self) -> Result<String, ConfigError> {
         self.external_rpc_url
+            .split(':')
+            .last()
+            .map(String::from)
+            .ok_or(ConfigError::InvalidExternalPort)
+    }
+
+    pub fn external_ws_url(&self) -> &str {
+        &self.external_ws_url
+    }
+
+    pub fn external_ws_port(&self) -> Result<String, ConfigError> {
+        self.external_ws_url
             .split(':')
             .last()
             .map(String::from)
@@ -85,6 +101,10 @@ impl Config {
 
     pub fn rollup_rpc_url(&self) -> &str {
         &self.rollup_rpc_url
+    }
+
+    pub fn rollup_ws_url(&self) -> &str {
+        &self.rollup_ws_url
     }
 
     pub fn encrypted_transaction_type(&self) -> &EncryptedTransactionType {
