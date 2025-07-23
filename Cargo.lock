@@ -6276,6 +6276,7 @@ dependencies = [
  "secure-rpc-node-primitive",
  "secure-rpc-primitives",
  "secure-rpc-service",
+ "serde",
  "skde 0.1.0 (git+https://github.com/radiusxyz/skde?rev=69e70ac0ab071000b3d13557cdbed43ffeddc878)",
  "tokio",
  "tracing",

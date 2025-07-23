@@ -1,6 +1,7 @@
 
 mod skde;
-pub use skde::SkdeSecureRpcService;
+pub use skde::*;
 mod blockchain;
-pub use blockchain::BlockchainService;
+pub use blockchain::*;
 pub mod rpc;
+pub use rpc::*;

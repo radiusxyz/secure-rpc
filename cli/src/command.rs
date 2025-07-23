@@ -17,7 +17,6 @@ fn create_configuration(cli: Box<NodeCommand>) -> NodeConfig {
         cli.secure_rpc_args.rpc_url,
         cli.secure_rpc_args.tx_orderer_rpc_url,
         cli.secure_rpc_args.rollup_rpc_url,
-        cli.secure_rpc_args.dkg_rpc_url,
         cli.secure_rpc_args.rollup_id,
         cli.secure_rpc_args.blockchain_url,
         cli.secure_rpc_args.contract_address,
