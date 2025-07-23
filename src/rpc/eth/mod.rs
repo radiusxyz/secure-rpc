@@ -32,7 +32,7 @@ where
         .map_err(RpcError::from)
 }
 
-macro_rules! define_fowarding_rpc {
+macro_rules! define_forwarding_rpc {
     ($name:ident, $method:expr) => {
         #[derive(Clone, Debug, Deserialize, Serialize)]
         pub struct $name(Value);
@@ -52,35 +52,92 @@ macro_rules! define_fowarding_rpc {
 }
 
 // Related to Eth rpc
-define_fowarding_rpc!(EthBlockNumber, "eth_blockNumber");
-define_fowarding_rpc!(EthCall, "eth_call");
-define_fowarding_rpc!(EthChainId, "eth_chainId");
-define_fowarding_rpc!(EthEstimateGas, "eth_estimateGas");
-define_fowarding_rpc!(EthFeeHistory, "eth_feeHistory");
-define_fowarding_rpc!(EthGasPrice, "eth_gasPrice");
-define_fowarding_rpc!(EthGetBalance, "eth_getBalance");
-define_fowarding_rpc!(EthGetBlockByHash, "eth_getBlockByHash");
-define_fowarding_rpc!(EthGetBlockByNumber, "eth_getBlockByNumber");
+define_forwarding_rpc!(EthBlockNumber, "eth_blockNumber");
+define_forwarding_rpc!(EthChainId, "eth_chainId");
+define_forwarding_rpc!(EthProtocolVersion, "eth_protocolVersion");
+define_forwarding_rpc!(EthSyncing, "eth_syncing");
+define_forwarding_rpc!(EthGasPrice, "eth_gasPrice");
+define_forwarding_rpc!(EthMaxPriorityFeePerGas, "eth_maxPriorityFeePerGas");
+define_forwarding_rpc!(EthFeeHistory, "eth_feeHistory");
+define_forwarding_rpc!(EthGetBlockByHash, "eth_getBlockByHash");
+define_forwarding_rpc!(EthGetBlockByNumber, "eth_getBlockByNumber");
+define_forwarding_rpc!(
+    EthGetBlockTransactionCountByHash,
+    "eth_getBlockTransactionCountByHash"
+);
+define_forwarding_rpc!(
+    EthGetBlockTransactionCountByNumber,
+    "eth_getBlockTransactionCountByNumber"
+);
+define_forwarding_rpc!(
+    EthGetUncleByBlockHashAndIndex,
+    "eth_getUncleByBlockHashAndIndex"
+);
+define_forwarding_rpc!(
+    EthGetUncleByBlockNumberAndIndex,
+    "eth_getUncleByBlockNumberAndIndex"
+);
+define_forwarding_rpc!(EthGetUncleCountByBlockHash, "eth_getUncleCountByBlockHash");
+define_forwarding_rpc!(
+    EthGetUncleCountByBlockNumber,
+    "eth_getUncleCountByBlockNumber"
+);
+define_forwarding_rpc!(EthGetTransactionByHash, "eth_getTransactionByHash");
+define_forwarding_rpc!(EthGetRawTransactionByHash, "eth_getRawTransactionByHash");
+define_forwarding_rpc!(
+    EthGetTransactionByBlockHashAndIndex,
+    "eth_getTransactionByBlockHashAndIndex"
+);
+define_forwarding_rpc!(
+    EthRetRawTransactionByBlockHashAndIndex,
+    "eth_retRawTransactionByBlockHashAndIndex"
+);
+define_forwarding_rpc!(
+    EthGetTransactionByBlockNumberAndIndex,
+    "eth_getTransactionByBlockNumberAndIndex"
+);
+define_forwarding_rpc!(
+    EthRetRawTransactionByBlockNumberAndIndex,
+    "eth_retRawTransactionByBlockNumberAndIndex"
+);
+define_forwarding_rpc!(EthGetTransactionReceipt, "eth_getTransactionReceipt");
+define_forwarding_rpc!(EthGetBlockReceipts, "eth_getBlockReceipts");
+define_forwarding_rpc!(EthEstimateGas, "eth_estimateGas");
+define_forwarding_rpc!(EthGetBalance, "eth_getBalance");
+define_forwarding_rpc!(EthGetCode, "eth_getCode");
+define_forwarding_rpc!(EthGetTransactionCount, "eth_getTransactionCount");
+define_forwarding_rpc!(EthGetStorageAt, "eth_getStorageAt");
+define_forwarding_rpc!(EthCall, "eth_call");
+define_forwarding_rpc!(EthCallMany, "eth_callMany");
+define_forwarding_rpc!(EthCallBundle, "eth_callBundle");
+define_forwarding_rpc!(EthCreateAccessList, "eth_createAccessList");
+define_forwarding_rpc!(EthNewFilter, "eth_newFilter");
+define_forwarding_rpc!(EthNewBlockFilter, "eth_newBlockFilter");
+define_forwarding_rpc!(
+    EthNewPendingTransactionFilter,
+    "eth_newPendingTransactionFilter"
+);
+define_forwarding_rpc!(EthGetFilterLogs, "eth_getFilterLogs");
+define_forwarding_rpc!(EthGetFilterChanges, "eth_getFilterChanges");
+define_forwarding_rpc!(EthUninstallFilter, "eth_uninstallFilter");
+define_forwarding_rpc!(EthGetLogs, "eth_getLogs");
+define_forwarding_rpc!(EthSignTypedData, "eth_signTypedData");
+define_forwarding_rpc!(EthGetProof, "eth_getProof");
+define_forwarding_rpc!(EthMining, "eth_mining");
+define_forwarding_rpc!(EthCoinbase, "eth_coinbase");
+define_forwarding_rpc!(EthHashrate, "eth_hashrate");
+define_forwarding_rpc!(EthSubmitHashrate, "eth_submitHashrate");
+define_forwarding_rpc!(EthGetWork, "eth_getWork");
+define_forwarding_rpc!(EthSubmitWork, "eth_submitWork");
+define_forwarding_rpc!(EthSubscribe, "eth_subscribe");
+define_forwarding_rpc!(EthUnsubscribe, "eth_unsubscribe");
 
-define_fowarding_rpc!(EthGetCode, "eth_getCode");
-define_fowarding_rpc!(EthGetTransactionByHash, "eth_getTransactionByHash");
-define_fowarding_rpc!(EthGetTransactionCount, "eth_getTransactionCount");
-define_fowarding_rpc!(EthGetTransactionReceipt, "eth_getTransactionReceipt");
-define_fowarding_rpc!(EthGetLogs, "eth_getLogs");
-
-define_fowarding_rpc!(EthGetStorageAt, "eth_getStorageAt");
-
-
-
-
-
-define_fowarding_rpc!(NetVersion, "net_version");
-// define_eth_rpc!(EthGetCode, "eth_getCode");
-// define_eth_rpc!(EthGasPrice, "eth_gasPrice");
-// define_eth_rpc!(EthFeeHistory, "eth_feeHistory");
-// define_eth_rpc!(EthGetBalance, "eth_getBalance");
+// Related to Net rpc
+define_forwarding_rpc!(NetVersion, "net_version");
 
 // Related to Zkevm rpc
-define_fowarding_rpc!(ZkevmGetLatestGlobalExitRoot, "zkevm_getLatestGlobalExitRoot");
-define_fowarding_rpc!(ZkevmGetExitRootsByGER, "zkevm_getExitRootsByGER");
-
+define_forwarding_rpc!(
+    ZkevmGetLatestGlobalExitRoot,
+    "zkevm_getLatestGlobalExitRoot"
+);
+define_forwarding_rpc!(ZkevmGetExitRootsByGER, "zkevm_getExitRootsByGER");

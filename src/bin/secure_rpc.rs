@@ -114,21 +114,55 @@ async fn initialize_external_rpc_server(
     let external_rpc_server = RpcServer::new(context.clone())
         // eth
         .register_rpc_method::<eth::EthBlockNumber>()?
-        .register_rpc_method::<eth::EthCall>()?
         .register_rpc_method::<eth::EthChainId>()?
-        .register_rpc_method::<eth::EthEstimateGas>()?
-        .register_rpc_method::<eth::EthFeeHistory>()?
+        .register_rpc_method::<eth::EthProtocolVersion>()?
+        .register_rpc_method::<eth::EthSyncing>()?
         .register_rpc_method::<eth::EthGasPrice>()?
-        .register_rpc_method::<eth::EthGetBalance>()?
+        .register_rpc_method::<eth::EthMaxPriorityFeePerGas>()?
+        .register_rpc_method::<eth::EthFeeHistory>()?
         .register_rpc_method::<eth::EthGetBlockByHash>()?
         .register_rpc_method::<eth::EthGetBlockByNumber>()?
-        .register_rpc_method::<eth::EthGetCode>()?
+        .register_rpc_method::<eth::EthGetBlockTransactionCountByHash>()?
+        .register_rpc_method::<eth::EthGetBlockTransactionCountByNumber>()?
+        .register_rpc_method::<eth::EthGetUncleByBlockHashAndIndex>()?
+        .register_rpc_method::<eth::EthGetUncleByBlockNumberAndIndex>()?
+        .register_rpc_method::<eth::EthGetUncleCountByBlockHash>()?
+        .register_rpc_method::<eth::EthGetUncleCountByBlockNumber>()?
         .register_rpc_method::<eth::EthGetTransactionByHash>()?
-        .register_rpc_method::<eth::EthGetTransactionCount>()?
+        .register_rpc_method::<eth::EthGetRawTransactionByHash>()?
+        .register_rpc_method::<eth::EthGetTransactionByBlockHashAndIndex>()?
+        .register_rpc_method::<eth::EthRetRawTransactionByBlockHashAndIndex>()?
+        .register_rpc_method::<eth::EthGetTransactionByBlockNumberAndIndex>()?
+        .register_rpc_method::<eth::EthRetRawTransactionByBlockNumberAndIndex>()?
         .register_rpc_method::<eth::EthGetTransactionReceipt>()?
-        .register_rpc_method::<eth::EthSendRawTransaction>()?
-        .register_rpc_method::<eth::EthGetLogs>()?
+        .register_rpc_method::<eth::EthGetBlockReceipts>()?
+        .register_rpc_method::<eth::EthEstimateGas>()?
+        .register_rpc_method::<eth::EthGetBalance>()?
+        .register_rpc_method::<eth::EthGetCode>()?
+        .register_rpc_method::<eth::EthGetTransactionCount>()?
         .register_rpc_method::<eth::EthGetStorageAt>()?
+        .register_rpc_method::<eth::EthCall>()?
+        .register_rpc_method::<eth::EthCallMany>()?
+        .register_rpc_method::<eth::EthCallBundle>()?
+        .register_rpc_method::<eth::EthCreateAccessList>()?
+        .register_rpc_method::<eth::EthNewFilter>()?
+        .register_rpc_method::<eth::EthNewBlockFilter>()?
+        .register_rpc_method::<eth::EthNewPendingTransactionFilter>()?
+        .register_rpc_method::<eth::EthGetFilterLogs>()?
+        .register_rpc_method::<eth::EthGetFilterChanges>()?
+        .register_rpc_method::<eth::EthUninstallFilter>()?
+        .register_rpc_method::<eth::EthGetLogs>()?
+        .register_rpc_method::<eth::EthSignTypedData>()?
+        .register_rpc_method::<eth::EthGetProof>()?
+        .register_rpc_method::<eth::EthMining>()?
+        .register_rpc_method::<eth::EthCoinbase>()?
+        .register_rpc_method::<eth::EthHashrate>()?
+        .register_rpc_method::<eth::EthSubmitHashrate>()?
+        .register_rpc_method::<eth::EthGetWork>()?
+        .register_rpc_method::<eth::EthSubmitWork>()?
+        .register_rpc_method::<eth::EthSubscribe>()?
+        .register_rpc_method::<eth::EthUnsubscribe>()?
+        // net
         .register_rpc_method::<eth::NetVersion>()?
         // cryptography
         .register_rpc_method::<DecryptTransaction>()?

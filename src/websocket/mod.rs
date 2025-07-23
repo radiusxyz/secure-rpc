@@ -1,6 +1,6 @@
 use futures::{SinkExt, StreamExt};
 use radius_sdk::json_rpc::server::LocalRpcParameter;
-use tokio::{join, net::TcpListener};
+use tokio::net::TcpListener;
 use tokio_tungstenite::{accept_async, connect_async, tungstenite::Message};
 
 use crate::{rpc::eth::EthSendRawTransaction, state::AppState};
