@@ -9,6 +9,7 @@ use secure_rpc::{
     rpc::{eth, *},
     state::AppState,
     types::config::{Config, ConfigOption, ConfigPath},
+    websocket::run_websocket_server,
 };
 use serde::{Deserialize, Serialize};
 use tokio::task::JoinHandle;
@@ -93,6 +94,7 @@ async fn main() -> Result<(), Error> {
             let app_state =
                 AppState::new(config, skde_params, Some(distributed_key_generation_client))?;
 
+            run_websocket_server(app_state.clone()).await;
             // Initialize the secure RPC server.
             let server_handle = initialize_external_rpc_server(app_state).await?;
 
@@ -106,7 +108,7 @@ async fn main() -> Result<(), Error> {
 async fn initialize_external_rpc_server(
     context: AppState, // rpc_client: &RpcClient,
 ) -> Result<JoinHandle<()>, Error> {
-    let external_rpc_url = anywhere(&context.config().external_port()?);
+    let external_rpc_url = anywhere(&context.config().external_rpc_port()?);
 
     // Initialize the external RPC server.
     let external_rpc_server = RpcServer::new(context.clone())
