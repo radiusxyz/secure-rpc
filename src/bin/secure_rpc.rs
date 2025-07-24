@@ -162,6 +162,7 @@ async fn initialize_external_rpc_server(
         .register_rpc_method::<eth::EthSubmitWork>()?
         .register_rpc_method::<eth::EthSubscribe>()?
         .register_rpc_method::<eth::EthUnsubscribe>()?
+        .register_rpc_method::<eth::EthSendRawTransaction>()?
         // net
         .register_rpc_method::<eth::NetVersion>()?
         // cryptography
