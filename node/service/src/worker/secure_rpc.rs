@@ -1,5 +1,4 @@
-use secure_rpc_node_primitive::{RpcEvent, OperatorEvent};
-use secure_rpc_primitives::{Context, TrustedSetupFor, EncryptedTxFor};
+use secure_rpc_primitives::{Context, EncryptedTxFor, OperatorEvent, RpcEvent, TrustedSetupFor};
 use tokio::{sync::mpsc, task::JoinHandle};
 use futures::{future::FutureExt, select_biased};
 

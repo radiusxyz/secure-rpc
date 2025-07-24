@@ -1,5 +1,5 @@
-use secure_rpc_node_primitive::OperatorEvent;
-use secure_rpc_primitives::{Context, RpcT, TrustedSetupFor, OperatorService};
+use secure_rpc_primitives::{Context, RpcT, TrustedSetupFor, OperatorService, OperatorEvent};
+use alloy::providers::{Provider, ProviderBuilder, WsConnect};
 use tokio::sync::mpsc;
 
 pub async fn start_operator_worker<C: Context, OS: OperatorService>(_context: &C, operator_service: OS) -> anyhow::Result<(tokio::task::JoinHandle<()>, mpsc::Receiver<OperatorEvent<TrustedSetupFor<C>>>, TrustedSetupFor<C>, Vec<String>)> 

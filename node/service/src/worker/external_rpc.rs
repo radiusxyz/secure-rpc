@@ -3,12 +3,12 @@ use jsonrpsee::core::traits::ToRpcParams;
 use secure_rpc_node_primitive::service::rpc::{DispatchMessage, ExternalRpcService, RpcError};
 use radius_sdk::json_rpc::client::{RpcClient, Id};
 
-pub async fn start_external_rpc_worker(initial_dkg_rpc_urls: Vec<String>, rollup_rpc_url: impl AsRef<str>, tx_orderer_rpc_url: impl AsRef<str>) -> (ExternalRpcService, tokio::task::JoinHandle<()>) {
+pub async fn start_external_rpc_worker(dkg_rpc_urls: Vec<String>, rollup_rpc_url: impl AsRef<str>, tx_orderer_rpc_url: impl AsRef<str>) -> (ExternalRpcService, tokio::task::JoinHandle<()>) {
     let (rpc_worker, tx) = ExternalRPCWorker::new();
     let handle = tokio::spawn(async move {
         rpc_worker.run().await;
     });
-    (ExternalRpcService::new(tx, initial_dkg_rpc_urls, rollup_rpc_url, tx_orderer_rpc_url), handle)
+    (ExternalRpcService::new(tx, dkg_rpc_urls, rollup_rpc_url, tx_orderer_rpc_url), handle)
 }
 
 pub struct ExternalRPCWorker {
