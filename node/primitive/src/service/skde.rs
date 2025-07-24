@@ -6,10 +6,10 @@ use tx_orderer::types::{SkdeEncryptedTransaction, decode_rlp_transaction,
     TransactionData, EthTransactionData
 };
 use anyhow::Result;
-use crate::DkgContract;
+use crate::operator::blockchain::OperatorContract;
 
-impl From<DkgContract::TrustedSetupParams> for SkdeParams {
-    fn from(params: DkgContract::TrustedSetupParams) -> Self {
+impl From<OperatorContract::TrustedSetupParams> for SkdeParams {
+    fn from(params: OperatorContract::TrustedSetupParams) -> Self {
         Self {
             n: params.n,
             g: params.g,
