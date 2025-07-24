@@ -136,8 +136,49 @@ define_forwarding_rpc!(EthUnsubscribe, "eth_unsubscribe");
 define_forwarding_rpc!(NetVersion, "net_version");
 
 // Related to Zkevm rpc
+define_forwarding_rpc!(ZkevmBatchNumber, "zkevm_batchNumber");
+define_forwarding_rpc!(
+    ZkevmBatchNumberByBlockNumber,
+    "zkevm_batchNumberByBlockNumber"
+);
+define_forwarding_rpc!(
+    ZkevmConsolidatedBlockNumber,
+    "zkevm_consolidatedBlockNumber"
+);
+define_forwarding_rpc!(ZkevmEstimateCounters, "zkevm_estimateCounters");
+define_forwarding_rpc!(ZkevmGetBatchByNumber, "zkevm_getBatchByNumber");
+define_forwarding_rpc!(
+    ZkevmGetBatchCountersByNumber,
+    "zkevm_getBatchCountersByNumber"
+);
+define_forwarding_rpc!(ZkevmGetBatchWitness, "zkevm_getBatchWitness");
+define_forwarding_rpc!(ZkevmGetBlockRangeWitness, "zkevm_getBlockRangeWitness");
+define_forwarding_rpc!(ZkevmGetExitRootTable, "zkevm_getExitRootTable");
+define_forwarding_rpc!(ZkevmGetExitRootsByGER, "zkevm_getExitRootsByGER");
+define_forwarding_rpc!(ZkevmGetForkById, "zkevm_getForkById");
+define_forwarding_rpc!(ZkevmGetForkId, "zkevm_getForkId");
+define_forwarding_rpc!(ZkevmGetForkIdByBatchNumber, "zkevm_getForkIdByBatchNumber");
+define_forwarding_rpc!(ZkevmGetForks, "zkevm_getForks");
+define_forwarding_rpc!(ZkevmGetFullBlockByHash, "zkevm_getFullBlockByHash");
+define_forwarding_rpc!(ZkevmGetFullBlockByNumber, "zkevm_getFullBlockByNumber");
+define_forwarding_rpc!(ZkevmGetL2BlockInfoTree, "zkevm_getL2BlockInfoTree");
+define_forwarding_rpc!(
+    ZkevmGetLatestDataStreamBlock,
+    "zkevm_getLatestDataStreamBlock"
+);
 define_forwarding_rpc!(
     ZkevmGetLatestGlobalExitRoot,
     "zkevm_getLatestGlobalExitRoot"
 );
-define_forwarding_rpc!(ZkevmGetExitRootsByGER, "zkevm_getExitRootsByGER");
+define_forwarding_rpc!(ZkevmGetProverInput, "zkevm_getProverInput");
+define_forwarding_rpc!(ZkevmGetRollupAddress, "zkevm_getRollupAddress");
+define_forwarding_rpc!(
+    ZkevmGetRollupManagerAddress,
+    "zkevm_getRollupManagerAddress"
+);
+define_forwarding_rpc!(ZkevmGetVersionHistory, "zkevm_getVersionHistory");
+define_forwarding_rpc!(ZkevmGetWitness, "zkevm_getWitness");
+define_forwarding_rpc!(ZkevmIsBlockConsolidated, "zkevm_isBlockConsolidated");
+define_forwarding_rpc!(ZkevmIsBlockVirtualized, "zkevm_isBlockVirtualized");
+define_forwarding_rpc!(ZkevmVerifiedBatchNumber, "zkevm_verifiedBatchNumber");
+define_forwarding_rpc!(ZkevmVirtualBatchNumber, "zkevm_virtualBatchNumber");

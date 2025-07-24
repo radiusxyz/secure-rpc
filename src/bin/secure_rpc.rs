@@ -163,6 +163,35 @@ async fn initialize_external_rpc_server(
         .register_rpc_method::<eth::EthSubscribe>()?
         .register_rpc_method::<eth::EthUnsubscribe>()?
         .register_rpc_method::<eth::EthSendRawTransaction>()?
+        // zkevm
+        .register_rpc_method::<eth::ZkevmBatchNumber>()?
+        .register_rpc_method::<eth::ZkevmBatchNumberByBlockNumber>()?
+        .register_rpc_method::<eth::ZkevmConsolidatedBlockNumber>()?
+        .register_rpc_method::<eth::ZkevmEstimateCounters>()?
+        .register_rpc_method::<eth::ZkevmGetBatchByNumber>()?
+        .register_rpc_method::<eth::ZkevmGetBatchCountersByNumber>()?
+        .register_rpc_method::<eth::ZkevmGetBatchWitness>()?
+        .register_rpc_method::<eth::ZkevmGetBlockRangeWitness>()?
+        .register_rpc_method::<eth::ZkevmGetExitRootTable>()?
+        .register_rpc_method::<eth::ZkevmGetExitRootsByGER>()?
+        .register_rpc_method::<eth::ZkevmGetForkById>()?
+        .register_rpc_method::<eth::ZkevmGetForkId>()?
+        .register_rpc_method::<eth::ZkevmGetForkIdByBatchNumber>()?
+        .register_rpc_method::<eth::ZkevmGetForks>()?
+        .register_rpc_method::<eth::ZkevmGetFullBlockByHash>()?
+        .register_rpc_method::<eth::ZkevmGetFullBlockByNumber>()?
+        .register_rpc_method::<eth::ZkevmGetL2BlockInfoTree>()?
+        .register_rpc_method::<eth::ZkevmGetLatestDataStreamBlock>()?
+        .register_rpc_method::<eth::ZkevmGetLatestGlobalExitRoot>()?
+        .register_rpc_method::<eth::ZkevmGetProverInput>()?
+        .register_rpc_method::<eth::ZkevmGetRollupAddress>()?
+        .register_rpc_method::<eth::ZkevmGetRollupManagerAddress>()?
+        .register_rpc_method::<eth::ZkevmGetVersionHistory>()?
+        .register_rpc_method::<eth::ZkevmGetWitness>()?
+        .register_rpc_method::<eth::ZkevmIsBlockConsolidated>()?
+        .register_rpc_method::<eth::ZkevmIsBlockVirtualized>()?
+        .register_rpc_method::<eth::ZkevmVerifiedBatchNumber>()?
+        .register_rpc_method::<eth::ZkevmVirtualBatchNumber>()?
         // net
         .register_rpc_method::<eth::NetVersion>()?
         // cryptography
