@@ -1,8 +1,12 @@
 mod traits;
 pub use traits::{RpcT, ErrorT};
 
+mod event;
+pub use event::*;
+
 use async_trait::async_trait;
 use serde::{Serialize, de::DeserializeOwned};
+
 
 pub type EncryptedTxFor<C> = <<C as Context>::SecureRpcService as SecureRpcService>::EncryptedTx;
 pub type TrustedSetupFor<C> = <<C as Context>::SecureRpcService as SecureRpcService>::TrustedSetup;
@@ -11,6 +15,7 @@ pub type TrustedSetupFor<C> = <<C as Context>::SecureRpcService as SecureRpcServ
 pub trait Context: RpcT {
     type SecureRpcService: SecureRpcService;
     type ExternalRpcService: ExternalRpcInterface;
+    type AsyncTask: AsyncTask<EncryptedTxFor<Self>>;
 
     /// Get the rollup ID from the context
     fn rollup_id(&self) -> &str;
@@ -23,6 +28,9 @@ pub trait Context: RpcT {
 
     /// Get the external RPC service
     fn external_rpc_service(&self) -> &Self::ExternalRpcService;
+
+    /// Get the async task
+    fn async_task(&self) -> &Self::AsyncTask;
 }
 
 #[async_trait]
@@ -84,4 +92,13 @@ pub trait OperatorService {
 
     /// Respond to the given task which is created by the operator
     async fn respond_task(&self, task: Self::Task) -> Result<(), Self::Error>;
+}
+
+#[async_trait]
+pub trait AsyncTask<Tx>: RpcT {
+    /// Type of the error for the async task
+    type Error: ErrorT;
+    
+    /// Send an event to the secure RPC worker
+    async fn send_event(&self, event: event::RpcEvent<Tx>) -> Result<(), Self::Error>;
 }
