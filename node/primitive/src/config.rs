@@ -1,4 +1,5 @@
 
+
 #[derive(Debug, Clone)]
 pub struct NodeConfig {
     pub is_dev: bool,
@@ -7,8 +8,6 @@ pub struct NodeConfig {
     pub tx_orderer_rpc_url: String,
     pub rollup_rpc_url: String,
     pub rollup_id: String,
-    pub blockchain_url: String,
-    pub contract_address: String,
     pub encrypt_mode: bool,
 }
 
@@ -20,8 +19,6 @@ impl NodeConfig {
         tx_orderer_rpc_url: String,
         rollup_rpc_url: String,
         rollup_id: String,
-        blockchain_url: String,
-        contract_address: String,
         encrypt_mode: bool,
     ) -> Self {
         Self {
@@ -31,8 +28,6 @@ impl NodeConfig {
             tx_orderer_rpc_url,
             rollup_rpc_url,
             rollup_id,
-            blockchain_url,
-            contract_address,
             encrypt_mode,
         }
     }
@@ -46,10 +41,7 @@ impl NodeConfig {
         tracing::info!("📡 RPC URL: {}", self.rpc_url);
         tracing::info!("📋 TX Orderer RPC URL: {}", self.tx_orderer_rpc_url);
         tracing::info!("🔄 Rollup RPC URL: {}", self.rollup_rpc_url);
-        tracing::info!("⛓️ Blockchain URL: {}", self.blockchain_url);
         tracing::info!("🆔 Rollup ID: {}", self.rollup_id);
-        tracing::info!("📄 --- Contract Configuration ---");
-        tracing::info!("📍 Contract Address: {}", self.contract_address);
         tracing::info!("✅ =============================");
     }
 
