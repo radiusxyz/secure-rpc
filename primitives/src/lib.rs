@@ -64,8 +64,13 @@ pub trait ExternalRpcInterface: RpcT {
 #[async_trait]
 pub trait OperatorService {
 
+    /// Type of the trusted setup this operator service is using
     type TrustedSetup;
+
+    /// Type of the task this operator should handle
     type Task;
+
+    /// Type of the error for the operator service
     type Error: ErrorT;
 
     /// Get the trusted setup

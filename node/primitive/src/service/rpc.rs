@@ -105,7 +105,8 @@ impl ExternalRpcService {
 
     pub async fn do_get_enc_key(&self) -> RpcResult<GetEncKeyResponse> {
         let index = self.random_index(self.dkg_rpc_urls.len())?;
-        self.request::<JsonRpcResponse<GetEncKeyResponse>>(&self.dkg_rpc_urls[index], "get_enc_key", ArrayParams::new()).await.map(|r| r.result)
+        let url = self.dkg_rpc_urls[index].clone();
+        self.request::<JsonRpcResponse<GetEncKeyResponse>>(&url, "get_enc_key", ArrayParams::new()).await.map(|r| r.result)
     }
 
     pub async fn do_forward_rpc_request<P: Serialize>(&self, method: &str, params: P) -> RpcResult<serde_json::Value> {
