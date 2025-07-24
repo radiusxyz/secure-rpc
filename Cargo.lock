@@ -6239,7 +6239,9 @@ dependencies = [
  "clap",
  "secure-rpc-node-primitive",
  "secure-rpc-node-service",
+ "serde",
  "tokio",
+ "toml",
  "uuid",
 ]
 
@@ -6268,6 +6270,7 @@ dependencies = [
 name = "secure-rpc-node-service"
 version = "1.0.0"
 dependencies = [
+ "alloy",
  "anyhow",
  "clap",
  "futures",

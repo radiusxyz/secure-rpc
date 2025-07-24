@@ -13,5 +13,7 @@ secure-rpc-node-primitive = { path = "../node/primitive" }
 
 anyhow.workspace = true
 clap.workspace = true
+serde.workspace = true
 tokio.workspace = true
+toml.workspace = true
 uuid.workspace = true

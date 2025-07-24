@@ -32,7 +32,7 @@ tracing-subscriber = "0.3.17"
 thiserror = "2.0.12"
 anyhow = "1.0.97"
 async-trait = "0.1.88"
-alloy = "0.7"
+alloy = { version = "0.7", features = ["pubsub"] }
 jsonrpsee = { version = "0.25.1", features = ["client", "macros"] }
 futures = "0.3.31"
 uuid = { version = "1.17.0", features = ["v4"] }
