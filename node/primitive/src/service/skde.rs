@@ -6,31 +6,29 @@ use tx_orderer::types::{SkdeEncryptedTransaction, decode_rlp_transaction,
     TransactionData, EthTransactionData
 };
 use anyhow::Result;
+use crate::DkgContract;
 
-use crate::BlockchainService;
+impl From<DkgContract::TrustedSetupParams> for SkdeParams {
+    fn from(params: DkgContract::TrustedSetupParams) -> Self {
+        Self {
+            n: params.n,
+            g: params.g,
+            t: params.t,
+            h: params.h,
+            max_sequencer_number: params.max_sequencer_number,
+        }
+    }
+}
 
 #[derive(Debug, Clone)]
-pub struct SkdeSecureRpcService {
-    /// The blockchain service that provides the SKDE parameters
-    blockchain_service: BlockchainService,
-    /// The SKDE parameters
-    skde_params: Option<SkdeParams>, 
-}
+pub struct SkdeSecureRpcService(SkdeParams);
 
 impl SkdeSecureRpcService {
     /// Create a new instance
-    pub fn new(url: &str, contract_address: &str) -> Self {
-        let blockchain_service = BlockchainService::new(url, contract_address);
-        Self { blockchain_service, skde_params: None }
-    }
+    pub fn new(skde_params: SkdeParams) -> Self { Self(skde_params) }
 
-    /// Get the SKDE parameters from the blockchain service if not already initialized
-    pub async fn with_skde_params(&mut self) -> Result<(), SecureRpcServiceError> {
-        if self.skde_params.is_none() {
-            let res = self.blockchain_service.get_trusted_setup().await.map_err(|_| SecureRpcServiceError::SkdeParamsUnavailable)?;
-            self.skde_params = Some(res);
-        }
-        Ok(())
+    fn update_skde_params(&mut self, skde_params: SkdeParams) {
+        self.0 = skde_params;
     }
 
     fn decode_raw_tx(&self, raw_tx: &str) -> Result<(EthOpenData, String)> {
@@ -43,8 +41,7 @@ impl SkdeSecureRpcService {
 
     fn encrypt_tx(&self, session_id: u64, raw_tx: &str, enc_key: &str) -> Result<SkdeEncryptedTransaction, SecureRpcServiceError> {
         let (tx_data , msg) = self.decode_raw_tx(raw_tx).map_err(|_| SecureRpcServiceError::RlpDecodeFailed)?;
-        let skde_params = self.skde_params.as_ref().ok_or(SecureRpcServiceError::NotInitialized)?;
-        encrypt(skde_params, &msg, enc_key, true)
+        encrypt(&self.0, &msg, enc_key, true)
             .map(|encrypted| {
                 let encrypted_data = EncryptedData::from(encrypted);
                 let transaction_data =
@@ -56,8 +53,13 @@ impl SkdeSecureRpcService {
 
 #[async_trait]
 impl SecureRpcService for SkdeSecureRpcService {
+    type TrustedSetup = SkdeParams;
     type EncryptedTx = SkdeEncryptedTransaction;
     type Error = SecureRpcServiceError;
+
+    async fn update_trusted_setup(&mut self, trusted_setup: Self::TrustedSetup) {
+        self.update_skde_params(trusted_setup.into());
+    }
 
     async fn encrypt_tx(&self, session_id: u64, raw_tx: &str, enc_key: &str) -> Result<Self::EncryptedTx, Self::Error> {
         self.encrypt_tx(session_id, raw_tx, enc_key)

@@ -4,5 +4,5 @@ pub mod rpc_url {
     pub const DEFAULT_ROLLUP_RPC_URL: &str = "http://127.0.0.1:8123";
     pub const DEFAULT_DKG_RPC_URL: &str = "http://127.0.0.1:7100";
     pub const DEFAULT_BLOCKCHAIN_URL: &str = "http://127.0.0.1:8545";
-    pub const DEFAULT_CONTRACT_ADDRESS: &str = "0x0000000000000000000000000000000000000000";
+    pub const DEFAULT_CONTRACT_ADDRESS: &str = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 }

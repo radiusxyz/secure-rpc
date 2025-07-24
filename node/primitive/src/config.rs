@@ -6,7 +6,6 @@ pub struct NodeConfig {
     pub rpc_url: String,
     pub tx_orderer_rpc_url: String,
     pub rollup_rpc_url: String,
-    pub dkg_rpc_url: String,
     pub rollup_id: String,
     pub blockchain_url: String,
     pub contract_address: String,
@@ -20,7 +19,6 @@ impl NodeConfig {
         rpc_url: String,
         tx_orderer_rpc_url: String,
         rollup_rpc_url: String,
-        dkg_rpc_url: String,
         rollup_id: String,
         blockchain_url: String,
         contract_address: String,
@@ -32,7 +30,6 @@ impl NodeConfig {
             rpc_url,
             tx_orderer_rpc_url,
             rollup_rpc_url,
-            dkg_rpc_url,
             rollup_id,
             blockchain_url,
             contract_address,
@@ -49,11 +46,9 @@ impl NodeConfig {
         tracing::info!("📡 RPC URL: {}", self.rpc_url);
         tracing::info!("📋 TX Orderer RPC URL: {}", self.tx_orderer_rpc_url);
         tracing::info!("🔄 Rollup RPC URL: {}", self.rollup_rpc_url);
-        tracing::info!("🔑 DKG RPC URL: {}", self.dkg_rpc_url);
-        tracing::info!("⛓️  Blockchain URL: {}", self.blockchain_url);
-        tracing::info!("💾 --- Storage Configuration ---");
-        tracing::info!("📄 --- Contract Configuration ---");
+        tracing::info!("⛓️ Blockchain URL: {}", self.blockchain_url);
         tracing::info!("🆔 Rollup ID: {}", self.rollup_id);
+        tracing::info!("📄 --- Contract Configuration ---");
         tracing::info!("📍 Contract Address: {}", self.contract_address);
         tracing::info!("✅ =============================");
     }

@@ -19,7 +19,7 @@ pub struct SecureRpcArgs {
     pub rpc_url: String,
 
     #[doc = "Enable encrypt mode"]
-    #[clap(long = "encrypt-mode")]
+    #[clap(long = "encrypt-mode", default_value_t = true)]
     pub encrypt_mode: bool,
 
     #[doc = "Url of the tx-orderer node which handles transactions ordering"]
