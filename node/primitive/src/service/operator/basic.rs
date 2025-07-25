@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use secure_rpc_primitives::{Context, OperatorService, TrustedSetupFor};
 use async_trait::async_trait;
 
@@ -8,8 +10,8 @@ pub struct BasicOperatorService<C> {
 }
 
 impl<C: Context> BasicOperatorService<C> {
-    pub fn new(dkg_rpc_urls: Vec<String>, context: C) -> Self {
-        Self { dkg_rpc_urls, _context: context }
+    pub fn new(dkg_rpc_urls: Vec<String>, context: C) -> Arc<Self> {
+        Arc::new(Self { dkg_rpc_urls, _context: context })
     }
 }
 
@@ -22,22 +24,13 @@ pub enum BasicOperatorServiceError {
 #[async_trait]
 impl<C: Context> OperatorService for BasicOperatorService<C> {
     type TrustedSetup = TrustedSetupFor<C>;
-    type Task = ();
     type Error = BasicOperatorServiceError;
 
-    async fn get_trusted_setup(&self) -> Option<Self::TrustedSetup> {
+    async fn update_trusted_setup(&self) -> Option<Self::TrustedSetup> {
         None
     }
 
-    async fn get_operator_rpc_urls(&self) -> Option<Vec<String>> {
+    async fn update_operator_rpc_urls(&self) -> Option<Vec<String>> {
         Some(self.dkg_rpc_urls.clone())
-    }
-
-    async fn create_task(&self) -> Result<Self::Task, Self::Error> {
-        todo!()
-    }
-
-    async fn respond_task(&self, _task: ()) -> Result<(), Self::Error> {
-        todo!()
     }
 }

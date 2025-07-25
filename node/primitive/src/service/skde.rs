@@ -1,9 +1,7 @@
 use skde::delay_encryption::{SkdeParams, encrypt};
 use secure_rpc_primitives::SecureRpcService;
 use async_trait::async_trait; 
-use tx_orderer::types::{SkdeEncryptedTransaction, decode_rlp_transaction, 
-    to_encrypt_data_string, EthOpenData, EncryptedData, 
-    TransactionData, EthTransactionData
+use tx_orderer::types::{decode_rlp_transaction, to_encrypt_data_string, EncryptedData, EthOpenData, EthTransactionData, RawTransaction, SkdeEncryptedTransaction, TransactionData
 };
 use anyhow::Result;
 use crate::operator::blockchain::OperatorContract;
@@ -31,15 +29,17 @@ impl SkdeSecureRpcService {
         self.0 = skde_params;
     }
 
-    fn decode_raw_tx(&self, raw_tx: &str) -> Result<(EthOpenData, String)> {
+    fn decode_raw_tx(&self, raw_tx: &[u8]) -> Result<(EthOpenData, String)> {
         // TODO: Refactor me!
-        decode_rlp_transaction(raw_tx)
+        let raw_tx_str = std::str::from_utf8(raw_tx)
+            .map_err(|_| anyhow::anyhow!("Invalid UTF-8"))?;
+        decode_rlp_transaction(raw_tx_str)
             .map(|tx| {
                 (EthOpenData::from(tx.clone()), to_encrypt_data_string(&tx))
             }).map_err(|_| anyhow::anyhow!("RLP decode failed"))
     }
 
-    fn encrypt_tx(&self, session_id: u64, raw_tx: &str, enc_key: &str) -> Result<SkdeEncryptedTransaction, SecureRpcServiceError> {
+    fn encrypt_tx(&self, session_id: u64, raw_tx: &[u8], enc_key: &str) -> Result<SkdeEncryptedTransaction, SecureRpcServiceError> {
         let (tx_data , msg) = self.decode_raw_tx(raw_tx).map_err(|_| SecureRpcServiceError::RlpDecodeFailed)?;
         encrypt(&self.0, &msg, enc_key, true)
             .map(|encrypted| {
@@ -54,15 +54,16 @@ impl SkdeSecureRpcService {
 #[async_trait]
 impl SecureRpcService for SkdeSecureRpcService {
     type TrustedSetup = SkdeParams;
+    type RawTx = RawTransaction;
     type EncryptedTx = SkdeEncryptedTransaction;
     type Error = SecureRpcServiceError;
 
-    async fn update_trusted_setup(&mut self, trusted_setup: Self::TrustedSetup) {
+    fn update_trusted_setup(&mut self, trusted_setup: Self::TrustedSetup) {
         self.update_skde_params(trusted_setup.into());
     }
 
-    async fn encrypt_tx(&self, session_id: u64, raw_tx: &str, enc_key: &str) -> Result<Self::EncryptedTx, Self::Error> {
-        self.encrypt_tx(session_id, raw_tx, enc_key)
+    async fn encrypt_tx(&self, session_id: u64, tx: &[u8], enc_key: &str) -> Result<Self::EncryptedTx, Self::Error> {
+        self.encrypt_tx(session_id, tx, enc_key)
     }
 }
 

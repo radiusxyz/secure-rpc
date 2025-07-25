@@ -1,10 +1,7 @@
-use alloy::{
-    providers::RootProvider, sol, sol_types::SolValue, pubsub::PubSubFrontend,
-    transports::http::{Client, Http},
-};
-use secure_rpc_primitives::OperatorService;
-use async_trait::async_trait;
 
+use alloy::{
+    primitives::Address as EthAddress, providers::{ProviderBuilder, RootProvider}, sol, sol_types::SolValue, transports::http::{Client, Http, reqwest::Url}
+};
 pub use OperatorContract::OperatorContractInstance;
 
 sol! {
@@ -24,13 +21,8 @@ sol! {
             string h;
             string max_sequencer_number;
         }
-
-        #[derive(Debug)]
-        event TrustedSetupUpdated(uint256 currentBlock, uint256 effectiveBlock, uint256 delayRounds);
         #[derive(Debug)]
         event TrustedSetupActivated(uint256 activationBlock);
-        #[derive(Debug)]
-        event CommitteeActivationPending(uint256 currentBlock, uint256 effectiveBlock, uint256 delayRounds);
         #[derive(Debug)]
         event CommitteeActivated(uint256 activationBlock);
         
@@ -43,24 +35,27 @@ sol! {
 // TODO: Refactor to use generic wrapper
 #[derive(Debug, Clone)]
 pub struct BlockchainService {
-    ws_provider: RootProvider<PubSubFrontend>,
-    contract_instance: OperatorContractInstance<Http<Client>, RootProvider<Http<Client>>>,
+    pub contract_instance: OperatorContractInstance<Http<Client>, RootProvider<Http<Client>>>,
 }
 
 impl BlockchainService {
-    pub fn new(ws_provider: RootProvider<PubSubFrontend>, contract_instance: OperatorContractInstance<Http<Client>, RootProvider<Http<Client>>>) -> Self {
-        Self { ws_provider, contract_instance }
+    pub fn new(blockchain_http_rpc_url: String, contract_address: String) -> Self {
+        let http_provider = ProviderBuilder::new().on_http(Url::parse(&blockchain_http_rpc_url).unwrap());
+        let contract_instance = OperatorContractInstance::new(contract_address.parse::<EthAddress>().unwrap(), http_provider);
+        Self { contract_instance }
     }
 
     pub async fn get_trusted_setup(&self) -> Result<OperatorContract::TrustedSetupParams, BlockchainServiceError> 
     {
         let res = self.contract_instance.getTrustedSetup().call().await.map_err(|_| BlockchainServiceError::FailedToGetTrustedSetup)?;
-        OperatorContract::TrustedSetupParams::abi_decode(&res._0.to_vec(), false).map_err(|_| BlockchainServiceError::FailedToDecodeTrustedSetup)
+        let trusted_setup = OperatorContract::TrustedSetupParams::abi_decode(&res._0.to_vec(), false).map_err(|_| BlockchainServiceError::FailedToDecodeTrustedSetup)?;
+        return Ok(trusted_setup)
     }
 
-    pub async fn get_committee_rpc_urls(&self) -> Result<Vec<String>, BlockchainServiceError> {
+    pub async fn get_operator_rpc_urls(&self) -> Result<Vec<String>, BlockchainServiceError> {
         let res = self.contract_instance.getOperatorList().call().await.map_err(|_| BlockchainServiceError::FailedToGetCommitteeList)?;
-        Ok(res._0.iter().map(|c| c.externalRpcUrl.clone()).collect())
+        let committee_rpc_urls = res._0.iter().map(|c| c.externalRpcUrl.clone()).collect();
+        return Ok(committee_rpc_urls)
     }
 }
 
@@ -72,28 +67,4 @@ pub enum BlockchainServiceError {
     FailedToDecodeTrustedSetup,
     #[error("Failed to get committee list")]
     FailedToGetCommitteeList,
-}
-
-#[async_trait]
-impl OperatorService for BlockchainService {
-
-    type TrustedSetup = OperatorContract::TrustedSetupParams;
-    type Task = ();
-    type Error = BlockchainServiceError;
-
-    async fn get_trusted_setup(&self) -> Option<OperatorContract::TrustedSetupParams> {
-        self.get_trusted_setup().await.ok()
-    }
-
-    async fn get_operator_rpc_urls(&self) -> Option<Vec<String>> {
-        self.get_committee_rpc_urls().await.ok()
-    }
-
-    async fn create_task(&self) -> Result<Self::Task, Self::Error> {
-        todo!()
-    }
-
-    async fn respond_task(&self, _task: ()) -> Result<(), Self::Error> {
-        todo!()
-    }
 }

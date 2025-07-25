@@ -3,8 +3,6 @@ use serde::{Deserialize, de::DeserializeOwned, Serialize};
 use tokio::sync::{mpsc, oneshot};
 use jsonrpsee::{core::{params::ArrayParams, traits::ToRpcParams}, rpc_params};
 use async_trait::async_trait;
-use rand::{rngs::StdRng, SeedableRng, Rng};
-use std::time::{SystemTime, UNIX_EPOCH};
 use secure_rpc_primitives::{ExternalRpcInterface, RpcT};
 
 pub type RpcResult<T> = Result<T, RpcError>;
@@ -52,36 +50,11 @@ pub enum DispatchMessage {
 }
 
 #[derive(Clone)]
-pub struct ExternalRpcService {
-    dkg_rpc_urls: Vec<String>,
-    rollup_rpc_url: String,
-    tx_orderer_rpc_url: String,
-    sender: mpsc::Sender<DispatchMessage>
-}
+pub struct ExternalRpcService { rollup_rpc_url: String, sender: mpsc::Sender<DispatchMessage> }
 
 impl ExternalRpcService {
-    pub fn new(tx: mpsc::Sender<DispatchMessage>, dkg_rpc_urls: Vec<String>, rollup_rpc_url: impl AsRef<str>, tx_orderer_rpc_url: impl AsRef<str>) -> Self {
-        Self { 
-            sender: tx,
-            dkg_rpc_urls,
-            rollup_rpc_url: rollup_rpc_url.as_ref().to_string(),
-            tx_orderer_rpc_url: tx_orderer_rpc_url.as_ref().to_string()
-        }
-    }
-
-    fn set_dkg_rpc_urls(&mut self, dkg_rpc_urls: Vec<String>) {
-        self.dkg_rpc_urls = dkg_rpc_urls;
-    }
-
-    fn random_index(&self, size: usize) -> RpcResult<usize> {
-        if size == 0 { return Err(RpcError::InternalError("Empty RPC list".to_string())) }
-        if size == 1 { return Ok(0); }
-        let seed = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_nanos() as u64;
-        let mut rng = StdRng::seed_from_u64(seed);
-        Ok(rng.gen_range(0..size))
+    pub fn new(rollup_rpc_url: String, tx: mpsc::Sender<DispatchMessage>) -> Self {
+        Self { rollup_rpc_url, sender: tx }
     }
 
     /// General request method which returns `R` as the response type
@@ -103,20 +76,17 @@ impl ExternalRpcService {
         Ok(result)
     }
 
-    pub async fn do_get_enc_key(&self) -> RpcResult<GetEncKeyResponse> {
-        let index = self.random_index(self.dkg_rpc_urls.len())?;
-        let url = self.dkg_rpc_urls[index].clone();
-        self.request::<JsonRpcResponse<GetEncKeyResponse>>(&url, "get_enc_key", ArrayParams::new()).await.map(|r| r.result)
+    pub async fn do_get_enc_key(&self, url: &str) -> RpcResult<GetEncKeyResponse> {
+        self.request::<JsonRpcResponse<GetEncKeyResponse>>(url, "get_enc_key", ArrayParams::new()).await.map(|r| r.result)
     }
 
     pub async fn do_forward_rpc_request<P: Serialize>(&self, method: &str, params: P) -> RpcResult<serde_json::Value> {
         self.request::<JsonRpcResponse<serde_json::Value>>(&self.rollup_rpc_url, method, rpc_params!(params)).await.map(|r| r.result)
     }
 
-    pub async fn do_forward_tx<T: Serialize>(&self, rollup_id: &str, raw_tx: T, is_encrypted: bool) -> RpcResult<SendEncryptedTxResponse> {
+    pub async fn do_forward_tx<T: Serialize>(&self, url: &str, rollup_id: &str, raw_tx: T, is_encrypted: bool) -> RpcResult<SendEncryptedTxResponse> {
         let method = if is_encrypted { "send_encrypted_transaction" } else { "send_raw_transaction" };
-        let tx_orderer_rpc_url = self.tx_orderer_rpc_url.clone();   
-        self.request::<JsonRpcResponse<serde_json::Value>>(&tx_orderer_rpc_url, method, rpc_params!(rollup_id, raw_tx)).await.map(|r| r.result)
+        self.request::<JsonRpcResponse<serde_json::Value>>(url, method, rpc_params!(rollup_id, raw_tx)).await.map(|r| r.result)
     }
 }
 
@@ -124,16 +94,16 @@ impl ExternalRpcService {
 impl ExternalRpcInterface for ExternalRpcService {
     type Error = RpcError;
 
-    async fn get_enc_key(&self) -> RpcResult<GetEncKeyResponse> {
-        self.do_get_enc_key().await
+    async fn get_enc_key(&self, url: &str) -> RpcResult<GetEncKeyResponse> {
+        self.do_get_enc_key(url).await
     }
 
     async fn forward_rpc_request<P: Serialize + RpcT>(&self, method: &str, params: P) -> RpcResult<serde_json::Value> {
         self.do_forward_rpc_request(method, params).await
     }
 
-    async fn forward_tx<T: Serialize + RpcT>(&self, rollup_id: &str, is_encrypted: bool, tx: T) -> RpcResult<SendEncryptedTxResponse> {
-        self.do_forward_tx(rollup_id, tx, is_encrypted).await
+    async fn forward_tx<T: Serialize + RpcT>(&self, url: &str, rollup_id: &str, is_encrypted: bool, tx: T) -> RpcResult<SendEncryptedTxResponse> {
+        self.do_forward_tx(url, rollup_id, tx, is_encrypted).await
     }
 }   
 

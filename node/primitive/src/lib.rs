@@ -1,11 +1,13 @@
 mod config;
+mod event;
+pub use event::*;
 pub use config::NodeConfig;
 pub mod constants;
 pub mod service;
 pub use service::*;
 use async_trait::async_trait;
-use secure_rpc_primitives::{AsyncTask, Context, ExternalRpcInterface, OperatorEvent, RpcEvent, RpcT, SecureRpcService};
-use tokio::sync::mpsc;
+use secure_rpc_primitives::{AsyncTask, Context, ExternalRpcInterface, SecureRpcService};
+use tokio::sync::{mpsc, oneshot};
 
 #[derive(Clone)]
 pub struct SecureRpcNode<S, E, AT> {
@@ -35,7 +37,7 @@ impl<S, E, AT> SecureRpcNode<S, E, AT> {
     }
 } 
 
-impl<S: SecureRpcService, E: ExternalRpcInterface, AT: AsyncTask<S::EncryptedTx>> Context for SecureRpcNode<S, E, AT> {
+impl<S: SecureRpcService, E: ExternalRpcInterface, AT: AsyncTask> Context for SecureRpcNode<S, E, AT> {
     type SecureRpcService = S;
     type ExternalRpcService = E;
     type AsyncTask = AT;
@@ -52,6 +54,10 @@ impl<S: SecureRpcService, E: ExternalRpcInterface, AT: AsyncTask<S::EncryptedTx>
         self.secure_rpc_service.as_ref().expect("Secure RPC service is not initialized")
     }
 
+    fn secure_rpc_service_mut(&mut self) -> &mut Self::SecureRpcService {
+        self.secure_rpc_service.as_mut().expect("Secure RPC service is not initialized")
+    }
+
     fn external_rpc_service(&self) -> &Self::ExternalRpcService {
         self.external_rpc_service.as_ref().expect("External RPC service is not initialized")
     }
@@ -62,23 +68,24 @@ impl<S: SecureRpcService, E: ExternalRpcInterface, AT: AsyncTask<S::EncryptedTx>
 }
 
 #[derive(Clone)]
-pub struct TaskExecutor<Tx> {
-    rpc_event_tx: mpsc::Sender<RpcEvent<Tx>>,
+pub struct TaskExecutor {
+    rpc_handler_event_tx: mpsc::Sender<RpcHandlerEvent>,
 }
 
-impl<Tx> TaskExecutor<Tx> {
-    pub fn new(rpc_event_tx: mpsc::Sender<RpcEvent<Tx>>) -> Self {
-        Self { rpc_event_tx }
+impl TaskExecutor {
+    pub fn new(rpc_handler_event_tx: mpsc::Sender<RpcHandlerEvent>) -> Self {
+        Self { rpc_handler_event_tx }
     }
 }
 
 #[async_trait]
-impl<Tx: RpcT> AsyncTask<Tx> for TaskExecutor<Tx> {
+impl AsyncTask for TaskExecutor {
     type Error = AsyncTaskError;
 
-    async fn send_event(&self, event: RpcEvent<Tx>) -> Result<(), Self::Error> {
-        self.rpc_event_tx.send(event).await.map_err(|_| AsyncTaskError::SendEventError("Failed to send event".to_string()))?;
-        Ok(())
+    async fn send_tx(&self, raw_tx: Vec<u8>, should_encrypt: bool) -> Result<serde_json::Value, Self::Error> {
+        let (tx, rx) = oneshot::channel();
+        self.rpc_handler_event_tx.send(RpcHandlerEvent::SendTx { raw_tx, should_encrypt, sender: tx }).await.map_err(|_| AsyncTaskError::SendEventError("Failed to send event".to_string()))?;
+        Ok(rx.await.map_err(|_| AsyncTaskError::SendEventError("Failed to send event".to_string()))?)
     }
 }
 
