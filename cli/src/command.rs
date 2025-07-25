@@ -78,13 +78,12 @@ fn run_node_inner(cli: Box<NodeCommand>, config: Option<Config>) -> anyhow::Resu
     let node_config = create_configuration(&cli, config.clone());
     match cli.operator_service {
         OperatorService::Blockchain(args) => {
-            let (blockchain_http_rpc_url, blockchain_ws_rpc_url, contract_address) = 
+            let (blockchain_http_rpc_url, contract_address) = 
                 merge_blockchain_operator_args(args, config.as_ref());
-            runtime.block_on(secure_rpc_node_service::run_blockchain_operator_secure_rpc_node(node_config, blockchain_http_rpc_url, blockchain_ws_rpc_url, contract_address))?;
+            runtime.block_on(secure_rpc_node_service::run_blockchain_operator_secure_rpc_node(node_config, blockchain_http_rpc_url, contract_address))?;
         }
-        OperatorService::Basic(args) => {
-            let dkg_rpc_urls = merge_basic_operator_args(args, config.as_ref());
-            runtime.block_on(secure_rpc_node_service::run_basic_operator_secure_rpc_node(node_config, dkg_rpc_urls))?;
+        OperatorService::Basic(_) => {
+            return Err(anyhow::anyhow!("Basic operator service is not supported yet"));
         }
     }
     Ok(())
@@ -93,7 +92,7 @@ fn run_node_inner(cli: Box<NodeCommand>, config: Option<Config>) -> anyhow::Resu
 fn merge_blockchain_operator_args(
     args: BlockchainOperatorArgs, 
     config: Option<&Config>
-) -> (String, String, String) {
+) -> (String, String) {
     use secure_rpc_node_primitive::constants::rpc_url::{
         DEFAULT_BLOCKCHAIN_URL,
         DEFAULT_CONTRACT_ADDRESS,
@@ -108,22 +107,16 @@ fn merge_blockchain_operator_args(
         args.blockchain_http_rpc_url
     };
 
-    let blockchain_ws_rpc_url = if args.blockchain_ws_rpc_url == DEFAULT_BLOCKCHAIN_URL {
-        config_blockchain.and_then(|c| c.blockchain_ws_rpc_url.clone()).unwrap_or(args.blockchain_ws_rpc_url)
-    } else {
-        args.blockchain_ws_rpc_url
-    };
-
     let contract_address = if args.contract_address == DEFAULT_CONTRACT_ADDRESS {
         config_blockchain.and_then(|c| c.contract_address.clone()).unwrap_or(args.contract_address)
     } else {
         args.contract_address
     };
 
-    (blockchain_http_rpc_url, blockchain_ws_rpc_url, contract_address)
+    (blockchain_http_rpc_url, contract_address)
 }
 
-fn merge_basic_operator_args(
+fn _merge_basic_operator_args(
     args: BasicOperatorArgs, 
     config: Option<&Config>
 ) -> Vec<String> {
