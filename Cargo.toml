@@ -35,6 +35,7 @@ async-trait = "0.1.88"
 alloy = { version = "0.7", features = ["pubsub"] }
 jsonrpsee = { version = "0.25.1", features = ["client", "macros"] }
 futures = "0.3.31"
+futures-util = "0.3.31"
 uuid = { version = "1.17.0", features = ["v4"] }
 
 # Radius

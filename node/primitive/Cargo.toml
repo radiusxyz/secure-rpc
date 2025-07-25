@@ -20,6 +20,7 @@ thiserror.workspace = true
 alloy.workspace = true
 jsonrpsee.workspace = true
 rand.workspace = true
+futures-util.workspace = true
 
 # Internal 
 secure-rpc-primitives.workspace = true

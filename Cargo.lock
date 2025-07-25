@@ -6253,6 +6253,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "clap",
+ "futures-util",
  "jsonrpsee 0.25.1",
  "radius-sdk",
  "rand 0.8.5",
@@ -6272,14 +6273,18 @@ version = "1.0.0"
 dependencies = [
  "alloy",
  "anyhow",
+ "async-trait",
  "clap",
  "futures",
+ "futures-util",
  "jsonrpsee 0.25.1",
  "radius-sdk",
+ "rand 0.8.5",
  "secure-rpc-node-primitive",
  "secure-rpc-primitives",
  "secure-rpc-service",
  "serde",
+ "serde_json",
  "skde 0.1.0 (git+https://github.com/radiusxyz/skde?rev=69e70ac0ab071000b3d13557cdbed43ffeddc878)",
  "tokio",
  "tracing",
@@ -6293,6 +6298,7 @@ dependencies = [
  "async-trait",
  "serde",
  "serde_json",
+ "tokio",
 ]
 
 [[package]]
@@ -6316,6 +6322,7 @@ dependencies = [
  "serde",
  "serde_json",
  "skde 0.1.0 (git+https://github.com/radiusxyz/skde?rev=69e70ac0ab071000b3d13557cdbed43ffeddc878)",
+ "tokio",
  "tracing",
  "tx_orderer",
 ]

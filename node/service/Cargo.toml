@@ -15,6 +15,10 @@ jsonrpsee.workspace = true
 tracing.workspace = true
 serde.workspace = true
 alloy.workspace = true
+serde_json.workspace = true
+rand.workspace = true
+async-trait.workspace = true
+futures-util.workspace = true
 
 secure-rpc-primitives.workspace = true
 secure-rpc-node-primitive.workspace = true

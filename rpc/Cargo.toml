@@ -15,6 +15,7 @@ tx_orderer.workspace = true
 rand.workspace = true
 skde.workspace = true
 tracing.workspace = true
+tokio.workspace = true
 
 # Radius-realted
 radius-sdk.workspace = true
