@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tx_orderer::types::RawTransaction;
 use radius_sdk::json_rpc::server::{RpcError, RpcParameter};
-use secure_rpc_primitives::{Context, ExternalRpcInterface};
+use secure_rpc_primitives::{Context, AsyncTask};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct SendRawTransaction {
@@ -17,7 +17,7 @@ impl<C: Context> RpcParameter<C> for SendRawTransaction {
     }
 
     async fn handler(self, context: C) -> Result<Self::Response, RpcError> {
-        let res = context.external_rpc_service().forward_tx(&self.rollup_id, false, self.raw_transaction.clone()).await.map_err(|e| RpcError::from(e))?;
+        let res = context.async_task().send_tx(serde_json::to_vec(&self.raw_transaction)?, false).await.map_err(|e| RpcError::from(e))?;
         Ok(res)
     }
 }
