@@ -5,3 +5,5 @@
 
 /scripts/execute/env.sh
 /scripts/rpc-call/env.sh
+
+.DS_Store
