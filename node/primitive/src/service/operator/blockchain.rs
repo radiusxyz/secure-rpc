@@ -1,8 +1,11 @@
 
 use alloy::{
-    primitives::Address as EthAddress, providers::{ProviderBuilder, RootProvider}, sol, sol_types::SolValue, transports::http::{Client, Http, reqwest::Url}
+    primitives::Address as EthAddress, providers::{ProviderBuilder, RootProvider}, sol, sol_types::SolValue, transports::http::{reqwest::Url, Client, Http}
 };
+use futures::Stream;
+use tokio::sync::mpsc;
 pub use OperatorContract::OperatorContractInstance;
+use futures_util::StreamExt;
 
 sol! {
     #[sol(rpc)]
@@ -32,17 +35,39 @@ sol! {
     }
 }
 
+async fn spawn_event_handler<T, E>(
+    mut event_stream: impl Stream<Item = Result<T, E>> + Unpin,
+    blockchain_event: BlockchainEvent,
+    blockchain_event_tx: mpsc::Sender<Result<BlockchainEvent, BlockchainServiceError>>
+) {
+    while let Some(res) = event_stream.next().await {
+        if let Ok(_) = res {
+            if let Err(e) = blockchain_event_tx.send(Ok(blockchain_event.clone())).await {
+                tracing::error!("Failed to send {:?} event: {:?}", blockchain_event, e);
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum BlockchainEvent {
+    TrustedSetupActivated,
+    CommitteeActivated,
+}
+
 // TODO: Refactor to use generic wrapper
 #[derive(Debug, Clone)]
 pub struct BlockchainService {
-    pub contract_instance: OperatorContractInstance<Http<Client>, RootProvider<Http<Client>>>,
+    pub blockchain_event_tx: mpsc::Sender<Result<BlockchainEvent, BlockchainServiceError>>,
+    pub contract_instance: OperatorContractInstance<Http<Client>, RootProvider<Http<Client>>>
 }
 
 impl BlockchainService {
-    pub fn new(blockchain_http_rpc_url: String, contract_address: String) -> Self {
+    pub fn new(blockchain_http_rpc_url: String, contract_address: String) -> (Self, mpsc::Receiver<Result<BlockchainEvent, BlockchainServiceError>>) {
         let http_provider = ProviderBuilder::new().on_http(Url::parse(&blockchain_http_rpc_url).unwrap());
+        let (blockchain_event_tx, blockchain_event_rx) = mpsc::channel(2);
         let contract_instance = OperatorContractInstance::new(contract_address.parse::<EthAddress>().unwrap(), http_provider);
-        Self { contract_instance }
+        (Self { blockchain_event_tx, contract_instance }, blockchain_event_rx)
     }
 
     pub async fn get_trusted_setup(&self) -> Result<OperatorContract::TrustedSetupParams, BlockchainServiceError> 
@@ -57,6 +82,14 @@ impl BlockchainService {
         let committee_rpc_urls = res._0.iter().map(|c| c.externalRpcUrl.clone()).collect();
         return Ok(committee_rpc_urls)
     }
+
+    pub async fn subscribe_events(&self) {
+        let trusted_setup_event = self.contract_instance.TrustedSetupActivated_filter().subscribe().await.map_err(|_| BlockchainServiceError::FailedToSubscribeEvents).unwrap().into_stream();
+        let committee_activated_event = self.contract_instance.CommitteeActivated_filter().subscribe().await.map_err(|_| BlockchainServiceError::FailedToSubscribeEvents).unwrap().into_stream();
+        let blockchain_event_tx = self.blockchain_event_tx.clone();
+        tokio::spawn(spawn_event_handler(trusted_setup_event, BlockchainEvent::TrustedSetupActivated, blockchain_event_tx.clone()));
+        tokio::spawn(spawn_event_handler(committee_activated_event, BlockchainEvent::CommitteeActivated, blockchain_event_tx.clone()));
+    }
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -67,4 +100,6 @@ pub enum BlockchainServiceError {
     FailedToDecodeTrustedSetup,
     #[error("Failed to get committee list")]
     FailedToGetCommitteeList,
+    #[error("Failed to subscribe to events")]
+    FailedToSubscribeEvents,
 }
