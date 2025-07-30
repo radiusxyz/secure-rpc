@@ -21,6 +21,7 @@ alloy.workspace = true
 jsonrpsee.workspace = true
 rand.workspace = true
 futures-util.workspace = true
+futures.workspace = true
 
 # Internal 
 secure-rpc-primitives.workspace = true
