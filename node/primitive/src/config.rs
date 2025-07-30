@@ -33,16 +33,14 @@ impl NodeConfig {
     }
 
     pub fn log_config(&self) {
-        tracing::info!("🚀 === Node Configuration ===");
+        tracing::info!("=== Node Configuration ===");
         tracing::info!("📛 Node Name: {}", self.node_name);
         tracing::info!("🔧 Development Mode: {}", self.is_dev);
         tracing::info!("🔐 Encryption Mode: {}", self.encrypt_mode);
-        tracing::info!("🌐 --- Network Configuration ---");
         tracing::info!("📡 RPC URL: {}", self.rpc_url);
         tracing::info!("📋 TX Orderer RPC URL: {}", self.tx_orderer_rpc_url);
         tracing::info!("🔄 Rollup RPC URL: {}", self.rollup_rpc_url);
         tracing::info!("🆔 Rollup ID: {}", self.rollup_id);
-        tracing::info!("✅ =============================");
     }
 
     pub fn is_encrypt_enabled(&self) -> bool {

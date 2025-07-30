@@ -7,3 +7,5 @@
 /scripts/rpc-call/env.sh
 
 .DS_Store
+
+config.toml

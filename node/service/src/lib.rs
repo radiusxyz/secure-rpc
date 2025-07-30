@@ -35,15 +35,21 @@ where
 }
 
 pub async fn run_blockchain_operator_secure_rpc_node(config: NodeConfig, blockchain_http_rpc_url: String, contract_address: String) -> anyhow::Result<()> {
+    config.log_config();
+    tracing::info!("Blockchain HTTP RPC URL: {}", blockchain_http_rpc_url);
+    tracing::info!("Contract Address: {}", contract_address);
     let mut handles = vec![];
     let mut secure_rpc_node = create_secure_rpc_node::<_, _, _>(&config);
 
     // Start the operator worker
     let (operator_handle, operator_event_rx, trusted_setup, dkg_rpc_urls) = start_blockchain_operator_worker::<_>(&secure_rpc_node, blockchain_http_rpc_url, contract_address).await?;
+    tracing::info!("Operator worker started successfully");
+    tracing::info!("👥 Dkg operators: {:?}", dkg_rpc_urls);
 
     // Start the external RPC worker
     let (external_rpc_service, rpc_handle) = start_external_rpc_worker(&config.rollup_rpc_url).await;
-
+    tracing::info!("External RPC worker started successfully");
+    
     secure_rpc_node.with_secure_rpc_service(SkdeSecureRpcService::new(trusted_setup));
     secure_rpc_node.with_external_rpc_service(external_rpc_service);
 
