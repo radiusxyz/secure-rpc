@@ -4,10 +4,10 @@ use async_trait::async_trait;
 use tx_orderer::types::{decode_rlp_transaction, to_encrypt_data_string, EncryptedData, EthOpenData, EthTransactionData, RawTransaction, SkdeEncryptedTransaction, TransactionData
 };
 use anyhow::Result;
-use crate::operator::blockchain::OperatorContract;
+use crate::operator::ssv::DkgBApp;
 
-impl From<OperatorContract::TrustedSetupParams> for SkdeParams {
-    fn from(params: OperatorContract::TrustedSetupParams) -> Self {
+impl From<DkgBApp::TrustedSetupParams> for SkdeParams {
+    fn from(params: DkgBApp::TrustedSetupParams) -> Self {
         Self {
             n: params.n,
             g: params.g,

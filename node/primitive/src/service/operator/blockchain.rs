@@ -27,7 +27,7 @@ sol! {
         #[derive(Debug)]
         event TrustedSetupActivated(uint256 activationBlock);
         #[derive(Debug)]
-        event CommitteeActivated(uint256 activationBlock);
+        event OperatorActivated(uint256 activationBlock);
         
         function getOperatorList() public view returns (OperatorInfo[] memory);
 
@@ -52,7 +52,7 @@ async fn spawn_event_handler<T, E>(
 #[derive(Debug, Clone)]
 pub enum BlockchainEvent {
     TrustedSetupActivated,
-    CommitteeActivated,
+    OperatorActivated,
 }
 
 // TODO: Refactor to use generic wrapper
@@ -78,17 +78,17 @@ impl BlockchainService {
     }
 
     pub async fn get_operator_rpc_urls(&self) -> Result<Vec<String>, BlockchainServiceError> {
-        let res = self.contract_instance.getOperatorList().call().await.map_err(|_| BlockchainServiceError::FailedToGetCommitteeList)?;
-        let committee_rpc_urls = res._0.iter().map(|c| c.externalRpcUrl.clone()).collect();
-        return Ok(committee_rpc_urls)
+        let res = self.contract_instance.getOperatorList().call().await.map_err(|_| BlockchainServiceError::FailedToGetOperatorList)?;
+        let operator_rpc_urls = res._0.iter().map(|c| c.externalRpcUrl.clone()).collect();
+        return Ok(operator_rpc_urls)
     }
 
     pub async fn subscribe_events(&self) {
         let trusted_setup_event = self.contract_instance.TrustedSetupActivated_filter().subscribe().await.map_err(|_| BlockchainServiceError::FailedToSubscribeEvents).unwrap().into_stream();
-        let committee_activated_event = self.contract_instance.CommitteeActivated_filter().subscribe().await.map_err(|_| BlockchainServiceError::FailedToSubscribeEvents).unwrap().into_stream();
+        let operator_activated_event = self.contract_instance.OperatorActivated_filter().subscribe().await.map_err(|_| BlockchainServiceError::FailedToSubscribeEvents).unwrap().into_stream();
         let blockchain_event_tx = self.blockchain_event_tx.clone();
         tokio::spawn(spawn_event_handler(trusted_setup_event, BlockchainEvent::TrustedSetupActivated, blockchain_event_tx.clone()));
-        tokio::spawn(spawn_event_handler(committee_activated_event, BlockchainEvent::CommitteeActivated, blockchain_event_tx.clone()));
+        tokio::spawn(spawn_event_handler(operator_activated_event, BlockchainEvent::OperatorActivated, blockchain_event_tx.clone()));
     }
 }
 
@@ -98,8 +98,8 @@ pub enum BlockchainServiceError {
     FailedToGetTrustedSetup,
     #[error("Failed to decode trusted setup")]
     FailedToDecodeTrustedSetup,
-    #[error("Failed to get committee list")]
-    FailedToGetCommitteeList,
+    #[error("Failed to get operator list")]
+    FailedToGetOperatorList,
     #[error("Failed to subscribe to events")]
     FailedToSubscribeEvents,
 }
