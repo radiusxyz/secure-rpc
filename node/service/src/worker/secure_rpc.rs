@@ -1,12 +1,15 @@
-use secure_rpc_primitives::{Context, TrustedSetupFor, ExternalRpcInterface, SecureRpcService};
-use secure_rpc_node_primitive::{OperatorEvent, RpcHandlerEvent};
+use secure_rpc_primitives::{Context, ExternalRpcInterface, Operator, SecureRpcService, TrustedSetupFor};
+use secure_rpc_node_primitive::RpcHandlerEvent;
 use tokio::{sync::mpsc, task::JoinHandle};
-use futures::{future::FutureExt, select_biased};
 use rand::{rngs::StdRng, SeedableRng, Rng};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-pub async fn start_secure_rpc_worker<C: Context>(context: &C, dkg_rpc_urls: Vec<String>, tx_orderer_rpc_url: String, operator_event_rx: mpsc::Receiver<OperatorEvent<TrustedSetupFor<C>>>) -> (JoinHandle<()>, mpsc::Sender<RpcHandlerEvent>) {
-    let (mut worker, tx) = SecureRpcWorker::<C>::new(context.clone(), dkg_rpc_urls, tx_orderer_rpc_url, operator_event_rx);
+pub async fn start_secure_rpc_worker<C: Context, O: Operator>(context: &C, operator: O, tx_orderer_rpc_url: String) -> (JoinHandle<()>, mpsc::Sender<RpcHandlerEvent>) 
+where
+    O: Send + Sync + 'static,
+    O::TrustedSetup: Into<TrustedSetupFor<C>>,
+{
+    let (mut worker, tx) = SecureRpcWorker::<C, O>::new(context.clone(), operator, tx_orderer_rpc_url);
     let handle = tokio::spawn(async move {
         worker.run().await;
     });
@@ -14,26 +17,33 @@ pub async fn start_secure_rpc_worker<C: Context>(context: &C, dkg_rpc_urls: Vec<
 }
 
 /// Main Secure RPC worker that handles the events from other workers
-struct SecureRpcWorker<C: Context> {
+struct SecureRpcWorker<C: Context, O: Operator> {
     context: C,
-    operator_urls: Vec<String>,
+    operator: O,
+    operator_urls: Option<Vec<String>>,
     tx_orderer_rpc_url: String,
-    operator_event_rx: mpsc::Receiver<OperatorEvent<TrustedSetupFor<C>>>,
     from_rpc_event_rx: mpsc::Receiver<RpcHandlerEvent>,
 }
 
-impl<C: Context> SecureRpcWorker<C> {
-    pub fn new(context: C, operator_urls: Vec<String>, tx_orderer_rpc_url: String, operator_event_rx: mpsc::Receiver<OperatorEvent<TrustedSetupFor<C>>>) -> (Self, mpsc::Sender<RpcHandlerEvent>) {
+impl<C: Context, O: Operator> SecureRpcWorker<C, O> 
+where
+    O::TrustedSetup: Into<TrustedSetupFor<C>>,
+{
+    pub fn new(context: C, operator: O, tx_orderer_rpc_url: String) -> (Self, mpsc::Sender<RpcHandlerEvent>) {
         let (tx, from_rpc_event_rx) = mpsc::channel(100);
-        (Self { context, operator_urls, tx_orderer_rpc_url, operator_event_rx, from_rpc_event_rx }, tx)
+        (Self { context, operator, operator_urls: None, tx_orderer_rpc_url, from_rpc_event_rx }, tx)
     }
 
-    fn update_operator_list(&mut self, new: Vec<String>) {
-        self.operator_urls = new;
+    async fn update_operator_list(&mut self) {
+        if let Some(operator_urls) = self.operator.get_operator_rpc_urls().await {
+            self.operator_urls = Some(operator_urls);
+        }
     }
 
-    fn update_trusted_setup(&mut self, new_trusted_setup: TrustedSetupFor<C>) {
-        self.context.secure_rpc_service_mut().update_trusted_setup(new_trusted_setup);
+    async fn update_trusted_setup(&mut self) {
+        if let Some(trusted_setup) = self.operator.get_active_trusted_setup().await {
+            self.context.secure_rpc_service_mut().update_trusted_setup(trusted_setup.into());
+        }
     }
 
     fn random_index(&self, size: usize) -> anyhow::Result<usize> {
@@ -48,8 +58,13 @@ impl<C: Context> SecureRpcWorker<C> {
     }
 
     fn get_random_operator_url(&self) -> anyhow::Result<String> {
-        let index = self.random_index(self.operator_urls.len())?;
-        Ok(self.operator_urls[index].clone())
+        if let Some(operator_urls) = &self.operator_urls {
+            let index = self.random_index(operator_urls.len())?;
+            Ok(operator_urls[index].clone())
+        } else {
+            // TODO: Should handle this case. Should not reach here
+            Err(anyhow::anyhow!("Not initialized?"))
+        }
     }
 
     /// Encrypt the raw transaction if the encryption mode is enabled
@@ -77,25 +92,13 @@ impl<C: Context> SecureRpcWorker<C> {
     }
 
     pub async fn run(&mut self) {
-        loop {
-            select_biased! {
-                event = self.operator_event_rx.recv().fuse() => {
-                    match event {
-                        Some(OperatorEvent::UpdateTrustedSetup(ts)) => { self.update_trusted_setup(ts); }
-                        Some(OperatorEvent::UpdateOperatorList(operator_list)) => { self.update_operator_list(operator_list); }
-                        None => { break; } // Channel is closed
-                    }
-                },
-                event = self.from_rpc_event_rx.recv().fuse() => {
-                    match event {
-                        Some(RpcHandlerEvent::SendTx { raw_tx, should_encrypt, sender }) => {
-                            if let Ok(res) = self.handle_send_tx(raw_tx, should_encrypt).await {
-                                if let Err(e) = sender.send(res) { tracing::error!("Channel is closed: {}", e); }
-                            } else {
-                                tracing::error!("Failed to forward transaction");
-                            }
-                        }, 
-                        None => { break; } // Channel is closed
+        while let Some(event) = self.from_rpc_event_rx.recv().await {
+            match event {
+                RpcHandlerEvent::SendTx { raw_tx, should_encrypt, sender } => {
+                    if let Ok(res) = self.handle_send_tx(raw_tx, should_encrypt).await {
+                        if let Err(e) = sender.send(res) { tracing::error!("Channel is closed: {}", e); }
+                    } else {
+                        tracing::error!("Failed to forward transaction");
                     }
                 }
             }

@@ -80,7 +80,7 @@ fn run_node_inner(cli: Box<NodeCommand>, config: Option<Config>) -> anyhow::Resu
         OperatorService::Blockchain(args) => {
             let (blockchain_http_rpc_url, contract_address) = 
                 merge_blockchain_operator_args(args, config.as_ref());
-            runtime.block_on(secure_rpc_node_service::run_blockchain_operator_secure_rpc_node(node_config, blockchain_http_rpc_url, contract_address))?;
+            runtime.block_on(secure_rpc_node_service::run_secure_rpc_node_with_bapp_service(node_config, blockchain_http_rpc_url, contract_address))?;
         }
         OperatorService::Basic(_) => {
             return Err(anyhow::anyhow!("Basic operator service is not supported yet"));
