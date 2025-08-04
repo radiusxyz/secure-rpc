@@ -74,7 +74,7 @@ pub trait ExternalRpcInterface: RpcT {
 
 /// API for operator service(e.g SSV)
 #[async_trait]
-pub trait OperatorService {
+pub trait Operator {
 
     /// Type of the trusted setup this operator service is using
     type TrustedSetup;
@@ -83,10 +83,10 @@ pub trait OperatorService {
     type Error: ErrorT;
 
     /// Get the trusted setup
-    async fn update_trusted_setup(&self) -> Option<Self::TrustedSetup>;
+    async fn get_active_trusted_setup(&self) -> Option<Self::TrustedSetup>;
 
     /// Get the operator's RPC URLs
-    async fn update_operator_rpc_urls(&self) -> Option<Vec<String>>;
+    async fn get_operator_rpc_urls(&self) -> Option<Vec<String>>;
 }
 
 #[async_trait]
