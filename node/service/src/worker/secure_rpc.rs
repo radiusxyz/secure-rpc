@@ -1,15 +1,12 @@
-use secure_rpc_primitives::{Context, ExternalRpcInterface, Operator, SecureRpcService, TrustedSetupFor};
-use secure_rpc_node_primitive::RpcHandlerEvent;
+use secure_rpc_primitives::{Context, ExternalRpcInterface, SecureRpcService, TrustedSetupFor};
+use secure_rpc_node_primitive::{OperatorEvent, RpcHandlerEvent};
 use tokio::{sync::mpsc, task::JoinHandle};
 use rand::{rngs::StdRng, SeedableRng, Rng};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-pub async fn start_secure_rpc_worker<C: Context, O: Operator>(context: &C, operator: O, tx_orderer_rpc_url: String) -> (JoinHandle<()>, mpsc::Sender<RpcHandlerEvent>) 
-where
-    O: Send + Sync + 'static,
-    O::TrustedSetup: Into<TrustedSetupFor<C>>,
+pub async fn start_secure_rpc_worker<C: Context>(context: &C, operator_event_rx: mpsc::Receiver<OperatorEvent<TrustedSetupFor<C>>>, tx_orderer_rpc_url: String) -> (JoinHandle<()>, mpsc::Sender<RpcHandlerEvent>) 
 {
-    let (mut worker, tx) = SecureRpcWorker::<C, O>::new(context.clone(), operator, tx_orderer_rpc_url);
+    let (mut worker, tx) = SecureRpcWorker::<C>::new(context.clone(), operator_event_rx, tx_orderer_rpc_url);
     let handle = tokio::spawn(async move {
         worker.run().await;
     });
@@ -17,33 +14,26 @@ where
 }
 
 /// Main Secure RPC worker that handles the events from other workers
-struct SecureRpcWorker<C: Context, O: Operator> {
+struct SecureRpcWorker<C: Context> {
     context: C,
-    operator: O,
     operator_urls: Option<Vec<String>>,
     tx_orderer_rpc_url: String,
     from_rpc_event_rx: mpsc::Receiver<RpcHandlerEvent>,
+    operator_event_rx: mpsc::Receiver<OperatorEvent<TrustedSetupFor<C>>>,
 }
 
-impl<C: Context, O: Operator> SecureRpcWorker<C, O> 
-where
-    O::TrustedSetup: Into<TrustedSetupFor<C>>,
-{
-    pub fn new(context: C, operator: O, tx_orderer_rpc_url: String) -> (Self, mpsc::Sender<RpcHandlerEvent>) {
+impl<C: Context> SecureRpcWorker<C> {
+    pub fn new(context: C, operator_event_rx: mpsc::Receiver<OperatorEvent<TrustedSetupFor<C>>>, tx_orderer_rpc_url: String) -> (Self, mpsc::Sender<RpcHandlerEvent>) {
         let (tx, from_rpc_event_rx) = mpsc::channel(100);
-        (Self { context, operator, operator_urls: None, tx_orderer_rpc_url, from_rpc_event_rx }, tx)
+        (Self { context, operator_urls: None, tx_orderer_rpc_url, from_rpc_event_rx, operator_event_rx }, tx)
     }
 
-    async fn update_operator_list(&mut self) {
-        if let Some(operator_urls) = self.operator.get_operator_rpc_urls().await {
-            self.operator_urls = Some(operator_urls);
-        }
+    async fn update_operator_list(&mut self, operator_urls: Vec<String>) {
+        self.operator_urls = Some(operator_urls);
     }
 
-    async fn update_trusted_setup(&mut self) {
-        if let Some(trusted_setup) = self.operator.get_active_trusted_setup().await {
-            self.context.secure_rpc_service_mut().update_trusted_setup(trusted_setup.into());
-        }
+    async fn update_trusted_setup(&mut self, trusted_setup: TrustedSetupFor<C>) {
+        self.context.secure_rpc_service_mut().update_trusted_setup(trusted_setup);
     }
 
     fn random_index(&self, size: usize) -> anyhow::Result<usize> {
@@ -92,13 +82,29 @@ where
     }
 
     pub async fn run(&mut self) {
-        while let Some(event) = self.from_rpc_event_rx.recv().await {
-            match event {
-                RpcHandlerEvent::SendTx { raw_tx, should_encrypt, sender } => {
-                    if let Ok(res) = self.handle_send_tx(raw_tx, should_encrypt).await {
-                        if let Err(e) = sender.send(res) { tracing::error!("Channel is closed: {}", e); }
-                    } else {
-                        tracing::error!("Failed to forward transaction");
+        loop {
+            tokio::select! {
+                Some(event) = self.from_rpc_event_rx.recv() => {
+                    tracing::info!("Received event: {:?}", event);
+                    match event {
+                        RpcHandlerEvent::SendTx { raw_tx, should_encrypt, sender } => {
+                            if let Ok(res) = self.handle_send_tx(raw_tx, should_encrypt).await {
+                                if let Err(e) = sender.send(res) { tracing::error!("Channel is closed: {}", e); }
+                            } else {
+                                tracing::error!("Failed to forward transaction");
+                            }
+                        }
+                    }
+                },
+                Some(event) = self.operator_event_rx.recv() => {
+                    tracing::info!("Received operator event");
+                    match event {
+                        OperatorEvent::UpdateOperatorList(operator_urls) => {
+                            self.update_operator_list(operator_urls).await;
+                        }
+                        OperatorEvent::UpdateTrustedSetup(trusted_setup) => {
+                            self.update_trusted_setup(trusted_setup).await;
+                        }
                     }
                 }
             }

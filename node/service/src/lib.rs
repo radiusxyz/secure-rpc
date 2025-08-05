@@ -1,9 +1,9 @@
 mod rpc;
 mod worker;
 use tokio::task::JoinHandle;
-use worker::{external_rpc::start_external_rpc_worker, secure_rpc::start_secure_rpc_worker};
+use worker::{external_rpc::start_external_rpc_worker, secure_rpc::start_secure_rpc_worker, operator::start_bapp_operator_worker};
 use secure_rpc_node_primitive::{
-    ssv::BAppService, NodeConfig, SecureRpcNode, SkdeSecureRpcService, TaskExecutor
+    NodeConfig, SecureRpcNode, SkdeSecureRpcService, TaskExecutor
 };
 use secure_rpc_primitives::{AsyncTask, ExternalRpcInterface, SecureRpcService};
 
@@ -34,26 +34,33 @@ where
     Ok(handle)
 }
 
-pub async fn run_secure_rpc_node_with_bapp_service(config: NodeConfig, blockchain_http_rpc_url: String, contract_address: String) -> anyhow::Result<()> {
+pub async fn run_secure_rpc_node_with_bapp_service(config: NodeConfig, blockchain_http_rpc_url: String, blockchain_ws_rpc_url: String, contract_address: String) -> anyhow::Result<()> {
     config.log_config();
     tracing::info!("Blockchain HTTP RPC URL: {}", blockchain_http_rpc_url);
+    tracing::info!("Blockchain WS RPC URL: {}", blockchain_ws_rpc_url);
     tracing::info!("Contract Address: {}", contract_address);
     let mut handles = vec![];
     let mut secure_rpc_node = create_secure_rpc_node::<_, _, _>(&config);
-    let bapp_service = BAppService::new(blockchain_http_rpc_url, contract_address);
+
+    // Start the operator worker
+    let (operator_handle, operator_event_rx, trusted_setup, operator_urls) = start_bapp_operator_worker::<_>(&secure_rpc_node, blockchain_http_rpc_url, blockchain_ws_rpc_url, contract_address).await?;
+    tracing::info!("Operator worker started successfully");
+    tracing::info!("👥 Initial operators RPC URLs: {:?}", operator_urls);
+
     // Start the external RPC worker
     let (external_rpc_service, rpc_handle) = start_external_rpc_worker(&config.rollup_rpc_url).await;
     tracing::info!("External RPC worker started successfully");
-    let trusted_setup = bapp_service.get_active_trusted_setup().await?;
-    secure_rpc_node.with_secure_rpc_service(SkdeSecureRpcService::new(trusted_setup.into()));
+    
+    secure_rpc_node.with_secure_rpc_service(SkdeSecureRpcService::new(trusted_setup));
     secure_rpc_node.with_external_rpc_service(external_rpc_service);
 
     // Start the secure RPC worker
-    let (secure_rpc_handle, rpc_event_tx) = start_secure_rpc_worker(&secure_rpc_node, bapp_service, config.tx_orderer_rpc_url).await;
+    let (secure_rpc_handle, rpc_event_tx) = start_secure_rpc_worker(&secure_rpc_node, operator_event_rx, config.tx_orderer_rpc_url).await;
     secure_rpc_node.with_async_task(TaskExecutor::new(rpc_event_tx));
 
     let rpc_server_handle = run_rpc_server(&secure_rpc_node, &config.rpc_url).await?;
 
+    handles.push(operator_handle);
     handles.push(rpc_handle);
     handles.push(secure_rpc_handle);
     handles.push(rpc_server_handle);
