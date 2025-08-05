@@ -1,6 +1,7 @@
 use crate::{Args, Parser};
 use secure_rpc_node_primitive::constants::rpc_url::{
-    DEFAULT_BLOCKCHAIN_URL,
+    DEFAULT_BLOCKCHAIN_HTTP_URL,
+    DEFAULT_BLOCKCHAIN_WS_URL,
     DEFAULT_CONTRACT_ADDRESS,
     DEFAULT_DKG_RPC_URL,
 };
@@ -16,11 +17,11 @@ pub enum OperatorService {
 #[derive(Debug, Args)]
 pub struct BlockchainOperatorArgs {
     #[doc = "Url of the blockchain node which provides the trusted setup"]
-    #[clap(long = "blockchain-http-rpc-url", default_value = DEFAULT_BLOCKCHAIN_URL)]
+    #[clap(long = "blockchain-http-rpc-url", default_value = DEFAULT_BLOCKCHAIN_HTTP_URL)]
     pub blockchain_http_rpc_url: String,
 
     #[doc = "Url of the blockchain node which provides the trusted setup"]
-    #[clap(long = "blockchain-ws-rpc-url", default_value = DEFAULT_BLOCKCHAIN_URL)]
+    #[clap(long = "blockchain-ws-rpc-url", default_value = DEFAULT_BLOCKCHAIN_WS_URL)]
     pub blockchain_ws_rpc_url: String,
 
     #[doc = "Address of the trusted setup contract"]
